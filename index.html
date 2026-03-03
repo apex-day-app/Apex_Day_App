@@ -2,8 +2,13 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APEX DAY - Color Prediction Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APEX DAY - Admin Panel</title>
+    
+    <!-- Firebase 8.x Version -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,188 +16,355 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Telegram WebApp -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+        
+        .login-box {
+            max-width: 400px;
+            margin: 100px auto;
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #3a3a3a;
+            color: white;
+        }
+        
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: #D4AF37;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            padding: 12px 25px;
+            background: #2a2a2a;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .tab-btn.active {
+            background: #D4AF37;
+            color: black;
+        }
+        
+        .tab-content {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #D4AF37;
+            color: black;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        
+        .pending {
+            background: #ff4444;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .completed {
+            background: #00C851;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .action-btn {
+            background: #D4AF37;
+            color: black;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .reject-btn {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            background: #3a3a3a;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .refresh-btn {
+            background: #D4AF37;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .balance-edit {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .balance-edit input {
+            width: 100px;
+            padding: 5px;
+            background: #3a3a3a;
+            border: none;
+            color: white;
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loader"></div>
-        <p>🚀 गेम लोड हो रहा है...</p>
-    </div>
-
-    <!-- Main Game Container -->
-    <div id="game-container" class="game-container hidden">
-        <!-- Header -->
-        <div class="header">
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="user-details">
-                    <span class="user-name" id="userName">Loading...</span>
-                    <span class="user-gameid" id="userGameId">ID: </span>
-                </div>
-            </div>
-            <div class="header-right">
-                <button class="icon-btn" onclick="window.location.reload()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-            </div>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section" class="login-box">
+            <h2 style="color: #D4AF37; margin-bottom: 20px;">👑 Admin Login</h2>
+            <input type="password" id="admin-password" placeholder="Enter Admin Password">
+            <button onclick="adminLogin()">Login</button>
         </div>
 
-        <!-- Balance Card -->
-        <div class="balance-card">
-            <div class="balance-icon">
-                <i class="fas fa-wallet"></i>
-            </div>
-            <div class="balance-info">
-                <div class="balance-label">आपका बैलेंस</div>
-                <div class="balance-amount" id="balanceAmount">₹0</div>
-            </div>
-        </div>
-
-        <!-- Game Area -->
-        <div class="game-area">
-            <!-- Timer & Result -->
-            <div class="game-header">
-                <div class="timer-box" id="timer">15</div>
-                <div class="result-box" id="resultBox">
-                    <span class="result-text">बेट लगाएं</span>
-                </div>
-            </div>
-
-            <!-- Color Buttons -->
-            <div class="color-buttons">
-                <button class="color-btn green-btn" onclick="placeBet('green')" id="greenBtn">
-                    <i class="fas fa-circle"></i> GREEN 2x
-                    <span class="badge" id="greenBetAmount">0</span>
-                </button>
-                <button class="color-btn blue-btn" onclick="placeBet('blue')" id="blueBtn">
-                    <i class="fas fa-circle"></i> BLUE 2x
-                    <span class="badge" id="blueBetAmount">0</span>
-                </button>
-            </div>
-
-            <!-- Amount Selector -->
-            <div class="amount-selector">
-                <div class="amount-presets">
-                    <button class="preset-btn" onclick="setAmount(10)">10</button>
-                    <button class="preset-btn" onclick="setAmount(50)">50</button>
-                    <button class="preset-btn" onclick="setAmount(100)">100</button>
-                    <button class="preset-btn" onclick="setAmount(500)">500</button>
-                    <button class="preset-btn" onclick="setAmount(1000)">1000</button>
-                </div>
-                <div class="custom-amount">
-                    <input type="number" id="betAmount" value="10" min="1" max="10000" class="amount-input">
-                    <button class="action-btn" onclick="placeBetWithAmount()">
-                        <i class="fas fa-dice"></i> बेट लगाएं
-                    </button>
-                </div>
-            </div>
-
-            <!-- Bet Lists -->
-            <div class="bet-lists">
-                <div class="bet-column">
-                    <div class="column-header">
-                        <div class="color-indicator green"></div>
-                        <span>GREEN</span>
-                        <span class="total-badge" id="greenTotal">0</span>
+        <!-- Admin Panel (Hidden by default) -->
+        <div id="admin-panel" class="hidden">
+            <div class="header">
+                <h1><i class="fas fa-crown" style="margin-right: 10px;"></i> APEX DAY - Admin Panel</h1>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="number" id="total-users">0</div>
+                        <div>Total Users</div>
                     </div>
-                    <div class="bets-container" id="greenBets"></div>
-                </div>
-                <div class="bet-column">
-                    <div class="column-header">
-                        <div class="color-indicator blue"></div>
-                        <span>BLUE</span>
-                        <span class="total-badge" id="blueTotal">0</span>
+                    <div class="stat-card">
+                        <div class="number" id="pending-txns">0</div>
+                        <div>Pending Requests</div>
                     </div>
-                    <div class="bets-container" id="blueBets"></div>
+                    <div class="stat-card">
+                        <div class="number" id="total-bets">0</div>
+                        <div>Today's Bets</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- History Strip -->
-        <div class="history-container">
-            <div class="history-strip" id="historyStrip"></div>
-        </div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('deposits')">💰 Deposits</button>
+                <button class="tab-btn" onclick="showTab('withdrawals')">💸 Withdrawals</button>
+                <button class="tab-btn" onclick="showTab('users')">👥 Users</button>
+                <button class="tab-btn" onclick="showTab('bets')">🎲 Bets</button>
+                <button class="tab-btn" onclick="showTab('settings')">⚙️ Settings</button>
+                <button class="refresh-btn" onclick="loadAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
 
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <button class="nav-item active" onclick="showTab('game')">
-                <i class="fas fa-gamepad"></i>
-                <span>गेम</span>
-            </button>
-            <button class="nav-item" onclick="openBot()">
-                <i class="fas fa-robot"></i>
-                <span>बॉट</span>
-            </button>
-            <button class="nav-item" onclick="showTab('profile')">
-                <i class="fas fa-user"></i>
-                <span>प्रोफाइल</span>
-            </button>
+            <!-- Deposits Tab -->
+            <div id="deposits-tab" class="tab-content">
+                <h2 style="color: #D4AF37; margin-bottom: 15px;">💰 Pending Deposit Requests</h2>
+                <input type="text" class="search-box" id="deposit-search" placeholder="Search by name or UTR..." onkeyup="filterDeposits()">
+                <table id="deposits-table">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>User</th>
+                            <th>Game ID</th>
+                            <th>Amount</th>
+                            <th>UTR</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deposits-body">
+                        <tr><td colspan="7">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Withdrawals Tab -->
+            <div id="withdrawals-tab" class="tab-content hidden">
+                <h2 style="color: #D4AF37; margin-bottom: 15px;">💸 Pending Withdrawal Requests</h2>
+                <input type="text" class="search-box" id="withdraw-search" placeholder="Search by name or bank..." onkeyup="filterWithdrawals()">
+                <table id="withdrawals-table">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>User</th>
+                            <th>Game ID</th>
+                            <th>Amount</th>
+                            <th>Bank Details</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawals-body">
+                        <tr><td colspan="7">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users-tab" class="tab-content hidden">
+                <h2 style="color: #D4AF37; margin-bottom: 15px;">👥 All Users</h2>
+                <input type="text" class="search-box" id="users-search" placeholder="Search by name, email or Game ID..." onkeyup="filterUsers()">
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Game ID</th>
+                            <th>Balance</th>
+                            <th>Bank Accounts</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-body">
+                        <tr><td colspan="7">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bets Tab -->
+            <div id="bets-tab" class="tab-content hidden">
+                <h2 style="color: #D4AF37; margin-bottom: 15px;">🎲 Recent Bets</h2>
+                <input type="text" class="search-box" id="bets-search" placeholder="Search by user..." onkeyup="filterBets()">
+                <table id="bets-table">
+                    <thead>
+                        <tr>
+                            <th>Date/Time</th>
+                            <th>User</th>
+                            <th>Game ID</th>
+                            <th>Color</th>
+                            <th>Amount</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bets-body">
+                        <tr><td colspan="6">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content hidden">
+                <h2 style="color: #D4AF37; margin-bottom: 15px;">⚙️ Settings</h2>
+                
+                <div style="background: #3a3a3a; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 15px;">🎁 Promo Code</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="promo-code-value" value="WELCOME20" class="search-box" style="flex: 1;">
+                        <button class="action-btn" onclick="updatePromoCode()">Update</button>
+                    </div>
+                </div>
+                
+                <div style="background: #3a3a3a; padding: 20px; border-radius: 5px;">
+                    <h3 style="margin-bottom: 15px;">💰 Welcome Bonus</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="bonus-amount" value="20" class="search-box" style="flex: 1;">
+                        <button class="action-btn" onclick="updateBonus()">Update</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Profile Page (Hidden by default) -->
-    <div id="profile-page" class="profile-page hidden">
-        <div class="profile-header">
-            <button class="back-btn" onclick="showTab('game')">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <h2>प्रोफाइल</h2>
-        </div>
-        
-        <div class="profile-content">
-            <div class="profile-card">
-                <div class="profile-avatar" id="profileAvatar">
-                    <i class="fas fa-user-circle"></i>
-                </div>
-                <div class="profile-name" id="profileName">Loading...</div>
-                <div class="profile-id" id="profileGameId">ID: </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stat-item">
-                    <i class="fas fa-wallet"></i>
-                    <span>बैलेंस</span>
-                    <strong id="profileBalance">₹0</strong>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>ज्वाइन</span>
-                    <strong id="joinDate">-</strong>
-                </div>
-            </div>
-
-            <div class="info-card">
-                <h3><i class="fas fa-info-circle"></i> गेम के नियम</h3>
-                <ul>
-                    <li>✅ न्यूनतम बेट: ₹1</li>
-                    <li>✅ अधिकतम बेट: ₹10,000</li>
-                    <li>✅ जीतने पर 2x मिलेगा</li>
-                    <li>✅ हारने पर 0.5x वापस</li>
-                    <li>✅ जिस रंग पर कम रकम लगी, वही जीतेगा</li>
-                </ul>
-            </div>
-
-            <div class="action-buttons">
-                <button class="action-btn primary" onclick="openBot()">
-                    <i class="fas fa-robot"></i> बॉट पर जाएं
-                </button>
-                <button class="action-btn secondary" onclick="copyGameId()">
-                    <i class="fas fa-copy"></i> ID कॉपी करें
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
-
-    <script src="script.js"></script>
+    <script src="admin.js"></script>
 </body>
-            </html>
+</html>

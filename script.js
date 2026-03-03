@@ -16,49 +16,41 @@ const transactions = db.collection('transactions');
 const gameHistory = db.collection('game_history');
 const userBets = db.collection('user_bets');
 
-let currentUser = null, userData = null, selectedBank = null, gameTimer = null, resultTimeout = null;
+let currentUser = null, userData = null, selectedBank = null, timer = null;
 let currentBet = { green: 0, blue: 0 }, betMap = { green: {}, blue: {} };
 const BET_TIME = 15;
-let game = { totalGreen: 0, totalBlue: 0, currentTime: 0, resultColor: null };
+let game = { totalGreen: 0, totalBlue: 0, bets: [], time: 0 };
 
-// ==================== TELEGRAM CHECK ====================
+// ==================== AUTO REDIRECT CHECK ====================
 const tg = window.Telegram?.WebApp;
 const telegramUser = tg?.initDataUnsafe?.user;
 const BOT_LINK = "https://t.me/APEX_DAY_bot";
 
 if (!telegramUser) {
-    const loadingMsg = document.getElementById('loading-message');
-    if (loadingMsg) loadingMsg.innerText = 'Redirecting to Telegram Bot...';
-    setTimeout(() => window.location.href = BOT_LINK, 1500);
+    document.getElementById('loading-message').innerHTML = '⏳ Telegram Bot पर रीडायरेक्ट हो रहे हैं...';
+    setTimeout(() => { window.location.href = BOT_LINK; }, 2000);
 } else {
-    if (tg) {
-        tg.expand();
-        tg.ready();
-    }
-    setTimeout(autoRegister, 500);
+    tg.expand();
+    tg.ready();
+    autoRegister();
 }
 
 // ==================== AUTO REGISTER ====================
 async function autoRegister() {
     try {
-        const loadingMsg = document.getElementById('loading-message');
-        if (loadingMsg) loadingMsg.innerText = 'Loading your data...';
-        
+        document.getElementById('loading-message').innerText = '⏳ आपका डेटा लोड हो रहा है...';
         const cred = await auth.signInAnonymously();
         const fbUser = cred.user;
         const doc = await users.doc(fbUser.uid).get();
 
         if (!doc.exists) {
             userData = {
-                uid: fbUser.uid, 
-                telegramId: telegramUser.id.toString(),
-                firstName: telegramUser.first_name || '', 
-                lastName: telegramUser.last_name || '',
+                uid: fbUser.uid, telegramId: telegramUser.id.toString(),
+                firstName: telegramUser.first_name || '', lastName: telegramUser.last_name || '',
                 username: telegramUser.username || null,
                 fullName: (telegramUser.first_name || '') + (telegramUser.last_name ? ' ' + telegramUser.last_name : ''),
-                balance: 20, 
-                bank_accounts: [],
-                notifications: [{ message: '🎉 ₹20 Welcome Bonus!', timestamp: new Date() }],
+                balance: 20, bank_accounts: [],
+                notifications: [{ message: '🎉 ₹20 बोनस मिला', timestamp: new Date() }],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
             await users.doc(fbUser.uid).set(userData);
@@ -68,107 +60,59 @@ async function autoRegister() {
         }
 
         currentUser = fbUser;
-        
-        // Update all UI elements safely
-        safeSetInnerText('user-name', userData.fullName || 'User');
-        safeSetInnerText('user-handle', userData.username ? '@' + userData.username : '');
-        safeSetInnerText('profile-name', userData.fullName || '-');
-        safeSetInnerText('profile-telegram-id', userData.telegramId || '-');
-        safeSetInnerText('profile-handle', userData.username ? '@' + userData.username : '');
-        
-        updateUI();
-        updateWithdrawAlert();
-        
-        safeHide('loading-screen');
-        safeShow('dashboard-page');
-        
+        document.getElementById('user-name').innerText = userData.fullName || 'User';
+        document.getElementById('user-telegram-id').innerText = userData.username ? '@' + userData.username : 'Telegram User';
+        document.getElementById('profile-name').innerText = userData.fullName || '-';
+        document.getElementById('profile-telegram-id').innerText = userData.telegramId || '-';
+        document.getElementById('profile-username').innerText = userData.username ? '@' + userData.username : '-';
+        updateBalance();
+
+        document.getElementById('loading-screen').classList.add('hidden');
+        document.getElementById('dashboard-page').classList.add('active');
         startGame();
         loadHistory();
-        loadTransactionHistory();
-    } catch (error) {
-        console.error('Auto register error:', error);
-        const loadingMsg = document.getElementById('loading-message');
-        if (loadingMsg) {
-            loadingMsg.innerHTML = 'Error: ' + error.message + '<br><br><button onclick="location.reload()">⟳ Try Again</button>';
-        }
+    } catch (e) {
+        document.getElementById('loading-message').innerHTML = '❌ Error: ' + e.message + '<br><button onclick="location.reload()">पुनः प्रयास करें</button>';
     }
 }
-
-// ==================== SAFE DOM FUNCTIONS ====================
-function safeGet(id) { return document.getElementById(id); }
-function safeSetInnerText(id, text) { const el = safeGet(id); if (el) el.innerText = text; }
-function safeHide(id) { const el = safeGet(id); if (el) el.classList.add('hidden'); }
-function safeShow(id) { const el = safeGet(id); if (el) el.classList.remove('hidden'); }
-function safeToggle(id) { const el = safeGet(id); if (el) el.classList.toggle('hidden'); }
 
 // ==================== UI FUNCTIONS ====================
-function updateUI() {
-    if (!userData) return;
-    const bal = Math.floor(userData.balance || 0);
-    safeSetInnerText('balance-amount', bal);
-    safeSetInnerText('profile-balance', bal);
-    safeSetInnerText('add-money-balance', 'Balance: ' + bal);
-    safeSetInnerText('withdraw-balance', 'Available: ' + bal);
-    safeSetInnerText('my-green-bet', currentBet.green);
-    safeSetInnerText('my-blue-bet', currentBet.blue);
-}
-
-function updateWithdrawAlert() {
-    const alert = safeGet('withdraw-alert');
-    if (alert && userData && userData.balance >= 105) {
-        alert.classList.remove('hidden');
-    } else if (alert) {
-        alert.classList.add('hidden');
-    }
-}
-
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const page = safeGet(id);
-    if (page) page.classList.add('active');
-    
-    if (id === 'profile-page') {
-        loadBankAccounts();
-        loadDetailedGameHistory();
-        loadTransactionHistory();
-    }
-    if (id === 'withdraw-page') loadBankAccounts();
+    document.getElementById(id).classList.add('active');
+    if (id === 'profile-page') loadBankAccounts();
+}
+
+function updateBalance() {
+    if (!userData) return;
+    const bal = Math.floor(userData.balance || 0);
+    document.getElementById('current-balance').innerText = bal;
+    document.getElementById('profile-balance').innerText = '₹' + bal;
+    document.getElementById('add-money-balance').innerText = 'बैलेंस: ₹' + bal;
+    document.getElementById('withdraw-money-balance').innerText = 'उपलब्ध: ₹' + bal;
 }
 
 function toggleNotificationPanel() {
-    safeToggle('notification-panel');
+    document.getElementById('notification-panel').classList.toggle('hidden');
 }
 
-function showAddBankPopup() { 
-    safeHide('add-bank-popup'); // First hide if visible
-    safeShow('add-bank-popup'); 
-}
+function showAddBankPopup() { document.getElementById('add-bank-popup').classList.remove('hidden'); }
 function closeAddBankPopup() { 
-    safeHide('add-bank-popup');
-    ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => {
-        const el = safeGet(id);
-        if (el) el.value = '';
-    });
-    const msg = safeGet('bank-message');
-    if (msg) {
-        msg.classList.remove('success', 'error');
-        msg.style.display = 'none';
-    }
+    document.getElementById('add-bank-popup').classList.add('hidden');
+    ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('bank-message').style.display = 'none';
 }
 
-// ==================== BANK FUNCTIONS ====================
+// ==================== BANK ACCOUNTS ====================
 function addBankAccount() {
-    const bank = safeGet('bank-name')?.value.trim();
-    const holder = safeGet('account-holder')?.value.trim();
-    const number = safeGet('account-number')?.value.trim();
-    const ifsc = safeGet('ifsc-code')?.value.trim().toUpperCase();
+    const bank = document.getElementById('bank-name').value.trim();
+    const holder = document.getElementById('account-holder').value.trim();
+    const number = document.getElementById('account-number').value.trim();
+    const ifsc = document.getElementById('ifsc-code').value.trim().toUpperCase();
     
     if (!bank || !holder || !number || !ifsc) {
-        showBankMessage('Please fill all fields', 'error');
-        return;
-    }
-    if (number.length < 9) {
-        showBankMessage('Invalid account number', 'error');
+        document.getElementById('bank-message').style.display = 'block';
+        document.getElementById('bank-message').innerText = '❌ सभी फ़ील्ड भरें';
         return;
     }
     
@@ -176,193 +120,130 @@ function addBankAccount() {
         bank_accounts: firebase.firestore.FieldValue.arrayUnion({ bank, holder, number, ifsc })
     }).then(() => { 
         closeAddBankPopup(); 
-        showNotification('Bank account added successfully!'); 
+        alert('✅ बैंक अकाउंट जुड़ गया'); 
         loadBankAccounts(); 
-    }).catch(err => showBankMessage(err.message, 'error'));
-}
-
-function showBankMessage(msg, type) {
-    const el = safeGet('bank-message');
-    if (!el) return;
-    el.innerText = msg;
-    el.className = 'message ' + type;
-    el.style.display = 'block';
+    }).catch(err => {
+        document.getElementById('bank-message').style.display = 'block';
+        document.getElementById('bank-message').innerText = '❌ ' + err.message;
+    });
 }
 
 function loadBankAccounts() {
-    const container = safeGet('bank-options');
-    const listContainer = safeGet('bank-accounts-list');
-    
     if (!userData?.bank_accounts?.length) {
-        if (container) container.innerHTML = '<p class="empty-state">No bank accounts</p>';
-        if (listContainer) listContainer.innerHTML = '<div class="empty-state">No bank accounts</div>';
+        document.getElementById('bank-options').innerHTML = '<p class="error-message">कोई बैंक अकाउंट नहीं</p>';
         return;
     }
-    
-    let options = '', list = '';
+    let html = '';
     userData.bank_accounts.forEach((b, i) => {
-        options += `<div class="bank-option ${selectedBank === i ? 'selected' : ''}" onclick="selectBank(${i})">${b.bank}<br><small>****${b.number.slice(-4)}</small></div>`;
-        list += `<div class="bank-item">${b.bank}<br><small>${b.holder} | ****${b.number.slice(-4)} | ${b.ifsc}</small></div>`;
+        html += `<div class="bank-option" onclick="selectBank(${i})" style="background:${selectedBank===i?'#f0f0f0':'white'}">${b.bank} - ****${b.number.slice(-4)}</div>`;
     });
-    if (container) container.innerHTML = options;
-    if (listContainer) listContainer.innerHTML = list;
+    document.getElementById('bank-options').innerHTML = html;
 }
 
 function selectBank(i) { selectedBank = i; loadBankAccounts(); }
 
 // ==================== DEPOSIT/WITHDRAW ====================
 function submitAddMoneyRequest() {
-    const amt = parseFloat(safeGet('add-amount')?.value);
-    const utr = safeGet('transaction-id')?.value.trim();
+    const amt = parseFloat(document.getElementById('add-amount').value);
+    const utr = document.getElementById('transaction-id').value.trim();
     if (!amt || amt < 10 || !utr) {
-        showMessage('add-money-message', 'Please enter amount and UTR', 'error');
+        document.getElementById('add-money-message').style.display = 'block';
+        document.getElementById('add-money-message').innerText = '❌ राशि और UTR डालें';
         return;
     }
     
     transactions.add({
-        userId: currentUser.uid, 
-        telegramId: userData.telegramId,
-        userName: userData.fullName, 
-        type: 'deposit', 
-        amount: amt,
-        utr, 
-        status: 'Pending', 
-        timestamp: new Date()
+        userId: currentUser.uid, telegramId: userData.telegramId,
+        userName: userData.fullName, type: 'deposit', amount: amt,
+        utr, status: 'Pending', timestamp: new Date()
     }).then(() => {
-        showMessage('add-money-message', '✅ ₹' + amt + ' request submitted', 'success');
-        const addAmount = safeGet('add-amount');
-        if (addAmount) addAmount.value = '';
-        const txId = safeGet('transaction-id');
-        if (txId) txId.value = '';
-        showNotification('Deposit request sent!');
-        loadTransactionHistory();
-    }).catch(err => showMessage('add-money-message', err.message, 'error'));
+        document.getElementById('add-money-message').style.display = 'block';
+        document.getElementById('add-money-message').style.background = '#00C851';
+        document.getElementById('add-money-message').innerText = '✅ ₹' + amt + ' का अनुरोध भेजा गया';
+        document.getElementById('add-amount').value = '';
+        document.getElementById('transaction-id').value = '';
+        setTimeout(() => document.getElementById('add-money-message').style.display = 'none', 3000);
+    }).catch(err => {
+        document.getElementById('add-money-message').style.display = 'block';
+        document.getElementById('add-money-message').innerText = '❌ ' + err.message;
+    });
 }
 
 function submitWithdrawRequest() {
-    const amt = parseFloat(safeGet('withdraw-amount')?.value);
-    if (!amt || amt < 105 || amt > userData.balance) {
-        showMessage('withdraw-message', 'Invalid amount (minimum 105)', 'error');
+    const amt = parseFloat(document.getElementById('withdraw-amount').value);
+    if (!amt || amt < 100 || amt > userData.balance) {
+        document.getElementById('withdraw-message').style.display = 'block';
+        document.getElementById('withdraw-message').innerText = '❌ सही राशि डालें';
         return;
     }
     if (selectedBank === null) {
-        showMessage('withdraw-message', 'Please select bank account', 'error');
+        document.getElementById('withdraw-message').style.display = 'block';
+        document.getElementById('withdraw-message').innerText = '❌ बैंक अकाउंट चुनें';
         return;
     }
-    
-    const netAmount = Math.floor(amt / 105) * 100;
-    const fee = amt - netAmount;
     
     transactions.add({
-        userId: currentUser.uid, 
-        telegramId: userData.telegramId,
-        userName: userData.fullName, 
-        type: 'withdraw', 
-        amount: amt,
-        netAmount: netAmount,
-        fee: fee,
-        bank: userData.bank_accounts[selectedBank], 
-        status: 'Pending', 
-        timestamp: new Date()
+        userId: currentUser.uid, telegramId: userData.telegramId,
+        userName: userData.fullName, type: 'withdraw', amount: amt,
+        bank: userData.bank_accounts[selectedBank], status: 'Pending', timestamp: new Date()
     }).then(() => {
-        showMessage('withdraw-message', '✅ ₹' + amt + ' request submitted (You will receive ₹' + netAmount + ')', 'success');
-        const withdrawAmount = safeGet('withdraw-amount');
-        if (withdrawAmount) withdrawAmount.value = '';
-        const netEl = safeGet('withdraw-net');
-        if (netEl) netEl.innerText = 'You will receive: ₹0';
-        showNotification('Withdrawal request sent!');
-        loadTransactionHistory();
-    }).catch(err => showMessage('withdraw-message', err.message, 'error'));
-}
-
-function showMessage(elId, msg, type) {
-    const el = safeGet(elId);
-    if (!el) return;
-    el.innerText = msg;
-    el.className = 'message ' + type;
-    el.style.display = 'block';
-    setTimeout(() => el.style.display = 'none', 3000);
-}
-
-function showNotification(msg) {
-    if (!userData?.notifications) userData.notifications = [];
-    userData.notifications.unshift({ message: msg, timestamp: new Date() });
-    if (userData.notifications.length > 20) userData.notifications.pop();
-    const dot = safeGet('notification-dot');
-    if (dot) dot.classList.add('active');
-    renderNotifications();
-}
-
-function renderNotifications() {
-    const list = safeGet('notification-list');
-    if (!list) return;
-    if (!userData?.notifications?.length) {
-        list.innerHTML = '<div class="empty-state">No notifications</div>';
-        return;
-    }
-    list.innerHTML = userData.notifications.map(n => 
-        `<div class="notification-item">${n.message}<br><small>${new Date(n.timestamp).toLocaleString()}</small></div>`
-    ).join('');
+        document.getElementById('withdraw-message').style.display = 'block';
+        document.getElementById('withdraw-message').style.background = '#00C851';
+        document.getElementById('withdraw-message').innerText = '✅ ₹' + amt + ' का अनुरोध भेजा गया';
+        document.getElementById('withdraw-amount').value = '';
+        setTimeout(() => document.getElementById('withdraw-message').style.display = 'none', 3000);
+    }).catch(err => {
+        document.getElementById('withdraw-message').style.display = 'block';
+        document.getElementById('withdraw-message').innerText = '❌ ' + err.message;
+    });
 }
 
 function showWithdrawPage() {
     if (!userData?.bank_accounts?.length) {
-        alert('Please add a bank account first');
+        alert('पहले बैंक अकाउंट जोड़ें');
         return;
     }
     loadBankAccounts();
     showPage('withdraw-page');
 }
 
-function selectAmount(btn) {
-    document.querySelectorAll('#add-money-page .amount-option').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    const addAmount = safeGet('add-amount');
-    if (addAmount) addAmount.value = btn.dataset.amount;
+function selectAmount(b) {
+    document.querySelectorAll('#add-money-page .amount-option').forEach(o => o.classList.remove('selected'));
+    b.classList.add('selected');
+    document.getElementById('add-amount').value = b.dataset.amount;
 }
 
-function selectWithdrawAmount(btn) {
-    document.querySelectorAll('#withdraw-page .amount-option').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    const amt = parseInt(btn.dataset.amount);
-    const withdrawAmount = safeGet('withdraw-amount');
-    if (withdrawAmount) withdrawAmount.value = amt;
-    const net = Math.floor(amt / 105) * 100;
-    const netEl = safeGet('withdraw-net');
-    if (netEl) netEl.innerText = 'You will receive: ₹' + net;
+function selectWithdrawAmount(b) {
+    document.querySelectorAll('#withdraw-page .amount-option').forEach(o => o.classList.remove('selected'));
+    b.classList.add('selected');
+    document.getElementById('withdraw-amount').value = b.dataset.amount;
 }
 
 // ==================== GAME FUNCTIONS ====================
 function startGame() {
-    if (gameTimer) clearInterval(gameTimer);
+    if (timer) clearInterval(timer);
     let time = BET_TIME;
-    game = { totalGreen: 0, totalBlue: 0, currentTime: 0, resultColor: null };
+    game = { totalGreen: 0, totalBlue: 0, bets: [], time: 0 };
     currentBet = { green: 0, blue: 0 };
     betMap = { green: {}, blue: {} };
     
-    const greenList = safeGet('green-bets-list');
-    const blueList = safeGet('blue-bets-list');
-    if (greenList) greenList.innerHTML = '<div class="empty-state">No bets yet</div>';
-    if (blueList) blueList.innerHTML = '<div class="empty-state">No bets yet</div>';
-    
-    safeSetInnerText('my-green-bet', '0');
-    safeSetInnerText('my-blue-bet', '0');
-    
-    if (resultTimeout) clearTimeout(resultTimeout);
-    const resultBox = safeGet('result-box');
-    if (resultBox) resultBox.style.background = 'white';
-    
+    ['green','blue'].forEach(c => {
+        document.getElementById(`bet-amount-${c}`).innerText = '₹0';
+        document.getElementById(`${c}-bets-list`).innerHTML = '<div class="empty-bets">कोई बेट नहीं</div>';
+        document.getElementById(`${c}-total`).innerText = '0';
+    });
+
     let last = performance.now();
     function update(now) {
         if (now - last >= 10) {
-            time -= 0.01; 
-            game.currentTime = time;
+            time -= 0.01; game.time = time;
             if (time <= 0) { 
-                safeSetInnerText('timer', '0'); 
+                document.getElementById('timer').innerText = '00:00'; 
                 endRound(); 
                 return; 
             }
-            safeSetInnerText('timer', Math.floor(time));
+            const s = Math.floor(time), ms = Math.floor((time % 1) * 100);
+            document.getElementById('timer').innerText = `${s}:${ms.toString().padStart(2,'0')}`;
             last = now;
         }
         if (time > 0) requestAnimationFrame(update);
@@ -377,34 +258,20 @@ function endRound() {
         if (totalG < totalB) winner = 'green';
         else if (totalB < totalG) winner = 'blue';
     }
-    
-    const resultBox = safeGet('result-box');
-    if (resultBox) {
-        resultBox.style.background = winner === 'green' ? '#06d6a0' : winner === 'blue' ? '#4d9fff' : '#999';
-    }
-    game.resultColor = winner;
-    
-    processWin(winner);
-    gameHistory.add({ result: winner, totalG, totalB, timestamp: new Date() });
-    updateHistory(winner);
-    
-    resultTimeout = setTimeout(() => {
-        if (game.currentTime <= 1) {
-            const resultBox = safeGet('result-box');
-            if (resultBox) resultBox.style.background = 'white';
-        }
-    }, 14000);
-    
-    setTimeout(startGame, 3000);
+    setTimeout(() => {
+        document.getElementById('result-box').style.background = winner === 'green' ? '#00C853' : winner === 'blue' ? '#2962FF' : '#9e9e9e';
+        document.getElementById('result-box').innerText = winner === 'green' ? '🟢 हरा जीता' : winner === 'blue' ? '🔵 नीला जीता' : '⚫ बराबर';
+        processWin(winner);
+        gameHistory.add({ result: winner, totalG, totalB, timestamp: new Date() });
+        updateHistory(winner);
+        setTimeout(startGame, 3000);
+    }, 2000);
 }
 
 function placeBet(color) {
     if (!currentUser || !userData) return;
-    const betInput = safeGet('bet-amount');
-    if (!betInput) return;
-    const amt = parseFloat(betInput.value);
-    const timerEl = safeGet('timer');
-    if (!timerEl || timerEl.innerText === '0' || !amt || amt < 1 || amt > userData.balance) return;
+    const amt = parseFloat(document.getElementById('bet-amount').value);
+    if (document.getElementById('timer').innerText === '00:00' || !amt || amt < 1 || amt > userData.balance) return;
 
     users.doc(currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(-amt) })
         .then(() => {
@@ -413,39 +280,30 @@ function placeBet(color) {
                 betMap[color][uid].amount += amt;
                 currentBet[color] += amt;
                 game[color === 'green' ? 'totalGreen' : 'totalBlue'] += amt;
-                const item = safeGet(`${color}-bet-${uid}`);
-                if (item) {
-                    item.innerHTML = `<span class="user-name">${name}</span> <span class="bet-amount">₹${Math.floor(betMap[color][uid].amount)}</span>`;
-                }
+                document.getElementById(`${color}-bet-${uid}`).innerHTML = `<div><span>${name}</span></div> <span>₹${Math.floor(betMap[color][uid].amount)}</span>`;
             } else {
                 betMap[color][uid] = { userName: name, amount: amt };
                 currentBet[color] += amt;
                 game[color === 'green' ? 'totalGreen' : 'totalBlue'] += amt;
-                const list = safeGet(`${color}-bets-list`);
-                if (list) {
-                    if (list.querySelector('.empty-state')) list.innerHTML = '';
-                    const item = document.createElement('div');
-                    item.className = 'bet-item'; 
-                    item.id = `${color}-bet-${uid}`;
-                    item.innerHTML = `<span class="user-name">${name}</span> <span class="bet-amount">₹${amt}</span>`;
-                    list.insertBefore(item, list.firstChild);
-                }
+                const list = document.getElementById(`${color}-bets-list`);
+                if (list.querySelector('.empty-bets')) list.innerHTML = '';
+                const item = document.createElement('div');
+                item.className = 'bet-item'; 
+                item.id = `${color}-bet-${uid}`;
+                item.innerHTML = `<div><span>${name}</span></div> <span>₹${amt}</span>`;
+                list.insertBefore(item, list.firstChild);
             }
             userBets.add({ 
-                userId: uid, 
-                telegramId: userData.telegramId, 
-                userName: name, 
-                amount: amt, 
-                color, 
-                timeLeft: game.currentTime, 
-                timestamp: new Date(), 
+                userId: uid, telegramId: userData.telegramId, 
+                userName: name, amount: amt, color, 
+                timeLeft: game.time, timestamp: new Date(), 
                 result: 'Pending' 
             });
-            safeSetInnerText(`my-${color}-bet`, currentBet[color]);
+            document.getElementById(`bet-amount-${color}`).innerText = `₹${Math.floor(currentBet[color])}`;
+            document.getElementById(`${color}-total`).innerText = Math.floor(color === 'green' ? game.totalGreen : game.totalBlue);
             userData.balance -= amt;
-            updateUI();
-            updateWithdrawAlert();
-        }).catch(console.error);
+            updateBalance();
+        });
 }
 
 function processWin(win) {
@@ -456,114 +314,39 @@ function processWin(win) {
         users.doc(currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(w - tb) });
         userBets.where('userId','==',currentUser.uid).where('result','==','Pending').get()
             .then(s => s.forEach(d => d.ref.update({ result: d.data().color === win ? 'Won' : 'Lost' })));
-        showNotification('🎉 You won! ₹' + w);
     } else if (win === 'gray' && tb > 0) {
         users.doc(currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(tb) });
         userBets.where('userId','==',currentUser.uid).where('result','==','Pending').get()
             .then(s => s.forEach(d => d.ref.update({ result: 'Refunded' })));
-        showNotification('⚫ Draw - money refunded');
     }
-    updateUI();
-    updateWithdrawAlert();
 }
 
-function updateHistory(color) {
-    const h = safeGet('history-strip');
-    if (!h) return;
-    if (h.querySelector('.empty-state')) h.innerHTML = '';
+function updateHistory(c) {
+    const h = document.getElementById('result-history');
     const n = document.createElement('div');
-    n.className = `history-item ${color}`;
+    n.className = `history-item ${c}`;
+    if (h.querySelector('.empty-bets')) h.innerHTML = '';
     h.insertBefore(n, h.firstChild);
     if (h.children.length > 20) h.removeChild(h.lastChild);
 }
 
 function loadHistory() {
     gameHistory.orderBy('timestamp','desc').limit(20).get().then(s => {
-        const h = safeGet('history-strip');
-        if (!h) return;
-        if (s.empty) {
-            h.innerHTML = '<div class="empty-state">No history</div>';
-            return;
-        }
+        const h = document.getElementById('result-history');
+        if (s.empty) return;
         h.innerHTML = '';
         const r = []; 
         s.forEach(d => r.push(d.data()));
         r.reverse().forEach(res => h.innerHTML += `<div class="history-item ${res.result}"></div>`);
-    }).catch(console.error);
+    });
 }
 
-function loadDetailedGameHistory() {
-    if (!currentUser) return;
-    userBets.where('userId','==',currentUser.uid).orderBy('timestamp','desc').limit(30).get()
-        .then(s => {
-            const h = safeGet('game-history-list');
-            if (!h) return;
-            if (s.empty) {
-                h.innerHTML = '<div class="empty-state">No game history</div>';
-                return;
-            }
-            let html = '';
-            s.forEach(d => {
-                const b = d.data();
-                const dt = b.timestamp ? new Date(b.timestamp.seconds * 1000).toLocaleString() : new Date(b.timestamp).toLocaleString();
-                const resultColor = b.result === 'Won' ? '#06d6a0' : b.result === 'Lost' ? '#ef476f' : '#ffd166';
-                html += `<div class="history-item-detailed">
-                    <div class="date">${dt}</div>
-                    <div class="details">
-                        <span>${b.color === 'green' ? '🟢 GREEN' : '🔵 BLUE'}</span>
-                        <span>₹${b.amount}</span>
-                        <span style="color:${resultColor}">${b.result}</span>
-                    </div>
-                </div>`;
-            });
-            h.innerHTML = html;
-        }).catch(console.error);
-}
-
-function loadTransactionHistory() {
-    if (!currentUser) return;
-    transactions.where('userId','==',currentUser.uid).orderBy('timestamp','desc').limit(30).get()
-        .then(s => {
-            const h = safeGet('transaction-history-list');
-            if (!h) return;
-            if (s.empty) {
-                h.innerHTML = '<div class="empty-state">No transactions</div>';
-                return;
-            }
-            let html = '';
-            s.forEach(d => {
-                const t = d.data();
-                const dt = t.timestamp ? new Date(t.timestamp.seconds * 1000).toLocaleString() : new Date(t.timestamp).toLocaleString();
-                const statusColor = t.status === 'Completed' ? '#06d6a0' : t.status === 'Pending' ? '#ffd166' : '#ef476f';
-                let details = '';
-                if (t.type === 'deposit') {
-                    details = `💰 Deposit ₹${t.amount} (UTR: ${t.utr})`;
-                } else {
-                    const net = t.netAmount || Math.floor(t.amount / 105) * 100;
-                    details = `💸 Withdraw ₹${t.amount} → Receive ₹${net}`;
-                }
-                html += `<div class="history-item-detailed">
-                    <div class="date">${dt}</div>
-                    <div class="details">
-                        <span>${details}</span>
-                        <span style="color:${statusColor}">${t.status}</span>
-                    </div>
-                </div>`;
-            });
-            h.innerHTML = html;
-        }).catch(console.error);
-}
-
-function setBetAmount(a) { 
-    const betInput = safeGet('bet-amount');
-    if (betInput) betInput.value = a; 
-}
+function setBetAmount(a) { document.getElementById('bet-amount').value = a; }
 function adjustBetAmount(d) { 
-    const betInput = safeGet('bet-amount');
-    if (!betInput) return;
-    let c = parseInt(betInput.value) || 0;
-    betInput.value = Math.max(1, c + d);
+    let c = parseInt(document.getElementById('bet-amount').value) || 0;
+    document.getElementById('bet-amount').value = Math.max(1, c + d);
 }
+
 function logout() { 
     auth.signOut().then(() => window.location.href = BOT_LINK); 
 }
@@ -584,16 +367,3 @@ window.submitWithdrawRequest = submitWithdrawRequest;
 window.placeBet = placeBet;
 window.setBetAmount = setBetAmount;
 window.adjustBetAmount = adjustBetAmount;
-
-// Withdraw amount input listener
-document.addEventListener('DOMContentLoaded', () => {
-    const withdrawInput = safeGet('withdraw-amount');
-    if (withdrawInput) {
-        withdrawInput.addEventListener('input', function() {
-            const amt = parseFloat(this.value) || 0;
-            const net = Math.floor(amt / 105) * 100;
-            const netEl = safeGet('withdraw-net');
-            if (netEl) netEl.innerText = 'You will receive: ₹' + net;
-        });
-    }
-});

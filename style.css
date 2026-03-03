@@ -1,984 +1,120 @@
-/* --- Global & Base Setup --- */
-:root {
-    --primary-color: #D4AF37; /* Gold */
-    --secondary-color: #C41E3A; /* Deep Red */
-    --background-color: #FFFFFF; /* White background */
-    --card-background: #F8F9FA; /* Light card */
-    --text-color: #000000; /* Black text */
-    --light-text: #333333; /* Dark gray text */
-    --error-color: #FF4444;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    --green-bet: #00C853;
-    --blue-bet: #2962FF;
-    --gold-color: #FFD700;
-    --gray-color: #E0E0E0;
-    --light-gray: #CCCCCC;
-    --dark-panel: #1A1A1A; /* Keep dark for game panel */
-    --timer-bg: #1A1A1A;
-    --result-bg: #2A2A2A;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-}
-
-/* --- Page and Container Layout --- */
-.page {
-    width: 100%;
-    max-width: 450px;
-    min-height: 100vh;
-    padding: 0;
-    position: relative;
-    background-color: var(--card-background);
-    box-shadow: var(--shadow);
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* --- Auth/Basic Content Card --- */
-.auth-container {
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.auth-header {
-    font-weight: 700;
-    font-size: 1.8rem;
-    color: var(--primary-color);
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-.auth-input {
-    padding: 12px 15px;
-    border: 1px solid var(--light-gray);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-    background: var(--background-color);
-    color: var(--text-color);
-}
-
-.auth-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-}
-
-.auth-btn {
-    padding: 12px 15px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: linear-gradient(135deg, var(--primary-color), #B8860B);
-    color: #000;
-    transition: transform 0.1s;
-}
-
-.auth-btn:hover {
-    transform: translateY(-1px);
-}
-
-.google-btn {
-    padding: 12px 15px;
-    border: 1px solid var(--light-gray);
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    text-align: center;
-    transition: background-color 0.3s;
-}
-
-.google-btn:hover {
-    background-color: var(--light-gray);
-}
-
-.divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: var(--light-text);
-    margin: 10px 0;
-}
-
-.divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid var(--light-gray);
-}
-
-.divider:not(:empty)::before { margin-right: 15px; }
-.divider:not(:empty)::after { margin-left: 15px; }
-
-.auth-link {
-    color: var(--primary-color);
-    cursor: pointer;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.error-message, .success-message {
-    text-align: center;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-top: 10px;
-}
-
-.error-message {
-    background-color: #FFE6E6;
-    color: var(--error-color);
-}
-
-.success-message {
-    background-color: #E6FFE6;
-    color: #00C853;
-}
-
-/* --- Dashboard Top Bar --- */
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #FFFFFF, #F0F0F0);
-    color: var(--text-color);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    min-height: 60px;
-    border-bottom: 2px solid var(--primary-color);
-}
-
-.balance-container {
-    flex: 1;
-}
-
-.balance-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: linear-gradient(135deg, #F0F0F0, #FFFFFF);
-    border-radius: 12px;
-    padding: 8px 15px;
-    border: 2px solid var(--primary-color);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    width: 85%;
-}
-
-.balance-amount {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
-}
-
-.add-money-btn {
-    background: var(--primary-color);
-    color: #000;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-weight: 700;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: transform 0.1s;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.add-money-btn:hover {
-    transform: scale(1.1);
-}
-
-.profile-section {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.promo-btn, .notification-btn, .profile-btn {
-    background: rgba(212, 175, 55, 0.1);
-    color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    font-size: 1.1rem;
-    cursor: pointer;
-    position: relative;
-    transition: background 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.promo-btn:hover, .notification-btn:hover, .profile-btn:hover {
-    background: rgba(212, 175, 55, 0.2);
-}
-
-.notification-dot {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 8px;
-    height: 8px;
-    background-color: var(--error-color);
-    border-radius: 50%;
-    border: 1px solid var(--primary-color);
-}
-
-/* History Container */
-.history-container {
-    background: var(--card-background);
-    padding: 8px 20px;
-    border-bottom: 1px solid var(--light-gray);
-}
-
-.history-section {
-    text-align: center;
-}
-
-.history-strip {
-    display: flex;
-    justify-content: flex-start;
-    gap: 5px;
-    max-width: 100%;
-    overflow-x: auto;
-    padding: 5px 0;
-    min-height: 25px;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.history-strip::-webkit-scrollbar {
-    display: none;
-}
-
-.history-item {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: white;
-    flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.history-item.green { background-color: var(--green-bet); }
-.history-item.blue { background-color: var(--blue-bet); }
-.history-item.gray { background-color: #666; }
-
-/* --- Game Area (Keep Dark) --- */
-.game-container {
-    padding: 15px 20px;
-    background-color: var(--dark-panel);
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-/* --- Game Center --- */
-.game-center {
-    background: var(--card-background);
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    text-align: center;
-    border: 1px solid var(--light-gray);
-}
-
-.timer-section {
-    margin-bottom: 10px;
-}
-
-.timer-display {
-    font-size: 3.2rem;
-    font-weight: 900;
-    color: var(--primary-color);
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-    line-height: 1.2;
-    background: var(--timer-bg);
-    padding: 10px;
-    border-radius: 8px;
-    border: 2px solid var(--primary-color);
-}
-
-.result-display {
-    text-align: center;
-}
-
-.result-button-3d {
-    font-size: 1rem;
-    font-weight: 700;
-    padding: 15px 30px;
-    border-radius: 12px;
-    background: var(--result-bg);
-    color: var(--text-color);
-    box-shadow: 
-        0 6px 0 var(--light-gray),
-        0 8px 12px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--light-gray);
-    min-height: 50px;
-    min-width: 180px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    transform: translateY(0);
-    transition: all 0.1s ease;
-}
-
-.result-button-3d:active {
-    transform: translateY(3px);
-    box-shadow: 
-        0 3px 0 var(--light-gray),
-        0 4px 6px rgba(0, 0, 0, 0.5);
-}
-
-/* Combined Betting Lists */
-.combined-betting-lists {
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    border: 2px solid var(--light-gray);
-    overflow: hidden;
-    max-height: 300px;
-}
-
-.bets-header {
-    display: flex;
-    background: #F0F0F0;
-    border-bottom: 2px solid var(--light-gray);
-    min-height: 40px;
-}
-
-.list-title-amount {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px;
-    border-right: 1px solid var(--light-gray);
-}
-
-.list-title-amount:last-child {
-    border-right: none;
-}
-
-.list-title-amount h3 {
-    margin: 0;
-    font-size: 1rem;
-    text-align: left;
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.total-amount-box {
-    background: var(--primary-color);
-    color: #000;
-    padding: 4px 10px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    min-width: 70px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    border-radius: 2px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bets-content {
-    display: flex;
-    height: 220px;
-    overflow-y: auto;
-}
-
-.bets-column {
-    flex: 1;
-    border-right: 1px solid var(--light-gray);
-    padding: 8px;
-}
-
-.bets-column:last-child {
-    border-right: none;
-}
-
-.bets-list {
-    font-size: 0.8rem;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-.bet-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--light-gray);
-    align-items: center;
-    min-width: max-content;
-}
-
-.bet-item:last-child {
-    border-bottom: none;
-}
-
-.serial-number {
-    font-weight: 600;
-    color: var(--light-text);
-    margin-right: 5px;
-    font-size: 0.7rem;
-}
-
-.empty-bets {
-    text-align: center;
-    color: var(--light-text);
-    padding: 20px 0;
-}
-
-/* Betting Panel */
-.betting-panel {
-    background: var(--dark-panel);
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    border: 1px solid var(--light-gray);
-}
-
-.betting-controls {
-    background: transparent;
-}
-
-.amount-controls {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 10px;
-}
-
-.amount-btn {
-    background: #F0F0F0;
-    color: #000;
-    border: 1px solid var(--light-gray);
-    padding: 8px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    flex: 1;
-}
-
-.bet-input {
-    flex: 2;
-    text-align: center;
-    padding: 8px 5px;
-    border: 1px solid var(--light-gray);
-    border-radius: 5px;
-    font-weight: 600;
-    background: #FFFFFF;
-    color: #000;
-    overflow-x: auto;
-}
-
-.color-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.color-btn {
-    flex: 1;
-    height: 60px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.1s;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-}
-
-.color-btn:hover {
-    transform: translateY(-2px);
-}
-
-.green-btn { 
-    background: linear-gradient(135deg, var(--green-bet), #009624);
-}
-
-.blue-btn { 
-    background: linear-gradient(135deg, var(--blue-bet), #0039CB);
-}
-
-.bet-amount-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--gold-color);
-    color: #000;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-
-/* --- Notification Panel --- */
-.notification-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 100%;
-    max-width: 450px;
-    background: rgba(255, 255, 255, 0.8);
-    z-index: 20;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.notification-content {
-    background: var(--card-background);
-    width: 80%;
-    max-width: 300px;
-    height: 100%;
-    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    border-left: 2px solid var(--primary-color);
-}
-
-.notification-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.notification-header h3 {
-    color: var(--primary-color);
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: var(--light-text);
-}
-
-.notification-list {
-    flex-grow: 1;
-    overflow-y: auto;
-}
-
-.notification-item {
-    border-bottom: 1px solid var(--light-gray);
-    padding: 8px 0;
-    font-size: 0.9rem;
-}
-
-.notification-item:last-child {
-    border-bottom: none;
-}
-
-/* --- Profile Page Styling --- */
-.profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #FFFFFF, #F0F0F0);
-    color: var(--text-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-bottom: 2px solid var(--primary-color);
-    min-height: 55px;
-}
-
-.back-btn-text {
-    background: none;
-    color: var(--primary-color);
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 35px;
-    height: 35px;
-    font-weight: bold;
-}
-
-.logout-btn-header {
-    background: var(--error-color);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.logout-btn-header:hover {
-    background: #cc0000;
-}
-
-.profile-content {
-    padding: 15px;
-}
-
-.profile-layout {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.profile-left-section, .profile-right-section {
-    background: var(--card-background);
-    border-radius: 8px;
-    padding: 15px;
-    border: 1px solid var(--light-gray);
-}
-
-.profile-main {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.profile-info {
-    border: 1px solid var(--light-gray);
-    border-radius: 8px;
-    padding: 12px;
-    background: #F8F9FA;
-}
-
-.info-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
-    border-bottom: 1px dashed var(--light-gray);
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-item label {
-    font-weight: 600;
-    color: var(--light-text);
-}
-
-#profile-balance {
-    color: var(--primary-color);
-    font-weight: 700;
-}
-
-/* Bank Account Section */
-.bank-account-section {
-    background: #E6F3E6;
-    border-radius: 8px;
-    padding: 12px;
-    border: 1px solid #00C853;
-}
-
-.bank-account-section h3 {
-    margin-top: 0;
-    color: #00C853;
-    margin-bottom: 12px;
-    font-size: 1.1rem;
-}
-
-.bank-accounts-list {
-    max-height: 150px;
-    overflow-y: auto;
-    margin-bottom: 12px;
-}
-
-.bank-account-item {
-    background: #F0F0F0;
-    border-radius: 6px;
-    padding: 8px;
-    margin-bottom: 8px;
-    border-left: 4px solid var(--secondary-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.bank-account-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.bank-account-details {
-    font-size: 0.8rem;
-    color: var(--light-text);
-}
-
-.add-bank-btn {
-    background: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    transition: background 0.3s;
-    font-size: 0.9rem;
-}
-
-.add-bank-btn:hover {
-    background: #A00;
-}
-
-/* Game History Section */
-.game-history-section {
-    background: #F0E6E6;
-    border-radius: 8px;
-    padding: 12px;
-    border: 1px solid var(--primary-color);
-}
-
-.game-history-section h3 {
-    margin-top: 0;
-    color: var(--primary-color);
-    margin-bottom: 12px;
-    font-size: 1.1rem;
-}
-
-.game-history-list {
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-.game-history-item {
-    background: #F8F9FA;
-    border-radius: 6px;
-    padding: 8px;
-    margin-bottom: 8px;
-    border-left: 4px solid var(--primary-color);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.game-history-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    font-size: 0.8rem;
-    color: var(--light-text);
-}
-
-.game-history-details {
-    font-size: 0.9rem;
-}
-
-.game-history-details div {
-    margin-bottom: 2px;
-}
-
-.back-btn {
-    background: #666;
-    color: white;
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.action-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.1s;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-    font-size: 0.9rem;
-}
-
-.action-btn:hover {
-    transform: translateY(-2px);
-}
-
-.action-btn.deposit { 
-    background: linear-gradient(135deg, var(--primary-color), #B8860B);
-}
-.action-btn.withdraw { 
-    background: linear-gradient(135deg, var(--secondary-color), #A00);
-}
-
-/* Add/Withdraw Page */
-.amount-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.amount-option {
-    padding: 10px;
-    border: 1px solid var(--primary-color);
-    background: var(--background-color);
-    color: var(--primary-color);
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.amount-option.selected {
-    background: var(--primary-color);
-    color: #000;
-}
-
-.payment-info {
-    padding: 15px;
-    border: 1px dashed var(--light-gray);
-    border-radius: 8px;
-    margin-bottom: 15px;
-    background: #F8F9FA;
-}
-
-/* Popup Overlay */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-}
-
-.popup-content {
-    background: var(--card-background);
-    padding: 20px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 380px;
-    box-shadow: var(--shadow);
-    border: 2px solid var(--primary-color);
-}
-
-.promo-popup-content {
-    max-width: 350px;
-}
-
-.popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.popup-body {
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-/* Promo Code Input Group */
-.promo-input-group {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.promo-code-input {
-    flex: 1;
-    padding: 12px 15px;
-    border: 1px solid var(--light-gray);
-    border-radius: 8px;
-    font-size: 1rem;
-    min-width: 200px;
-    background: var(--background-color);
-    color: var(--text-color);
-}
-
-.claim-btn {
-    background: var(--secondary-color);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    min-width: auto;
-}
-
-/* Success Message Animation */
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-}
-
-/* Responsive Design */
-@media (min-width: 768px) {
-    .profile-layout {
-        flex-direction: row;
-    }
-    
-    .profile-left-section {
-        flex: 1;
-    }
-    
-    .profile-right-section {
-        flex: 1;
-    }
-}
+/* ========== GLOBAL STYLES ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+:root { --primary: #D4AF37; --secondary: #C41E3A; --dark: #1A1A1A; --light: #F8F9FA; }
+body { background: #f5f5f5; display: flex; justify-content: center; min-height: 100vh; }
+.page { width: 100%; max-width: 450px; min-height: 100vh; background: white; display: none; }
+.page.active { display: block; }
+.hidden { display: none !important; }
+
+/* ========== LOADING SCREEN ========== */
+.loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; color: white; text-align: center; padding: 20px; }
+.loader { width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3); border-top: 5px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.loading-screen button { padding: 10px 20px; background: white; color: #764ba2; border: none; border-radius: 5px; margin-top: 15px; cursor: pointer; font-weight: 600; }
+
+/* ========== HEADER ========== */
+.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.user-avatar { width: 45px; height: 45px; border-radius: 50%; overflow: hidden; }
+.user-avatar i { font-size: 2.5rem; color: var(--primary); }
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-name { font-weight: 600; font-size: 1rem; }
+.user-id { font-size: 0.7rem; color: #666; }
+.header-actions { display: flex; gap: 10px; }
+.notification-btn, .profile-btn { background: none; border: none; font-size: 1.3rem; cursor: pointer; }
+
+/* ========== BALANCE CARD ========== */
+.balance-card { background: linear-gradient(135deg, var(--primary), #B8860B); margin: 15px 20px; padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 15px; color: white; box-shadow: 0 4px 15px rgba(212,175,55,0.3); }
+.balance-icon i { font-size: 2.5rem; }
+.balance-info { flex: 1; }
+.balance-label { font-size: 0.85rem; opacity: 0.9; }
+.balance-amount { font-size: 2rem; font-weight: 700; }
+.add-money-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 16px; border-radius: 50px; cursor: pointer; backdrop-filter: blur(5px); }
+
+/* ========== HISTORY ========== */
+.history-container { padding: 0 20px; margin: 15px 0; }
+.history-strip { display: flex; gap: 5px; overflow-x: auto; padding: 5px 0; }
+.history-item { width: 25px; height: 25px; border-radius: 50%; flex-shrink: 0; }
+.history-item.green { background: #00C853; }
+.history-item.blue { background: #2962FF; }
+.history-item.gray { background: #9e9e9e; }
+.empty-bets { text-align: center; color: #999; padding: 20px; }
+
+/* ========== GAME AREA ========== */
+.game-container { padding: 0 20px; }
+.game-center { background: var(--light); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
+.timer-display { font-size: 3rem; font-weight: 700; color: var(--primary); background: var(--dark); padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+.result-button-3d { background: #2A2A2A; color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 0 #666; }
+
+/* ========== BETTING LISTS ========== */
+.combined-betting-lists { background: var(--light); border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; overflow: hidden; }
+.bets-header { display: flex; background: #f0f0f0; border-bottom: 1px solid #ddd; }
+.list-title-amount { flex: 1; display: flex; justify-content: space-between; padding: 10px; }
+.total-amount-box { background: var(--primary); color: black; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.bets-content { display: flex; height: 200px; overflow-y: auto; }
+.bets-column { flex: 1; padding: 10px; border-right: 1px solid #ddd; }
+.bets-list { font-size: 0.8rem; }
+.bet-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #ddd; }
+
+/* ========== BETTING PANEL ========== */
+.betting-panel { background: var(--dark); padding: 15px; border-radius: 12px; margin-top: 15px; }
+.amount-controls { display: flex; gap: 5px; margin-bottom: 10px; }
+.amount-btn { flex: 1; padding: 8px; border: 1px solid #333; background: #333; color: white; border-radius: 5px; cursor: pointer; }
+.bet-input { flex: 2; padding: 8px; border: 1px solid #333; border-radius: 5px; background: #222; color: white; text-align: center; }
+.color-buttons { display: flex; gap: 10px; }
+.color-btn { flex: 1; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; position: relative; }
+.green-btn { background: linear-gradient(135deg, #00C853, #009624); }
+.blue-btn { background: linear-gradient(135deg, #2962FF, #0039CB); }
+.bet-amount-badge { position: absolute; top: -5px; right: -5px; background: #FFD700; color: black; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+
+/* ========== PROFILE PAGE ========== */
+.profile-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 2px solid var(--primary); }
+.back-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--primary); }
+.logout-btn { background: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
+.profile-content { padding: 20px; text-align: center; }
+.profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; margin: 0 auto 15px; }
+.profile-avatar-large i { font-size: 5rem; color: var(--primary); }
+.profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { font-size: 1.3rem; font-weight: 600; margin-bottom: 15px; }
+.profile-stats { background: var(--light); border-radius: 8px; padding: 15px; margin: 15px 0; }
+.stat-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd; }
+.stat-item:last-child { border-bottom: none; }
+
+/* ========== BANK SECTION ========== */
+.bank-section { background: var(--light); border-radius: 8px; padding: 15px; margin: 15px 0; }
+.bank-list { max-height: 150px; overflow-y: auto; margin-bottom: 10px; }
+.add-bank-btn { width: 100%; padding: 10px; background: var(--secondary); color: white; border: none; border-radius: 8px; cursor: pointer; }
+.bank-option { padding: 10px; border: 1px solid #ddd; margin: 5px 0; cursor: pointer; border-radius: 5px; }
+
+/* ========== ACTION BUTTONS ========== */
+.action-buttons { display: flex; gap: 10px; margin-top: 15px; }
+.action-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; color: white; cursor: pointer; }
+.action-btn.deposit { background: linear-gradient(135deg, var(--primary), #B8860B); }
+.action-btn.withdraw { background: linear-gradient(135deg, var(--secondary), #A00); }
+
+/* ========== ADD/WITHDRAW PAGES ========== */
+.page-header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; background: white; border-bottom: 2px solid var(--primary); }
+.content { padding: 20px; }
+.input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+.amount-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
+.amount-option { padding: 10px; border: 1px solid var(--primary); background: white; color: var(--primary); border-radius: 8px; cursor: pointer; text-align: center; }
+.amount-option.selected { background: var(--primary); color: black; }
+.payment-info { background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center; }
+.payment-info p { margin: 5px 0; }
+.small { font-size: 0.8rem; color: #666; }
+.submit-btn { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 15px; }
+
+/* ========== POPUPS ========== */
+.popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 100; }
+.popup-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; }
+.popup-content h3 { margin-bottom: 15px; color: var(--primary); }
+.close-btn { width: 100%; margin-top: 10px; background: #666; color: white; border: none; padding: 8px; border-radius: 5px; cursor: pointer; }
+.message { background: #ff4444; color: white; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
+
+/* ========== NOTIFICATION PANEL ========== */
+.panel { position: fixed; top: 0; right: 0; width: 100%; max-width: 350px; height: 100%; background: rgba(0,0,0,0.5); z-index: 20; }
+.panel-content { background: white; width: 80%; height: 100%; padding: 20px; overflow-y: auto; }
+.panel-content h3 { margin-bottom: 15px; color: var(--primary); }
+
+/* ========== UTILITY ========== */
+.error-message { color: #ff4444; text-align: center; margin: 10px 0; } 

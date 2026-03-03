@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>APEX DAY - Color Prediction Game</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader"></div>
+        <p>🚀 गेम लोड हो रहा है...</p>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="game-container hidden">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name" id="userName">Loading...</span>
+                    <span class="user-gameid" id="userGameId">ID: </span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" onclick="window.location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="balance-card">
+            <div class="balance-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="balance-info">
+                <div class="balance-label">आपका बैलेंस</div>
+                <div class="balance-amount" id="balanceAmount">₹0</div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-area">
+            <!-- Timer & Result -->
+            <div class="game-header">
+                <div class="timer-box" id="timer">15</div>
+                <div class="result-box" id="resultBox">
+                    <span class="result-text">बेट लगाएं</span>
+                </div>
+            </div>
+
+            <!-- Color Buttons -->
+            <div class="color-buttons">
+                <button class="color-btn green-btn" onclick="placeBet('green')" id="greenBtn">
+                    <i class="fas fa-circle"></i> GREEN 2x
+                    <span class="badge" id="greenBetAmount">0</span>
+                </button>
+                <button class="color-btn blue-btn" onclick="placeBet('blue')" id="blueBtn">
+                    <i class="fas fa-circle"></i> BLUE 2x
+                    <span class="badge" id="blueBetAmount">0</span>
+                </button>
+            </div>
+
+            <!-- Amount Selector -->
+            <div class="amount-selector">
+                <div class="amount-presets">
+                    <button class="preset-btn" onclick="setAmount(10)">10</button>
+                    <button class="preset-btn" onclick="setAmount(50)">50</button>
+                    <button class="preset-btn" onclick="setAmount(100)">100</button>
+                    <button class="preset-btn" onclick="setAmount(500)">500</button>
+                    <button class="preset-btn" onclick="setAmount(1000)">1000</button>
+                </div>
+                <div class="custom-amount">
+                    <input type="number" id="betAmount" value="10" min="1" max="10000" class="amount-input">
+                    <button class="action-btn" onclick="placeBetWithAmount()">
+                        <i class="fas fa-dice"></i> बेट लगाएं
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bet Lists -->
+            <div class="bet-lists">
+                <div class="bet-column">
+                    <div class="column-header">
+                        <div class="color-indicator green"></div>
+                        <span>GREEN</span>
+                        <span class="total-badge" id="greenTotal">0</span>
+                    </div>
+                    <div class="bets-container" id="greenBets"></div>
+                </div>
+                <div class="bet-column">
+                    <div class="column-header">
+                        <div class="color-indicator blue"></div>
+                        <span>BLUE</span>
+                        <span class="total-badge" id="blueTotal">0</span>
+                    </div>
+                    <div class="bets-container" id="blueBets"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Strip -->
+        <div class="history-container">
+            <div class="history-strip" id="historyStrip"></div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="showTab('game')">
+                <i class="fas fa-gamepad"></i>
+                <span>गेम</span>
+            </button>
+            <button class="nav-item" onclick="openBot()">
+                <i class="fas fa-robot"></i>
+                <span>बॉट</span>
+            </button>
+            <button class="nav-item" onclick="showTab('profile')">
+                <i class="fas fa-user"></i>
+                <span>प्रोफाइल</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Profile Page (Hidden by default) -->
+    <div id="profile-page" class="profile-page hidden">
+        <div class="profile-header">
+            <button class="back-btn" onclick="showTab('game')">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2>प्रोफाइल</h2>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-card">
+                <div class="profile-avatar" id="profileAvatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-name" id="profileName">Loading...</div>
+                <div class="profile-id" id="profileGameId">ID: </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stat-item">
+                    <i class="fas fa-wallet"></i>
+                    <span>बैलेंस</span>
+                    <strong id="profileBalance">₹0</strong>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>ज्वाइन</span>
+                    <strong id="joinDate">-</strong>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3><i class="fas fa-info-circle"></i> गेम के नियम</h3>
+                <ul>
+                    <li>✅ न्यूनतम बेट: ₹1</li>
+                    <li>✅ अधिकतम बेट: ₹10,000</li>
+                    <li>✅ जीतने पर 2x मिलेगा</li>
+                    <li>✅ हारने पर 0.5x वापस</li>
+                    <li>✅ जिस रंग पर कम रकम लगी, वही जीतेगा</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn primary" onclick="openBot()">
+                    <i class="fas fa-robot"></i> बॉट पर जाएं
+                </button>
+                <button class="action-btn secondary" onclick="copyGameId()">
+                    <i class="fas fa-copy"></i> ID कॉपी करें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+            </html>

@@ -3,368 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APEX DAY - Admin Panel</title>
+    <title>Fund Money - आपकी कमाई</title>
     
-    <!-- Firebase 8.x Version -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
+    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background: #1a1a1a;
-            color: white;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #D4AF37, #B8860B);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header h1 {
-            font-size: 1.8rem;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 20px;
-        }
-        
-        .stat-card {
-            background: rgba(255,255,255,0.1);
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #D4AF37;
-        }
-        
-        .login-box {
-            max-width: 400px;
-            margin: 100px auto;
-            background: #2a2a2a;
-            padding: 40px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .login-box input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            background: #3a3a3a;
-            color: white;
-        }
-        
-        .login-box button {
-            width: 100%;
-            padding: 15px;
-            background: #D4AF37;
-            border: none;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .tab-btn {
-            padding: 12px 25px;
-            background: #2a2a2a;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .tab-btn.active {
-            background: #D4AF37;
-            color: black;
-        }
-        
-        .tab-content {
-            background: #2a2a2a;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th {
-            background: #D4AF37;
-            color: black;
-            padding: 12px;
-            text-align: left;
-            font-weight: 600;
-        }
-        
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #3a3a3a;
-        }
-        
-        .pending {
-            background: #ff4444;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .completed {
-            background: #00C851;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .action-btn {
-            background: #D4AF37;
-            color: black;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-right: 5px;
-        }
-        
-        .reject-btn {
-            background: #ff4444;
-            color: white;
-        }
-        
-        .search-box {
-            width: 100%;
-            padding: 12px;
-            background: #3a3a3a;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            margin-bottom: 15px;
-        }
-        
-        .refresh-btn {
-            background: #D4AF37;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-        
-        .balance-edit {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .balance-edit input {
-            width: 100px;
-            padding: 5px;
-            background: #3a3a3a;
-            border: none;
-            color: white;
-            border-radius: 3px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Login Section -->
-        <div id="login-section" class="login-box">
-            <h2 style="color: #D4AF37; margin-bottom: 20px;">👑 Admin Login</h2>
-            <input type="password" id="admin-password" placeholder="Enter Admin Password">
-            <button onclick="adminLogin()">Login</button>
+
+    <!-- 1. Login Page -->
+    <div id="login-page" class="page active">
+        <div class="auth-container">
+            <h2 class="auth-header">💰 Fund Money</h2>
+            <p style="text-align: center; color: var(--light-text); margin-bottom: 20px;">
+                अपना अकाउंट बनाएं या लॉगिन करें
+            </p>
+            
+            <input type="email" id="login-email" placeholder="ईमेल एड्रेस" class="auth-input">
+            <input type="password" id="login-password" placeholder="पासवर्ड" class="auth-input">
+            
+            <button class="auth-btn" onclick="loginWithEmailPassword()">लॉगिन करें</button>
+            <p id="login-message" class="error-message hidden"></p>
+
+            <div class="divider">
+                <span>या</span>
+            </div>
+            
+            <button class="google-btn" onclick="signInWithGoogle()">
+                Google के साथ जारी रखें
+            </button>
+            
+            <p style="text-align: center;">
+                <a onclick="showPage('signup-page')" class="auth-link">नया अकाउंट बनाएँ</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- 2. Sign Up Page -->
+    <div id="signup-page" class="page hidden">
+        <div class="auth-container">
+            <h2 class="auth-header">अकाउंट बनाएं</h2>
+            
+            <input type="text" id="signup-name" placeholder="आपका नाम" class="auth-input">
+            <input type="email" id="signup-email" placeholder="ईमेल एड्रेस" class="auth-input">
+            <input type="password" id="signup-password" placeholder="पासवर्ड (कम से कम 6 अक्षर)" class="auth-input">
+            <input type="password" id="signup-confirm-password" placeholder="पासवर्ड कन्फर्म करें" class="auth-input">
+            
+            <button class="auth-btn" onclick="signUpWithEmailPassword()">अकाउंट बनाएं</button>
+            
+            <p id="signup-message" class="error-message hidden"></p>
+
+            <div class="divider">
+                <span>या</span>
+            </div>
+            
+            <button class="google-btn" onclick="signInWithGoogle()">
+                Google के साथ साइनअप करें
+            </button>
+            
+            <p style="text-align: center;">
+                <a onclick="showPage('login-page')" class="auth-link">पहले से अकाउंट है? लॉगिन करें</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- 3. Dashboard Page -->
+    <div id="dashboard-page" class="page hidden">
+        <div class="top-bar">
+            <div class="balance-container">
+                <div class="balance-card">
+                    <div class="balance-amount">₹ <span id="current-balance">0</span></div>
+                    <button class="add-money-btn" onclick="showPage('add-money-page')">+</button>
+                </div>
+            </div>
+            
+            <div class="profile-section">
+                <button class="promo-btn" onclick="showPromoPopup()">🎁</button>
+                <button class="notification-btn" onclick="toggleNotificationPanel()">
+                    🔔
+                    <span id="notification-dot" class="notification-dot hidden"></span>
+                </button>
+                <button class="profile-btn" onclick="showPage('profile-page')">👤</button>
+            </div>
         </div>
 
-        <!-- Admin Panel (Hidden by default) -->
-        <div id="admin-panel" class="hidden">
-            <div class="header">
-                <h1><i class="fas fa-crown" style="margin-right: 10px;"></i> APEX DAY - Admin Panel</h1>
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="number" id="total-users">0</div>
-                        <div>Total Users</div>
+        <!-- Result History -->
+        <div class="history-container">
+            <div class="history-section">
+                <div id="result-history" class="history-strip">
+                    <div class="empty-bets">कोई हिस्ट्री नहीं</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Area -->
+        <div class="game-container">
+            <!-- Game Center -->
+            <div class="game-center">
+                <div class="timer-section">
+                    <div id="timer" class="timer-display">15:00</div>
+                </div>
+                
+                <div class="result-display">
+                    <div id="result-box" class="result-button-3d"></div>
+                </div>
+            </div>
+
+            <!-- Combined Betting Lists -->
+            <div class="combined-betting-lists">
+                <div class="bets-header">
+                    <div class="list-title-amount">
+                        <h3>🟢 Green</h3>
+                        <div class="total-amount-box">₹ <span id="green-total">0</span></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="number" id="pending-txns">0</div>
-                        <div>Pending Requests</div>
+                    <div class="list-title-amount">
+                        <h3>🔵 Blue</h3>
+                        <div class="total-amount-box">₹ <span id="blue-total">0</span></div>
                     </div>
-                    <div class="stat-card">
-                        <div class="number" id="total-bets">0</div>
-                        <div>Today's Bets</div>
+                </div>
+                <div class="bets-content">
+                    <div class="bets-column green-bets">
+                        <div class="bets-list" id="green-bets-list">
+                            <div class="empty-bets">कोई बेट नहीं</div>
+                        </div>
+                    </div>
+                    <div class="bets-column blue-bets">
+                        <div class="bets-list" id="blue-bets-list">
+                            <div class="empty-bets">कोई बेट नहीं</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="tabs">
-                <button class="tab-btn active" onclick="showTab('deposits')">💰 Deposits</button>
-                <button class="tab-btn" onclick="showTab('withdrawals')">💸 Withdrawals</button>
-                <button class="tab-btn" onclick="showTab('users')">👥 Users</button>
-                <button class="tab-btn" onclick="showTab('bets')">🎲 Bets</button>
-                <button class="tab-btn" onclick="showTab('settings')">⚙️ Settings</button>
-                <button class="refresh-btn" onclick="loadAllData()"><i class="fas fa-sync-alt"></i> Refresh</button>
-            </div>
-
-            <!-- Deposits Tab -->
-            <div id="deposits-tab" class="tab-content">
-                <h2 style="color: #D4AF37; margin-bottom: 15px;">💰 Pending Deposit Requests</h2>
-                <input type="text" class="search-box" id="deposit-search" placeholder="Search by name or UTR..." onkeyup="filterDeposits()">
-                <table id="deposits-table">
-                    <thead>
-                        <tr>
-                            <th>Date/Time</th>
-                            <th>User</th>
-                            <th>Game ID</th>
-                            <th>Amount</th>
-                            <th>UTR</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="deposits-body">
-                        <tr><td colspan="7">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Withdrawals Tab -->
-            <div id="withdrawals-tab" class="tab-content hidden">
-                <h2 style="color: #D4AF37; margin-bottom: 15px;">💸 Pending Withdrawal Requests</h2>
-                <input type="text" class="search-box" id="withdraw-search" placeholder="Search by name or bank..." onkeyup="filterWithdrawals()">
-                <table id="withdrawals-table">
-                    <thead>
-                        <tr>
-                            <th>Date/Time</th>
-                            <th>User</th>
-                            <th>Game ID</th>
-                            <th>Amount</th>
-                            <th>Bank Details</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="withdrawals-body">
-                        <tr><td colspan="7">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Users Tab -->
-            <div id="users-tab" class="tab-content hidden">
-                <h2 style="color: #D4AF37; margin-bottom: 15px;">👥 All Users</h2>
-                <input type="text" class="search-box" id="users-search" placeholder="Search by name, email or Game ID..." onkeyup="filterUsers()">
-                <table id="users-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Game ID</th>
-                            <th>Balance</th>
-                            <th>Bank Accounts</th>
-                            <th>Joined</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-body">
-                        <tr><td colspan="7">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Bets Tab -->
-            <div id="bets-tab" class="tab-content hidden">
-                <h2 style="color: #D4AF37; margin-bottom: 15px;">🎲 Recent Bets</h2>
-                <input type="text" class="search-box" id="bets-search" placeholder="Search by user..." onkeyup="filterBets()">
-                <table id="bets-table">
-                    <thead>
-                        <tr>
-                            <th>Date/Time</th>
-                            <th>User</th>
-                            <th>Game ID</th>
-                            <th>Color</th>
-                            <th>Amount</th>
-                            <th>Result</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bets-body">
-                        <tr><td colspan="6">Loading...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Settings Tab -->
-            <div id="settings-tab" class="tab-content hidden">
-                <h2 style="color: #D4AF37; margin-bottom: 15px;">⚙️ Settings</h2>
-                
-                <div style="background: #3a3a3a; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 15px;">🎁 Promo Code</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="promo-code-value" value="WELCOME20" class="search-box" style="flex: 1;">
-                        <button class="action-btn" onclick="updatePromoCode()">Update</button>
+            <!-- Betting Controls -->
+            <div class="betting-panel">
+                <div class="betting-controls">
+                    <div class="amount-controls">
+                        <button class="amount-btn" onclick="setBetAmount(1)">Min</button>
+                        <button class="amount-btn" onclick="adjustBetAmount(-1)">-1</button>
+                        <input type="number" id="bet-amount" value="50" min="1" max="10000" class="bet-input">
+                        <button class="amount-btn" onclick="adjustBetAmount(1)">+1</button>
+                        <button class="amount-btn" onclick="setBetAmount(10000)">Max</button>
+                    </div>
+                    
+                    <div class="color-buttons">
+                        <button class="color-btn green-btn" onclick="placeBet('green')" id="bet-btn-green">
+                            हरा 2x
+                            <span class="bet-amount-badge" id="bet-amount-green">₹0</span>
+                        </button>
+                        <button class="color-btn blue-btn" onclick="placeBet('blue')" id="bet-btn-blue">
+                            नीला 2x
+                            <span class="bet-amount-badge" id="bet-amount-blue">₹0</span>
+                        </button>
                     </div>
                 </div>
-                
-                <div style="background: #3a3a3a; padding: 20px; border-radius: 5px;">
-                    <h3 style="margin-bottom: 15px;">💰 Welcome Bonus</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="number" id="bonus-amount" value="20" class="search-box" style="flex: 1;">
-                        <button class="action-btn" onclick="updateBonus()">Update</button>
+            </div>
+        </div>
+
+        <!-- Notification Panel -->
+        <div id="notification-panel" class="notification-panel hidden">
+            <div class="notification-content">
+                <div class="notification-header">
+                    <h3>📢 सूचनाएं</h3>
+                    <button class="close-btn" onclick="toggleNotificationPanel()">×</button>
+                </div>
+                <div id="notification-list" class="notification-list">
+                    <div class="empty-bets">कोई सूचना नहीं</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Profile Page -->
+    <div id="profile-page" class="page hidden">
+        <div class="profile-header">
+            <button class="back-btn-text" onclick="showPage('dashboard-page')"><</button>
+            <h2 class="auth-header">👤 आपकी प्रोफ़ाइल</h2>
+            <button class="logout-btn-header" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="profile-content">
+            <div class="profile-layout">
+                <!-- Left Section - Profile Details & Bank -->
+                <div class="profile-left-section">
+                    <div class="profile-main">
+                        <div class="profile-info">
+                            <div class="info-item">
+                                <label>नाम:</label>
+                                <span id="profile-name">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>ईमेल:</label>
+                                <span id="profile-email">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>यूज़र ID:</label>
+                                <span id="profile-user-id">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>बैलेंस:</label>
+                                <span id="profile-balance">₹ 0</span>
+                            </div>
+                        </div>
+
+                        <!-- Bank Account Section -->
+                        <div class="bank-account-section">
+                            <h3>🏦 बैंक अकाउंट</h3>
+                            <div id="bank-accounts-list" class="bank-accounts-list">
+                                <div class="empty-bets">कोई बैंक अकाउंट नहीं</div>
+                            </div>
+                            <button class="add-bank-btn" onclick="showAddBankPopup()">
+                                + बैंक अकाउंट जोड़ें
+                            </button>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="action-buttons">
+                            <button class="action-btn deposit" onclick="showPage('add-money-page')">
+                                💰 पैसा जोड़ें
+                            </button>
+                            <button class="action-btn withdraw" onclick="showWithdrawPage()">
+                                💸 पैसा निकालें
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section - Game History -->
+                <div class="profile-right-section">
+                    <div class="game-history-section">
+                        <h3>🎮 गेम हिस्ट्री</h3>
+                        <div id="game-history-list" class="game-history-list">
+                            <div class="empty-bets">कोई गेम हिस्ट्री नहीं</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="admin.js"></script>
+    <!-- 5. Add Money Page -->
+    <div id="add-money-page" class="page hidden">
+        <div class="auth-container">
+            <h2 class="auth-header">💰 पैसा जोड़ें</h2>
+            <p id="add-money-balance" style="text-align: center; font-weight: 600; color: var(--primary-color);">वर्तमान बैलेंस: ₹0</p>
+            
+            <div class="amount-options">
+                <button class="amount-option" data-amount="100" onclick="selectAmount(this)">₹100</button>
+                <button class="amount-option" data-amount="500" onclick="selectAmount(this)">₹500</button>
+                <button class="amount-option" data-amount="1000" onclick="selectAmount(this)">₹1000</button>
+                <button class="amount-option" data-amount="2000" onclick="selectAmount(this)">₹2000</button>
+            </div>
+            
+            <input type="number" id="add-amount" placeholder="कस्टम राशि" class="auth-input">
+            
+            <div class="payment-info">
+                <p style="font-size: 1.1em; font-weight: 600;"><strong>UPI ID:</strong> <span id="upi-display">fundmoney@upi</span></p>
+                <p style="font-size: 0.9em; color: var(--light-text);">
+                    UPI पर पेमेंट करें और ट्रांजैक्शन ID दर्ज करें
+                </p>
+            </div>
+            
+            <input type="text" id="transaction-id" placeholder="UTR/Transaction ID" class="auth-input">
+            
+            <button class="auth-btn" onclick="submitAddMoneyRequest()">अनुरोध भेजें</button>
+            <p id="add-money-message" class="error-message hidden"></p>
+            
+            <button class="back-btn" onclick="showPage('dashboard-page')">
+                ← वापस जाएं
+            </button>
+        </div>
+    </div>
+
+    <!-- 6. Withdraw Page -->
+    <div id="withdraw-page" class="page hidden">
+        <div class="auth-container">
+            <h2 class="auth-header">💸 पैसा निकालें</h2>
+            <p id="withdraw-money-balance" style="text-align: center; font-weight: 600; color: var(--primary-color);">निकासी के लिए उपलब्ध: ₹0</p>
+            
+            <!-- Bank Account Selection -->
+            <div id="bank-selection" style="padding: 15px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px;">
+                <h3 style="margin-bottom: 10px; color: #333; font-size: 1.1rem;">बैंक अकाउंट चुनें</h3>
+                <div id="bank-options">
+                    <p class="error-message" style="margin: 0; background: none; color: var(--error-color);">
+                        पहले प्रोफ़ाइल में बैंक अकाउंट जोड़ें।
+                    </p>
+                </div>
+            </div>
+            
+            <div class="amount-options">
+                <button class="amount-option" data-amount="100" onclick="selectWithdrawAmount(this)">₹100</button>
+                <button class="amount-option" data-amount="500" onclick="selectWithdrawAmount(this)">₹500</button>
+                <button class="amount-option" data-amount="1000" onclick="selectWithdrawAmount(this)">₹1000</button>
+                <button class="amount-option" data-amount="2000" onclick="selectWithdrawAmount(this)">₹2000</button>
+            </div>
+            
+            <input type="number" id="withdraw-amount" placeholder="निकासी राशि" class="auth-input">
+            
+            <button class="auth-btn" onclick="submitWithdrawRequest()">निकासी अनुरोध</button>
+            <p id="withdraw-message" class="error-message hidden"></p>
+            
+            <button class="back-btn" onclick="showPage('profile-page')">
+                ← वापस जाएं
+            </button>
+        </div>
+    </div>
+
+    <!-- Promo Code Popup -->
+    <div id="promo-popup" class="popup-overlay hidden">
+        <div class="popup-content promo-popup-content">
+            <div class="popup-header">
+                <h3>🎁 प्रोमो कोड</h3>
+                <button class="close-btn" onclick="closePromoPopup()">×</button>
+            </div>
+            <div class="popup-body">
+                <div class="promo-input-group">
+                    <input type="text" id="promo-code-input" placeholder="प्रोमो कोड दर्ज करें" 
+                           class="promo-code-input" maxlength="10">
+                    <button onclick="claimPromoCode()" class="claim-btn">
+                        Claim
+                    </button>
+                </div>
+                <p id="promo-message" class="error-message hidden" style="margin-top: 10px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bank Account Popup -->
+    <div id="add-bank-popup" class="popup-overlay hidden">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>🏦 बैंक अकाउंट जोड़ें</h3>
+                <button class="close-btn" onclick="closeAddBankPopup()">×</button>
+            </div>
+            <div class="popup-body">
+                <input type="text" id="bank-name" placeholder="बैंक का नाम" class="auth-input">
+                <input type="text" id="account-holder" placeholder="अकाउंट धारक का नाम" class="auth-input">
+                <input type="text" id="account-number" placeholder="अकाउंट नंबर" class="auth-input">
+                <input type="text" id="ifsc-code" placeholder="IFSC कोड" class="auth-input">
+                <button class="auth-btn" onclick="addBankAccount()">जोड़ें</button>
+                <p id="bank-message" class="error-message hidden" style="margin-top: 10px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Important Notification Popup -->
+    <div id="important-notification-popup" class="popup-overlay hidden">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3>⚠️ सूचना</h3>
+                <button class="close-btn" onclick="closeImportantNotification()">×</button>
+            </div>
+            <div class="popup-body">
+                <h4 id="important-notification-title" style="margin-bottom: 10px; color: var(--error-color);"></h4>
+                <p id="important-notification-message"></p>
+            </div>
+            <button class="auth-btn" onclick="closeImportantNotification()" style="margin-top: 15px;">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

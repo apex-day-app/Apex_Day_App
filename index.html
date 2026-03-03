@@ -22,7 +22,7 @@
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="loader"></div>
-        <p id="loading-message">⏳ कृपया प्रतीक्षा करें...</p>
+        <p>⏳ Telegram से डेटा लोड हो रहा है...</p>
     </div>
 
     <!-- Main Game Page -->
@@ -38,8 +38,8 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="icon-btn" onclick="toggleNotificationPanel()"><i class="fas fa-bell"></i></button>
-                <button class="icon-btn" onclick="showPage('profile-page')"><i class="fas fa-user"></i></button>
+                <button class="notification-btn" onclick="toggleNotificationPanel()">🔔</button>
+                <button class="profile-btn" onclick="showPage('profile-page')">👤</button>
             </div>
         </div>
 
@@ -54,7 +54,7 @@
 
         <div class="history-container">
             <div class="history-strip" id="result-history">
-                <div class="empty-state">कोई हिस्ट्री नहीं</div>
+                <div class="empty-bets">कोई हिस्ट्री नहीं</div>
             </div>
         </div>
 
@@ -63,37 +63,31 @@
                 <div class="timer-section">
                     <div id="timer" class="timer-display">15:00</div>
                 </div>
-                <div id="result-box" class="result-box">बेट लगाएं</div>
+                <div id="result-box" class="result-button-3d"></div>
             </div>
 
-            <div class="betting-lists">
+            <div class="combined-betting-lists">
                 <div class="bets-header">
-                    <div class="header-item"><h3>🟢 Green</h3><div class="total-badge">₹<span id="green-total">0</span></div></div>
-                    <div class="header-item"><h3>🔵 Blue</h3><div class="total-badge">₹<span id="blue-total">0</span></div></div>
+                    <div class="list-title-amount"><h3>🟢 Green</h3><div class="total-amount-box">₹<span id="green-total">0</span></div></div>
+                    <div class="list-title-amount"><h3>🔵 Blue</h3><div class="total-amount-box">₹<span id="blue-total">0</span></div></div>
                 </div>
                 <div class="bets-content">
-                    <div class="bets-column"><div class="bets-list" id="green-bets-list"><div class="empty-state">कोई बेट नहीं</div></div></div>
-                    <div class="bets-column"><div class="bets-list" id="blue-bets-list"><div class="empty-state">कोई बेट नहीं</div></div></div>
+                    <div class="bets-column"><div class="bets-list" id="green-bets-list"><div class="empty-bets">कोई बेट नहीं</div></div></div>
+                    <div class="bets-column"><div class="bets-list" id="blue-bets-list"><div class="empty-bets">कोई बेट नहीं</div></div></div>
                 </div>
             </div>
 
             <div class="betting-panel">
                 <div class="amount-controls">
                     <button class="amount-btn" onclick="setBetAmount(1)">Min</button>
-                    <button class="amount-btn" onclick="adjustBetAmount(-10)">-10</button>
+                    <button class="amount-btn" onclick="adjustBetAmount(-1)">-1</button>
                     <input type="number" id="bet-amount" value="50" min="1" max="10000" class="bet-input">
-                    <button class="amount-btn" onclick="adjustBetAmount(10)">+10</button>
+                    <button class="amount-btn" onclick="adjustBetAmount(1)">+1</button>
                     <button class="amount-btn" onclick="setBetAmount(10000)">Max</button>
                 </div>
                 <div class="color-buttons">
-                    <button class="color-btn green-btn" onclick="placeBet('green')">
-                        <i class="fas fa-circle"></i> GREEN 2x
-                        <span class="bet-badge" id="bet-amount-green">0</span>
-                    </button>
-                    <button class="color-btn blue-btn" onclick="placeBet('blue')">
-                        <i class="fas fa-circle"></i> BLUE 2x
-                        <span class="bet-badge" id="bet-amount-blue">0</span>
-                    </button>
+                    <button class="color-btn green-btn" onclick="placeBet('green')">हरा 2x <span class="bet-amount-badge" id="bet-amount-green">₹0</span></button>
+                    <button class="color-btn blue-btn" onclick="placeBet('blue')">नीला 2x <span class="bet-amount-badge" id="bet-amount-blue">₹0</span></button>
                 </div>
             </div>
         </div>
@@ -107,17 +101,21 @@
             <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i></button>
         </div>
         <div class="profile-content">
-            <div class="profile-avatar" id="profile-avatar"><i class="fas fa-user-circle"></i></div>
+            <div class="profile-avatar-large" id="profile-avatar"><i class="fas fa-user-circle"></i></div>
             <div class="profile-name" id="profile-name">-</div>
-            <div class="stats-card">
+            <div class="profile-stats">
                 <div class="stat-item"><span>Telegram ID</span><strong id="profile-telegram-id">-</strong></div>
                 <div class="stat-item"><span>यूज़रनेम</span><strong id="profile-username">-</strong></div>
                 <div class="stat-item"><span>बैलेंस</span><strong id="profile-balance">₹0</strong></div>
             </div>
             <div class="bank-section">
                 <h3>🏦 बैंक अकाउंट</h3>
-                <div id="bank-accounts-list" class="bank-list"><div class="empty-state">कोई बैंक अकाउंट नहीं</div></div>
-                <button class="action-btn primary" onclick="showAddBankPopup()">+ बैंक अकाउंट जोड़ें</button>
+                <div id="bank-accounts-list" class="bank-list"><div class="empty-bets">कोई बैंक अकाउंट नहीं</div></div>
+                <button class="add-bank-btn" onclick="showAddBankPopup()">+ बैंक अकाउंट जोड़ें</button>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn deposit" onclick="showPage('add-money-page')">💰 जमा</button>
+                <button class="action-btn withdraw" onclick="showWithdrawPage()">💸 निकालें</button>
             </div>
         </div>
     </div>
@@ -130,18 +128,18 @@
         </div>
         <div class="content">
             <p class="balance-info" id="add-money-balance">बैलेंस: ₹0</p>
-            <div class="amount-grid">
+            <div class="amount-options">
                 <button class="amount-option" data-amount="100" onclick="selectAmount(this)">₹100</button>
                 <button class="amount-option" data-amount="500" onclick="selectAmount(this)">₹500</button>
                 <button class="amount-option" data-amount="1000" onclick="selectAmount(this)">₹1000</button>
                 <button class="amount-option" data-amount="2000" onclick="selectAmount(this)">₹2000</button>
             </div>
-            <input type="number" id="add-amount" placeholder="कस्टम राशि" class="input-field">
-            <div class="info-box">
+            <input type="number" id="add-amount" placeholder="राशि" class="input">
+            <div class="payment-info">
                 <p><strong>UPI ID:</strong> apexday@ybl</p>
                 <p class="small">UTR नंबर डालें</p>
             </div>
-            <input type="text" id="transaction-id" placeholder="UTR नंबर" class="input-field">
+            <input type="text" id="transaction-id" placeholder="UTR नंबर" class="input">
             <button class="submit-btn" onclick="submitAddMoneyRequest()">अनुरोध भेजें</button>
             <p id="add-money-message" class="message hidden"></p>
         </div>
@@ -159,33 +157,32 @@
                 <h3>बैंक अकाउंट चुनें</h3>
                 <div id="bank-options"></div>
             </div>
-            <div class="amount-grid">
+            <div class="amount-options">
                 <button class="amount-option" data-amount="100" onclick="selectWithdrawAmount(this)">₹100</button>
                 <button class="amount-option" data-amount="500" onclick="selectWithdrawAmount(this)">₹500</button>
                 <button class="amount-option" data-amount="1000" onclick="selectWithdrawAmount(this)">₹1000</button>
                 <button class="amount-option" data-amount="2000" onclick="selectWithdrawAmount(this)">₹2000</button>
             </div>
-            <input type="number" id="withdraw-amount" placeholder="राशि" class="input-field">
+            <input type="number" id="withdraw-amount" placeholder="राशि" class="input">
             <button class="submit-btn" onclick="submitWithdrawRequest()">अनुरोध भेजें</button>
             <p id="withdraw-message" class="message hidden"></p>
         </div>
     </div>
 
-    <!-- Add Bank Popup -->
+    <!-- Popups -->
     <div id="add-bank-popup" class="popup-overlay hidden">
         <div class="popup-content">
             <h3>🏦 बैंक अकाउंट जोड़ें</h3>
-            <input type="text" id="bank-name" placeholder="बैंक का नाम" class="input-field">
-            <input type="text" id="account-holder" placeholder="खाताधारक का नाम" class="input-field">
-            <input type="text" id="account-number" placeholder="अकाउंट नंबर" class="input-field">
-            <input type="text" id="ifsc-code" placeholder="IFSC कोड" class="input-field">
+            <input type="text" id="bank-name" placeholder="बैंक का नाम" class="input">
+            <input type="text" id="account-holder" placeholder="खाताधारक का नाम" class="input">
+            <input type="text" id="account-number" placeholder="अकाउंट नंबर" class="input">
+            <input type="text" id="ifsc-code" placeholder="IFSC कोड" class="input">
             <button class="submit-btn" onclick="addBankAccount()">जोड़ें</button>
             <p id="bank-message" class="message hidden"></p>
             <button class="close-btn" onclick="closeAddBankPopup()">बंद करें</button>
         </div>
     </div>
 
-    <!-- Notification Panel -->
     <div id="notification-panel" class="panel hidden">
         <div class="panel-content">
             <h3>📢 सूचनाएं</h3>

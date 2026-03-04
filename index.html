@@ -1,95 +1,124 @@
-<!-- ========== SECTION 1: DOCUMENT SETUP & HEAD ========== -->
+<!-- ========== SECTION 1: DOCUMENT SETUP ========== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APEX · PREMIUM</title>
-    
-    <!-- Telegram WebApp -->
+    <title>APEX · GOLDEN DUSK</title>
+
+<!-- ========== SECTION 2: EXTERNAL SCRIPTS & FONTS ========== -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-</head>
-<body>
 
-<!-- ========== SECTION 2: GLOBAL STYLES & VARIABLES ========== -->
+<!-- ========== SECTION 3: CSS - GLOBAL VARIABLES (GOLDEN DUSK THEME) ========== -->
 <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-        --gold: #D4AF37;
-        --gold-light: #F0E68C;
-        --gold-dark: #AA8C2F;
-        --bg-dark: #0A0A0F;
-        --bg-card: #121218;
-        --bg-surface: #1A1A24;
-        --text-primary: #FFFFFF;
-        --text-secondary: #A0A0B0;
-        --emerald: #0F4C3A;
-        --sapphire: #1A3B5C;
-        --danger: #B22234;
-        --success: #0F4C3A;
-        --shadow: 0 20px 40px rgba(0,0,0,0.5);
-        --glow: 0 0 20px rgba(212, 175, 55, 0.3);
+        --primary-gold: #FFB347;
+        --secondary-gold: #E69500;
+        --deep-amber: #8B4513;
+        --dark-bg: #1A120B;
+        --dark-card: #2C1810;
+        --dark-surface: #3D2B1F;
+        --text-light: #FFF8E7;
+        --text-muted: #D4A373;
+        --emerald-deep: #1E3A2A;
+        --sapphire-deep: #1A2F4A;
+        --danger: #A63A3A;
+        --shadow-soft: 0 10px 30px rgba(0,0,0,0.5);
+        --glow-soft: 0 0 20px rgba(255, 179, 71, 0.3);
     }
+</style>
+
+<!-- ========== SECTION 4: CSS - BODY & CONTAINER ========== -->
+<style>
     body {
-        background: var(--bg-dark);
+        background: linear-gradient(135deg, var(--dark-bg) 0%, #2C1810 100%);
         font-family: 'Inter', sans-serif;
         display: flex;
         justify-content: center;
         min-height: 100vh;
-        color: var(--text-primary);
+        color: var(--text-light);
         padding: 10px;
     }
     .container {
         width: 100%;
         max-width: 450px;
-        background: var(--bg-card);
-        border-radius: 30px;
+        background: var(--dark-card);
+        border-radius: 40px 40px 20px 20px;
         padding: 20px;
-        box-shadow: var(--shadow);
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--primary-gold);
+        position: relative;
+        overflow: hidden;
+    }
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-gold), var(--deep-amber), var(--primary-gold));
     }
     .hidden { display: none !important; }
 </style>
 
-<!-- ========== SECTION 3: LOADING & TELEGRAM REDIRECT STYLES ========== -->
+<!-- ========== SECTION 5: CSS - LOADING ANIMATION ========== -->
 <style>
     .loading {
         text-align: center;
-        padding: 60px 20px;
+        padding: 80px 20px;
     }
-    .loader {
-        width: 50px;
-        height: 50px;
-        border: 3px solid var(--bg-surface);
-        border-top: 3px solid var(--gold);
+    .gold-loader {
+        width: 60px;
+        height: 60px;
+        border: 4px solid var(--dark-surface);
+        border-top: 4px solid var(--primary-gold);
+        border-right: 4px solid var(--primary-gold);
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        animation: spin 1s ease-in-out infinite;
         margin: 20px auto;
+        box-shadow: var(--glow-soft);
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    .telegram-card {
-        background: var(--bg-surface);
-        border-radius: 25px;
+    .loading-text {
+        color: var(--primary-gold);
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+</style>
+
+<!-- ========== SECTION 6: CSS - TELEGRAM REDIRECT ========== -->
+<style>
+    .telegram-redirect {
+        background: var(--dark-surface);
+        border-radius: 30px;
         padding: 40px 20px;
         text-align: center;
-        border: 1px solid var(--gold);
-        box-shadow: var(--glow);
+        border: 2px solid var(--primary-gold);
+        position: relative;
+        overflow: hidden;
     }
-    .telegram-icon {
+    .telegram-redirect::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,179,71,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .redirect-icon {
         font-size: 5rem;
-        color: var(--gold);
+        color: var(--primary-gold);
         margin-bottom: 20px;
         animation: float 3s ease-in-out infinite;
     }
@@ -98,21 +127,21 @@
         50% { transform: translateY(-10px); }
         100% { transform: translateY(0px); }
     }
-    .telegram-title {
-        font-size: 1.8rem;
-        color: var(--gold);
+    .redirect-title {
+        font-size: 2rem;
+        color: var(--primary-gold);
         font-family: 'Playfair Display', serif;
         margin-bottom: 10px;
     }
-    .telegram-sub {
-        color: var(--text-secondary);
+    .redirect-sub {
+        color: var(--text-muted);
         margin-bottom: 30px;
     }
-    .telegram-btn {
-        background: var(--gold);
-        color: var(--bg-dark);
+    .redirect-btn {
+        background: linear-gradient(135deg, var(--primary-gold), var(--deep-amber));
+        color: var(--dark-bg);
         border: none;
-        padding: 15px 30px;
+        padding: 15px 35px;
         border-radius: 50px;
         font-size: 1.1rem;
         font-weight: bold;
@@ -121,62 +150,72 @@
         align-items: center;
         gap: 10px;
         transition: all 0.3s;
+        border: 1px solid var(--primary-gold);
     }
-    .telegram-btn:hover {
+    .redirect-btn:hover {
         transform: scale(1.05);
-        box-shadow: var(--glow);
+        box-shadow: var(--glow-soft);
     }
 </style>
 
-<!-- ========== SECTION 4: HEADER, BALANCE, ALERT, HISTORY STYLES ========== -->
+<!-- ========== SECTION 7: CSS - HEADER & USER INFO ========== -->
 <style>
     .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
-        padding: 10px 0;
+        padding: 10px 5px;
     }
-    .user-info {
+    .user-profile {
         display: flex;
         align-items: center;
         gap: 15px;
         cursor: pointer;
+        background: var(--dark-surface);
+        padding: 5px 15px 5px 5px;
+        border-radius: 50px;
+        border: 1px solid var(--primary-gold);
     }
-    .avatar-ring {
-        padding: 2px;
-        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-        border-radius: 50%;
-    }
-    .avatar {
-        width: 50px;
-        height: 50px;
-        background: var(--bg-surface);
+    .profile-ring {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--primary-gold), var(--deep-amber));
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--gold);
-        font-size: 1.5rem;
+    }
+    .avatar {
+        width: 40px;
+        height: 40px;
+        background: var(--dark-card);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-gold);
+        font-size: 1.2rem;
         font-weight: bold;
     }
-    .user-details {
+    .user-text {
         display: flex;
         flex-direction: column;
     }
     .user-name {
         font-weight: 600;
         font-size: 1rem;
+        color: var(--text-light);
     }
     .user-handle {
-        font-size: 0.7rem;
-        color: var(--text-secondary);
+        font-size: 0.65rem;
+        color: var(--text-muted);
     }
     .menu-btn {
-        background: none;
-        border: none;
-        color: var(--gold);
-        font-size: 1.3rem;
+        background: var(--dark-surface);
+        border: 1px solid var(--primary-gold);
+        color: var(--primary-gold);
+        font-size: 1.2rem;
         cursor: pointer;
         width: 45px;
         height: 45px;
@@ -187,32 +226,43 @@
         transition: all 0.3s;
     }
     .menu-btn:hover {
-        background: var(--bg-surface);
+        background: var(--primary-gold);
+        color: var(--dark-bg);
     }
-    
+</style>
+
+<!-- ========== SECTION 8: CSS - BALANCE CARD ========== -->
+<style>
     .balance-card {
-        background: linear-gradient(145deg, var(--bg-card), var(--bg-surface));
-        border-radius: 25px;
+        background: linear-gradient(145deg, var(--dark-surface), var(--dark-card));
+        border-radius: 30px;
         padding: 25px;
         margin-bottom: 20px;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        border: 2px solid var(--primary-gold);
         position: relative;
         overflow: hidden;
     }
-    .balance-glow {
+    .balance-card::after {
+        content: '';
         position: absolute;
         top: -50%;
         right: -50%;
         width: 200px;
         height: 200px;
-        background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,179,71,0.15) 0%, transparent 70%);
         border-radius: 50%;
+        animation: pulseGlow 4s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+        0% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 0.5; }
     }
     .balance-label {
-        color: var(--text-secondary);
+        color: var(--text-muted);
         font-size: 0.8rem;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
         margin-bottom: 10px;
     }
     .balance-main {
@@ -221,249 +271,350 @@
         gap: 5px;
     }
     .currency {
-        font-size: 1.5rem;
-        color: var(--gold);
+        font-size: 2rem;
+        color: var(--primary-gold);
+        font-weight: 300;
     }
     .balance-amount {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 700;
         font-family: 'Playfair Display', serif;
-        color: var(--text-primary);
+        color: var(--text-light);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     }
-    .add-btn {
+    .add-funds {
         position: absolute;
         right: 25px;
         top: 50%;
         transform: translateY(-50%);
-        width: 50px;
-        height: 50px;
-        background: var(--gold);
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, var(--primary-gold), var(--deep-amber));
         border: none;
         border-radius: 50%;
-        color: var(--bg-dark);
-        font-size: 1.3rem;
+        color: var(--dark-bg);
+        font-size: 1.5rem;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.3s;
+        box-shadow: 0 0 20px rgba(255,179,71,0.3);
     }
-    .add-btn:hover {
+    .add-funds:hover {
         transform: translateY(-50%) scale(1.1);
-        box-shadow: var(--glow);
+        box-shadow: 0 0 30px rgba(255,179,71,0.6);
     }
-    
+</style>
+
+<!-- ========== SECTION 9: CSS - WITHDRAW ALERT ========== -->
+<style>
     .withdraw-alert {
-        background: rgba(178, 34, 34, 0.1);
-        border: 1px solid var(--danger);
+        background: rgba(166, 58, 58, 0.1);
+        border: 2px solid var(--danger);
         border-radius: 50px;
         padding: 15px;
         margin-bottom: 20px;
         text-align: center;
-        color: #ff6b6b;
+        color: #FF6B6B;
         font-weight: bold;
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        backdrop-filter: blur(5px);
     }
-    .alert-pulse {
+    .alert-wave {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        animation: slide 2s infinite;
+        background: linear-gradient(90deg, transparent, rgba(255,107,107,0.2), transparent);
+        animation: wave 2s infinite;
     }
-    @keyframes slide {
+    @keyframes wave {
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
     }
-    
-    .history-strip {
+</style>
+
+<!-- ========== SECTION 10: CSS - HISTORY TRACK ========== -->
+<style>
+    .history-track {
         display: flex;
         gap: 8px;
         overflow-x: auto;
         padding: 10px 0;
         margin-bottom: 20px;
     }
-    .history-item {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        flex-shrink: 0;
+    .history-track::-webkit-scrollbar {
+        height: 4px;
+        background: var(--dark-surface);
     }
-    .history-item.green { background: linear-gradient(135deg, var(--emerald), #1A5F4A); }
-    .history-item.blue { background: linear-gradient(135deg, var(--sapphire), #2A4B6C); }
-    .history-item.gray { background: linear-gradient(135deg, #2A2A35, #3A3A45); }
+    .history-track::-webkit-scrollbar-thumb {
+        background: var(--primary-gold);
+        border-radius: 4px;
+    }
+    .history-marker {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .history-marker::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    }
+    .history-marker.green { background: linear-gradient(135deg, var(--emerald-deep), #2A5A3A); }
+    .history-marker.blue { background: linear-gradient(135deg, var(--sapphire-deep), #2A4A6A); }
+    .history-marker.gray { background: linear-gradient(135deg, #4A3A2A, #6A4A2A); }
 </style>
 
-<!-- ========== SECTION 5: GAME AREA STYLES (TIMER, COLOR BUTTONS, BET CONTROLS) ========== -->
+<!-- ========== SECTION 11: CSS - TIMER SECTION ========== -->
 <style>
-    .timer-container {
-        margin-bottom: 20px;
-    }
-    .timer-box {
-        background: var(--bg-surface);
-        border-radius: 20px;
+    .timer-section {
+        background: var(--dark-surface);
+        border-radius: 25px;
         padding: 20px;
-        text-align: center;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        margin-bottom: 20px;
+        border: 1px solid var(--primary-gold);
+        position: relative;
     }
     .timer-display {
-        font-size: 3.5rem;
+        font-size: 4rem;
         font-weight: 700;
         font-family: 'Playfair Display', serif;
-        color: var(--gold);
+        color: var(--primary-gold);
+        text-align: center;
+        text-shadow: 0 0 20px rgba(255,179,71,0.5);
+        line-height: 1;
     }
-    
-    .color-buttons {
+    .timer-label {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        margin-top: 5px;
+    }
+    .timer-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-gold), var(--deep-amber));
+        animation: progress 15s linear infinite;
+    }
+    @keyframes progress {
+        0% { width: 100%; }
+        100% { width: 0%; }
+    }
+</style>
+
+<!-- ========== SECTION 12: CSS - GAME BUTTONS ========== -->
+<style>
+    .game-buttons {
         display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
+        gap: 20px;
+        margin-bottom: 25px;
     }
-    .color-btn {
+    .game-btn {
         flex: 1;
-        height: 80px;
+        height: 100px;
         border: none;
-        border-radius: 20px;
+        border-radius: 25px;
         cursor: pointer;
         transition: all 0.3s;
         position: relative;
         overflow: hidden;
     }
-    .color-btn::after {
+    .game-btn::before {
         content: '';
         position: absolute;
         top: 0;
-        left: 0;
+        left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(145deg, rgba(255,255,255,0.1), transparent);
-        opacity: 0;
-        transition: opacity 0.3s;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
     }
-    .color-btn:hover::after { opacity: 1; }
-    .color-btn:active { transform: scale(0.95); }
-    .color-btn.green { background: linear-gradient(145deg, #0F3A2A, #0A2A1F); border: 1px solid var(--emerald); }
-    .color-btn.blue { background: linear-gradient(145deg, #1A2A4A, #0F1A2A); border: 1px solid var(--sapphire); }
-    
+    .game-btn:hover::before {
+        left: 100%;
+    }
+    .game-btn:active { transform: scale(0.95); }
+    .game-btn.emerald {
+        background: linear-gradient(145deg, var(--emerald-deep), #0F2A1F);
+        border: 2px solid #2A5A3A;
+        box-shadow: 0 0 20px rgba(42,90,58,0.3);
+    }
+    .game-btn.sapphire {
+        background: linear-gradient(145deg, var(--sapphire-deep), #0F1F2A);
+        border: 2px solid #2A4A6A;
+        box-shadow: 0 0 20px rgba(42,74,106,0.3);
+    }
+    .btn-label {
+        position: absolute;
+        bottom: 15px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        color: var(--text-light);
+        font-weight: 600;
+        letter-spacing: 2px;
+    }
+</style>
+
+<!-- ========== SECTION 13: CSS - BET PANEL ========== -->
+<style>
+    .bet-panel {
+        background: var(--dark-surface);
+        border-radius: 25px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 1px solid var(--primary-gold);
+    }
     .bet-controls {
         display: flex;
-        gap: 5px;
+        gap: 8px;
         margin-bottom: 20px;
     }
-    .control-btn {
+    .bet-ctrl {
         flex: 1;
         padding: 12px 5px;
-        background: var(--bg-surface);
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        background: var(--dark-card);
+        border: 1px solid var(--primary-gold);
         border-radius: 12px;
-        color: var(--gold);
+        color: var(--primary-gold);
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s;
     }
-    .control-btn:hover {
-        background: rgba(212, 175, 55, 0.1);
-        border-color: var(--gold);
+    .bet-ctrl:hover {
+        background: var(--primary-gold);
+        color: var(--dark-bg);
     }
     .bet-input {
         flex: 2;
         padding: 12px;
-        background: var(--bg-surface);
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        background: var(--dark-card);
+        border: 2px solid var(--primary-gold);
         border-radius: 12px;
-        color: var(--text-primary);
+        color: var(--text-light);
         text-align: center;
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 600;
     }
     .bet-input:focus {
         outline: none;
-        border-color: var(--gold);
+        border-color: var(--secondary-gold);
+        box-shadow: var(--glow-soft);
     }
-    
-    .my-bets {
+</style>
+
+<!-- ========== SECTION 14: CSS - PLAYER BETS ========== -->
+<style>
+    .player-bets {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         margin-bottom: 20px;
     }
-    .my-bet {
+    .player-bet {
         flex: 1;
         padding: 15px;
-        border-radius: 15px;
+        border-radius: 20px;
         text-align: center;
+        backdrop-filter: blur(10px);
     }
-    .my-bet.green { background: rgba(15, 76, 58, 0.2); border: 1px solid var(--emerald); }
-    .my-bet.blue { background: rgba(26, 59, 92, 0.2); border: 1px solid var(--sapphire); }
-    .bet-label {
+    .player-bet.emerald {
+        background: rgba(30, 58, 42, 0.3);
+        border: 2px solid var(--emerald-deep);
+    }
+    .player-bet.sapphire {
+        background: rgba(26, 47, 74, 0.3);
+        border: 2px solid var(--sapphire-deep);
+    }
+    .bet-header {
         font-size: 0.7rem;
-        color: var(--text-secondary);
+        color: var(--text-muted);
         margin-bottom: 5px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
     }
-    .bet-value {
-        font-size: 1.5rem;
+    .bet-total {
+        font-size: 1.8rem;
         font-weight: 700;
-        color: var(--gold);
+        color: var(--primary-gold);
+        font-family: 'Playfair Display', serif;
     }
-    
-    .bets-container {
+</style>
+
+<!-- ========== SECTION 15: CSS - BETS LIST ========== -->
+<style>
+    .bets-wrapper {
         display: flex;
-        gap: 15px;
-        height: 150px;
+        gap: 20px;
+        height: 180px;
         overflow: hidden;
     }
-    .bet-list {
+    .bets-column {
         flex: 1;
-        background: var(--bg-surface);
+        background: var(--dark-card);
         border-radius: 20px;
         padding: 15px;
         overflow-y: auto;
+        border: 1px solid rgba(255,179,71,0.2);
     }
-    .bet-list.green { border: 1px solid var(--emerald); }
-    .bet-list.blue { border: 1px solid var(--sapphire); }
-    .list-header {
-        color: var(--gold);
+    .bets-column.emerald { border-top: 4px solid var(--emerald-deep); }
+    .bets-column.sapphire { border-top: 4px solid var(--sapphire-deep); }
+    .column-title {
+        color: var(--primary-gold);
         font-size: 0.8rem;
         margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
     }
-    .bet-item {
+    .bet-entry {
         display: flex;
         justify-content: space-between;
         padding: 8px 0;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        border-bottom: 1px solid rgba(255,179,71,0.1);
         font-size: 0.9rem;
     }
-    .bet-item:last-child { border-bottom: none; }
-    .empty-state {
+    .bet-entry:last-child { border-bottom: none; }
+    .empty-msg {
         text-align: center;
-        color: var(--text-secondary);
+        color: var(--text-muted);
         padding: 20px 0;
         font-style: italic;
     }
 </style>
 
-<!-- ========== SECTION 6: PROFILE, BANK, HISTORY SECTION STYLES ========== -->
+<!-- ========== SECTION 16: CSS - PROFILE SECTION ========== -->
 <style>
+    .profile-container {
+        background: var(--dark-surface);
+        border-radius: 30px;
+        padding: 25px;
+        margin-top: 10px;
+        border: 1px solid var(--primary-gold);
+    }
     .profile-header {
         display: flex;
         align-items: center;
         gap: 15px;
-        margin-bottom: 30px;
-        padding: 10px 0;
+        margin-bottom: 25px;
     }
-    .back-btn {
+    .nav-btn {
         width: 45px;
         height: 45px;
-        background: var(--bg-surface);
-        border: none;
+        background: var(--dark-card);
+        border: 1px solid var(--primary-gold);
         border-radius: 50%;
-        color: var(--gold);
+        color: var(--primary-gold);
         font-size: 1.2rem;
         cursor: pointer;
         display: flex;
@@ -471,65 +622,65 @@
         justify-content: center;
         transition: all 0.3s;
     }
-    .back-btn:hover {
-        background: var(--gold);
-        color: var(--bg-dark);
+    .nav-btn:hover {
+        background: var(--primary-gold);
+        color: var(--dark-bg);
     }
-    .profile-avatar {
+    .profile-avatar-large {
         width: 100px;
         height: 100px;
         margin: 0 auto 20px;
-        background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+        background: linear-gradient(135deg, var(--primary-gold), var(--deep-amber));
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 3rem;
-        color: var(--bg-dark);
+        color: var(--dark-bg);
         font-weight: bold;
+        border: 3px solid var(--primary-gold);
     }
-    .profile-name {
-        text-align: center;
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-    .profile-handle {
-        text-align: center;
-        color: var(--text-secondary);
-        margin-bottom: 30px;
-    }
+</style>
+
+<!-- ========== SECTION 17: CSS - STATS CARDS ========== -->
+<style>
     .stats-grid {
         display: flex;
         gap: 15px;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
     }
-    .stat-card {
+    .stat-item {
         flex: 1;
-        background: var(--bg-surface);
-        border-radius: 15px;
+        background: var(--dark-card);
+        border-radius: 20px;
         padding: 15px;
         text-align: center;
+        border: 1px solid var(--primary-gold);
     }
     .stat-label {
-        color: var(--text-secondary);
+        color: var(--text-muted);
         font-size: 0.7rem;
         margin-bottom: 5px;
+        letter-spacing: 1px;
     }
-    .stat-value {
-        font-size: 1.3rem;
+    .stat-number {
+        font-size: 1.5rem;
         font-weight: 700;
-        color: var(--gold);
+        color: var(--primary-gold);
     }
-    
-    .bank-section {
-        background: var(--bg-surface);
+</style>
+
+<!-- ========== SECTION 18: CSS - BANK SECTION ========== -->
+<style>
+    .bank-container {
+        background: var(--dark-card);
         border-radius: 20px;
         padding: 20px;
         margin-bottom: 20px;
+        border: 1px solid var(--primary-gold);
     }
-    .section-title {
-        color: var(--gold);
+    .bank-title {
+        color: var(--primary-gold);
         font-size: 1rem;
         margin-bottom: 15px;
         display: flex;
@@ -542,23 +693,23 @@
         margin-bottom: 15px;
     }
     .bank-item {
-        background: var(--bg-card);
+        background: var(--dark-surface);
         padding: 12px;
-        border-radius: 10px;
+        border-radius: 12px;
         margin-bottom: 8px;
-        border-left: 3px solid var(--gold);
+        border-left: 3px solid var(--primary-gold);
     }
     .bank-item small {
-        color: var(--text-secondary);
+        color: var(--text-muted);
         font-size: 0.7rem;
     }
-    .add-bank-btn {
+    .add-bank {
         width: 100%;
         padding: 12px;
         background: transparent;
-        border: 1px dashed var(--gold);
-        border-radius: 10px;
-        color: var(--gold);
+        border: 2px dashed var(--primary-gold);
+        border-radius: 12px;
+        color: var(--primary-gold);
         cursor: pointer;
         display: flex;
         align-items: center;
@@ -566,11 +717,14 @@
         gap: 8px;
         transition: all 0.3s;
     }
-    .add-bank-btn:hover {
-        background: rgba(212, 175, 55, 0.1);
+    .add-bank:hover {
+        background: rgba(255,179,71,0.1);
     }
-    
-    .action-buttons {
+</style>
+
+<!-- ========== SECTION 19: CSS - ACTION BUTTONS ========== -->
+<style>
+    .action-grid {
         display: flex;
         gap: 15px;
         margin-bottom: 20px;
@@ -587,31 +741,25 @@
         justify-content: center;
         gap: 8px;
         transition: all 0.3s;
+        border: 1px solid transparent;
     }
     .action-btn.deposit {
-        background: linear-gradient(145deg, #0F3A2A, #0A2A1F);
-        border: 1px solid var(--emerald);
-        color: white;
+        background: linear-gradient(145deg, var(--emerald-deep), #0F2A1F);
+        border-color: #2A5A3A;
+        color: var(--text-light);
     }
     .action-btn.withdraw {
-        background: linear-gradient(145deg, #1A2A4A, #0F1A2A);
-        border: 1px solid var(--sapphire);
-        color: white;
+        background: linear-gradient(145deg, var(--sapphire-deep), #0F1F2A);
+        border-color: #2A4A6A;
+        color: var(--text-light);
     }
-    .action-btn:hover { transform: translateY(-2px); }
-    
-    .history-section {
-        background: var(--bg-surface);
-        border-radius: 20px;
-        padding: 20px;
-    }
-    .history-list {
-        max-height: 150px;
-        overflow-y: auto;
+    .action-btn:hover {
+        transform: translateY(-3px);
+        filter: brightness(1.2);
     }
 </style>
 
-<!-- ========== SECTION 7: ADD/WITHDRAW PAGES, POPUP, MENU STYLES ========== -->
+<!-- ========== SECTION 20: CSS - DEPOSIT/WITHDRAW PAGES ========== -->
 <style>
     .page-content {
         padding: 10px 0;
@@ -620,88 +768,92 @@
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
-        margin-bottom: 20px;
+        margin: 20px 0;
     }
-    .amount-btn {
+    .amount-option {
         padding: 12px;
-        background: transparent;
-        border: 1px solid rgba(212, 175, 55, 0.3);
-        border-radius: 10px;
-        color: var(--gold);
+        background: var(--dark-card);
+        border: 2px solid var(--primary-gold);
+        border-radius: 12px;
+        color: var(--primary-gold);
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s;
     }
-    .amount-btn:hover {
-        background: rgba(212, 175, 55, 0.1);
-        border-color: var(--gold);
+    .amount-option:hover {
+        background: var(--primary-gold);
+        color: var(--dark-bg);
     }
-    .amount-btn.selected {
-        background: var(--gold);
-        color: var(--bg-dark);
-        border-color: var(--gold);
+    .amount-option.selected {
+        background: var(--primary-gold);
+        color: var(--dark-bg);
+        border-color: var(--deep-amber);
     }
     .input-field {
         width: 100%;
         padding: 15px;
-        background: var(--bg-surface);
-        border: 1px solid rgba(212, 175, 55, 0.3);
-        border-radius: 12px;
-        color: var(--text-primary);
+        background: var(--dark-card);
+        border: 2px solid var(--primary-gold);
+        border-radius: 15px;
+        color: var(--text-light);
         margin-bottom: 15px;
         font-size: 1rem;
     }
     .input-field:focus {
         outline: none;
-        border-color: var(--gold);
+        border-color: var(--secondary-gold);
+        box-shadow: var(--glow-soft);
     }
-    .info-box {
-        background: var(--bg-surface);
-        border-radius: 15px;
+    .info-panel {
+        background: var(--dark-surface);
+        border-radius: 20px;
         padding: 20px;
         text-align: center;
         margin: 20px 0;
+        border: 1px solid var(--primary-gold);
     }
-    .info-box i {
-        color: var(--gold);
-        font-size: 2rem;
-        margin-bottom: 10px;
-    }
-    .upi-id {
-        font-size: 1.2rem;
+    .upi-code {
+        font-size: 1.3rem;
         font-weight: 600;
-        color: var(--gold);
+        color: var(--primary-gold);
         margin: 10px 0;
         font-family: monospace;
+        letter-spacing: 2px;
     }
     .fee-note {
-        color: var(--text-secondary);
+        color: var(--text-muted);
         font-size: 0.8rem;
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    .net-amount {
-        color: var(--gold);
-        font-weight: 600;
         text-align: center;
         margin: 10px 0;
     }
-    .submit-btn {
+    .net-amount {
+        color: var(--primary-gold);
+        font-weight: 600;
+        text-align: center;
+        margin: 10px 0;
+        font-size: 1.1rem;
+    }
+    .submit-action {
         width: 100%;
         padding: 16px;
-        background: var(--gold);
+        background: linear-gradient(135deg, var(--primary-gold), var(--deep-amber));
         border: none;
-        border-radius: 12px;
-        font-weight: 600;
+        border-radius: 15px;
+        font-weight: bold;
         cursor: pointer;
         font-size: 1rem;
         transition: all 0.3s;
+        color: var(--dark-bg);
+        margin-top: 10px;
     }
-    .submit-btn:hover {
+    .submit-action:hover {
         transform: translateY(-2px);
-        box-shadow: var(--glow);
+        box-shadow: var(--glow-soft);
     }
-    
+</style>
+
+<!-- ========== SECTION 21: CSS - SIDE MENU & OVERLAY ========== -->
+<style>
     .side-menu {
         position: fixed;
         top: 0;
@@ -709,13 +861,14 @@
         width: 80%;
         max-width: 320px;
         height: 100%;
-        background: var(--bg-card);
+        background: var(--dark-surface);
         z-index: 200;
         padding: 30px 20px;
-        border-left: 1px solid rgba(212, 175, 55, 0.3);
+        border-left: 3px solid var(--primary-gold);
         transform: translateX(100%);
         transition: transform 0.3s ease;
         box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        backdrop-filter: blur(10px);
     }
     .side-menu.open { transform: translateX(0); }
     .menu-header {
@@ -725,7 +878,7 @@
         margin-bottom: 30px;
     }
     .menu-header h3 {
-        color: var(--gold);
+        color: var(--primary-gold);
         font-size: 1.3rem;
     }
     .menu-item {
@@ -736,14 +889,15 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        color: var(--text-primary);
+        color: var(--text-light);
         transition: all 0.3s;
     }
     .menu-item:hover {
-        background: var(--bg-surface);
-        color: var(--gold);
+        background: var(--primary-gold);
+        color: var(--dark-bg);
     }
-    .menu-item i { width: 25px; color: var(--gold); }
+    .menu-item:hover i { color: var(--dark-bg); }
+    .menu-item i { width: 25px; color: var(--primary-gold); }
     
     .overlay {
         position: fixed;
@@ -751,7 +905,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.7);
+        background: rgba(0,0,0,0.8);
         z-index: 150;
         display: none;
         backdrop-filter: blur(5px);
@@ -763,181 +917,170 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: var(--bg-card);
-        border-radius: 25px;
+        background: var(--dark-surface);
+        border-radius: 30px;
         padding: 25px;
         width: 90%;
         max-width: 350px;
-        border: 1px solid var(--gold);
+        border: 2px solid var(--primary-gold);
         z-index: 300;
+        box-shadow: 0 0 30px rgba(255,179,71,0.3);
     }
     .popup h3 {
-        color: var(--gold);
+        color: var(--primary-gold);
         text-align: center;
         margin-bottom: 20px;
     }
     .message {
-        color: var(--success);
+        color: var(--emerald-deep);
         text-align: center;
         margin-top: 10px;
     }
 </style>
 
-<!-- ========== SECTION 8: LOADING & TELEGRAM PAGES (HTML) ========== -->
-<body>
-    <div class="container" id="app">
-        <!-- LOADING SCREEN -->
-        <div id="loading" class="loading">
-            <div class="loader"></div>
-            <p style="color: var(--gold);">Connecting to Telegram...</p>
+<!-- ========== SECTION 22: HTML - LOADING & REDIRECT ========== -->
+<div class="container">
+    <div id="loading" class="loading">
+        <div class="gold-loader"></div>
+        <p class="loading-text">CONNECTING</p>
+    </div>
+
+    <div id="telegram-page" class="hidden">
+        <div class="telegram-redirect">
+            <div class="redirect-icon"><i class="fab fa-telegram"></i></div>
+            <h2 class="redirect-title">APEX GOLDEN</h2>
+            <p class="redirect-sub">enter through telegram</p>
+            <button class="redirect-btn" onclick="redirectToTelegram()">
+                <i class="fab fa-telegram"></i> OPEN TELEGRAM
+            </button>
+        </div>
+    </div>
+
+<!-- ========== SECTION 23: HTML - MAIN GAME ========== -->
+    <div id="game-page" class="hidden">
+        <div class="header">
+            <div class="user-profile" onclick="showPage('profile-page')">
+                <div class="profile-ring">
+                    <div class="avatar" id="avatar">A</div>
+                </div>
+                <div class="user-text">
+                    <span class="user-name" id="user-name">Loading...</span>
+                    <span class="user-handle" id="user-handle"></span>
+                </div>
+            </div>
+            <button class="menu-btn" onclick="toggleMenu()">
+                <i class="fas fa-cog"></i>
+            </button>
         </div>
 
-        <!-- TELEGRAM REDIRECT PAGE -->
-        <div id="telegram-page" class="hidden">
-            <div class="telegram-card">
-                <div class="telegram-icon">
-                    <i class="fab fa-telegram"></i>
-                </div>
-                <h2 class="telegram-title">APEX PREMIUM</h2>
-                <p class="telegram-sub">This game only works inside Telegram</p>
-                <button class="telegram-btn" onclick="redirectToTelegram()">
-                    <i class="fab fa-telegram"></i> Open Telegram
-                </button>
+        <div class="balance-card">
+            <div class="balance-label">GOLD BALANCE</div>
+            <div class="balance-main">
+                <span class="currency">⏣</span>
+                <span class="balance-amount" id="balance-amount">20</span>
             </div>
+            <button class="add-funds" onclick="showPage('add-money-page')">
+                <i class="fas fa-plus"></i>
+            </button>
         </div>
 
-<!-- ========== SECTION 9: MAIN GAME PAGE (HTML) ========== -->
-        <!-- MAIN GAME PAGE -->
-        <div id="game-page" class="hidden">
-            <!-- Header -->
-            <div class="header">
-                <div class="user-info" onclick="showPage('profile-page')">
-                    <div class="avatar-ring">
-                        <div class="avatar" id="avatar">A</div>
-                    </div>
-                    <div class="user-details">
-                        <span class="user-name" id="user-name">Loading...</span>
-                        <span class="user-handle" id="user-handle"></span>
-                    </div>
-                </div>
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i class="fas fa-sliders-h"></i>
-                </button>
-            </div>
+        <div id="withdraw-alert" class="withdraw-alert hidden" onclick="showPage('withdraw-page')">
+            <i class="fas fa-crown"></i> GOLD WITHDRAW AVAILABLE
+            <div class="alert-wave"></div>
+        </div>
 
-            <!-- Balance Card -->
-            <div class="balance-card">
-                <div class="balance-glow"></div>
-                <div class="balance-label">Available Balance</div>
-                <div class="balance-main">
-                    <span class="currency">₹</span>
-                    <span class="balance-amount" id="balance-amount">0</span>
-                </div>
-                <button class="add-btn" onclick="showPage('add-money-page')">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
+        <div class="history-track" id="history-track"></div>
 
-            <!-- Withdraw Alert -->
-            <div id="withdraw-alert" class="withdraw-alert hidden" onclick="showPage('withdraw-page')">
-                <i class="fas fa-arrow-down"></i> WITHDRAW AVAILABLE
-                <div class="alert-pulse"></div>
-            </div>
+        <div class="timer-section">
+            <div class="timer-display" id="timer">15</div>
+            <div class="timer-label">SECONDS REMAINING</div>
+            <div class="timer-progress"></div>
+        </div>
 
-            <!-- History Strip -->
-            <div class="history-strip" id="history-strip"></div>
+        <div class="game-buttons">
+            <button class="game-btn emerald" onclick="placeBet('green')">
+                <span class="btn-label">EMERALD</span>
+            </button>
+            <button class="game-btn sapphire" onclick="placeBet('blue')">
+                <span class="btn-label">SAPPHIRE</span>
+            </button>
+        </div>
 
-            <!-- Timer -->
-            <div class="timer-container">
-                <div class="timer-box">
-                    <div class="timer-display" id="timer">15</div>
-                </div>
-            </div>
-
-            <!-- Color Buttons -->
-            <div class="color-buttons">
-                <button class="color-btn green" onclick="placeBet('green')"></button>
-                <button class="color-btn blue" onclick="placeBet('blue')"></button>
-            </div>
-
-            <!-- Bet Controls -->
+        <div class="bet-panel">
             <div class="bet-controls">
-                <button class="control-btn" onclick="setBetAmount(1)">MIN</button>
-                <button class="control-btn" onclick="adjustBetAmount(-1)">-1</button>
+                <button class="bet-ctrl" onclick="setBetAmount(1)">MIN</button>
+                <button class="bet-ctrl" onclick="adjustBetAmount(-1)">−1</button>
                 <input type="number" id="bet-amount" value="1" min="1" max="10000" class="bet-input">
-                <button class="control-btn" onclick="adjustBetAmount(1)">+1</button>
-                <button class="control-btn" onclick="setBetAmount(10000)">MAX</button>
-            </div>
-
-            <!-- My Bets -->
-            <div class="my-bets">
-                <div class="my-bet green">
-                    <div class="bet-label">MY BET</div>
-                    <div class="bet-value" id="my-green-bet">0</div>
-                </div>
-                <div class="my-bet blue">
-                    <div class="bet-label">MY BET</div>
-                    <div class="bet-value" id="my-blue-bet">0</div>
-                </div>
-            </div>
-
-            <!-- Bets Lists -->
-            <div class="bets-container">
-                <div class="bet-list green">
-                    <div class="list-header">GREEN</div>
-                    <div id="green-bets-list"></div>
-                </div>
-                <div class="bet-list blue">
-                    <div class="list-header">BLUE</div>
-                    <div id="blue-bets-list"></div>
-                </div>
+                <button class="bet-ctrl" onclick="adjustBetAmount(1)">+1</button>
+                <button class="bet-ctrl" onclick="setBetAmount(10000)">MAX</button>
             </div>
         </div>
 
-<!-- ========== SECTION 10: PROFILE, ADD/WITHDRAW PAGES & POPUPS (HTML) ========== -->
-        <!-- PROFILE PAGE -->
-        <div id="profile-page" class="hidden">
+        <div class="player-bets">
+            <div class="player-bet emerald">
+                <div class="bet-header">EMERALD BET</div>
+                <div class="bet-total" id="my-green-bet">0</div>
+            </div>
+            <div class="player-bet sapphire">
+                <div class="bet-header">SAPPHIRE BET</div>
+                <div class="bet-total" id="my-blue-bet">0</div>
+            </div>
+        </div>
+
+        <div class="bets-wrapper">
+            <div class="bets-column emerald">
+                <div class="column-title">EMERALD</div>
+                <div id="green-bets-list"></div>
+            </div>
+            <div class="bets-column sapphire">
+                <div class="column-title">SAPPHIRE</div>
+                <div id="blue-bets-list"></div>
+            </div>
+        </div>
+    </div>
+
+<!-- ========== SECTION 24: HTML - PROFILE & TRANSACTIONS ========== -->
+    <div id="profile-page" class="hidden">
+        <div class="profile-container">
             <div class="profile-header">
-                <button class="back-btn" onclick="showPage('game-page')">
+                <button class="nav-btn" onclick="showPage('game-page')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2 style="color: var(--gold); flex: 1; text-align: center;">PROFILE</h2>
-                <button class="back-btn" onclick="logout()">
+                <h2 style="color: var(--primary-gold); flex: 1; text-align: center;">PROFILE</h2>
+                <button class="nav-btn" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
 
-            <div class="profile-avatar" id="profile-avatar">A</div>
-            <div class="profile-name" id="profile-name">-</div>
-            <div class="profile-handle" id="profile-handle"></div>
+            <div class="profile-avatar-large" id="profile-avatar">A</div>
+            <h3 style="text-align: center; margin-bottom: 5px;" id="profile-name">-</h3>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 25px;" id="profile-handle"></p>
 
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Balance</div>
-                    <div class="stat-value" id="profile-balance">0</div>
+                <div class="stat-item">
+                    <div class="stat-label">GOLD</div>
+                    <div class="stat-number" id="profile-balance">0</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-label">Games</div>
-                    <div class="stat-value" id="total-games">0</div>
+                <div class="stat-item">
+                    <div class="stat-label">GAMES</div>
+                    <div class="stat-number" id="total-games">0</div>
                 </div>
             </div>
 
-            <!-- Bank Accounts -->
-            <div class="bank-section">
-                <div class="section-title">
-                    <i class="fas fa-university"></i>
-                    <span>BANK ACCOUNTS</span>
+            <div class="bank-container">
+                <div class="bank-title">
+                    <i class="fas fa-landmark"></i>
+                    <span>GOLD VAULT</span>
                 </div>
                 <div id="bank-list" class="bank-list">
-                    <div class="empty-state">No bank accounts</div>
+                    <div class="empty-msg">No bank accounts</div>
                 </div>
-                <button class="add-bank-btn" onclick="showAddBankPopup()">
+                <button class="add-bank" onclick="showAddBankPopup()">
                     <i class="fas fa-plus"></i> ADD ACCOUNT
                 </button>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
+            <div class="action-grid">
                 <button class="action-btn deposit" onclick="showPage('add-money-page')">
                     <i class="fas fa-arrow-up"></i> DEPOSIT
                 </button>
@@ -946,499 +1089,560 @@
                 </button>
             </div>
 
-            <!-- Game History -->
-            <div class="history-section">
-                <div class="section-title">
-                    <i class="fas fa-history"></i>
+            <div class="bank-container">
+                <div class="bank-title">
+                    <i class="fas fa-scroll"></i>
                     <span>GAME HISTORY</span>
                 </div>
-                <div id="game-history" class="history-list"></div>
+                <div id="game-history" class="bank-list"></div>
             </div>
         </div>
-
-        <!-- ADD MONEY PAGE -->
-        <div id="add-money-page" class="hidden">
-            <div class="profile-header">
-                <button class="back-btn" onclick="showPage('game-page')">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 style="color: var(--gold); flex: 1; text-align: center;">DEPOSIT</h2>
-            </div>
-
-            <div class="page-content">
-                <div class="stats-grid" style="margin-bottom: 20px;">
-                    <div class="stat-card">
-                        <div class="stat-label">Balance</div>
-                        <div class="stat-value" id="deposit-balance">0</div>
-                    </div>
-                </div>
-
-                <div class="amount-grid">
-                    <button class="amount-btn" data-amount="100" onclick="selectAmount(this)">100</button>
-                    <button class="amount-btn" data-amount="500" onclick="selectAmount(this)">500</button>
-                    <button class="amount-btn" data-amount="1000" onclick="selectAmount(this)">1000</button>
-                    <button class="amount-btn" data-amount="2000" onclick="selectAmount(this)">2000</button>
-                </div>
-
-                <input type="number" id="add-amount" placeholder="Custom amount" class="input-field">
-
-                <div class="info-box">
-                    <i class="fas fa-qrcode"></i>
-                    <p style="color: var(--gold); margin-bottom: 5px;">UPI ID</p>
-                    <div class="upi-id">apex@ybl</div>
-                    <p style="color: var(--text-secondary); font-size: 0.8rem;">Enter UTR after payment</p>
-                </div>
-
-                <input type="text" id="utr-number" placeholder="UTR Number" class="input-field">
-
-                <button class="submit-btn" onclick="submitDeposit()">SUBMIT REQUEST</button>
-                <div id="deposit-message" class="hidden message"></div>
-            </div>
-        </div>
-
-        <!-- WITHDRAW PAGE -->
-        <div id="withdraw-page" class="hidden">
-            <div class="profile-header">
-                <button class="back-btn" onclick="showPage('profile-page')">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h2 style="color: var(--gold); flex: 1; text-align: center;">WITHDRAW</h2>
-            </div>
-
-            <div class="page-content">
-                <div class="stats-grid" style="margin-bottom: 20px;">
-                    <div class="stat-card">
-                        <div class="stat-label">Available</div>
-                        <div class="stat-value" id="withdraw-balance">0</div>
-                    </div>
-                </div>
-
-                <p class="fee-note">* 5% service fee applies</p>
-
-                <div class="amount-grid">
-                    <button class="amount-btn" data-amount="105" onclick="selectWithdrawAmount(this)">105</button>
-                    <button class="amount-btn" data-amount="210" onclick="selectWithdrawAmount(this)">210</button>
-                    <button class="amount-btn" data-amount="525" onclick="selectWithdrawAmount(this)">525</button>
-                    <button class="amount-btn" data-amount="1050" onclick="selectWithdrawAmount(this)">1050</button>
-                </div>
-
-                <input type="number" id="withdraw-amount" placeholder="Amount" class="input-field">
-                <p id="withdraw-net" class="net-amount">You receive: ₹0</p>
-
-                <button class="submit-btn" onclick="submitWithdraw()">SUBMIT REQUEST</button>
-                <div id="withdraw-message" class="hidden message"></div>
-            </div>
-        </div>
-
-        <!-- ADD BANK POPUP -->
-        <div id="bank-popup" class="popup hidden">
-            <h3>ADD BANK ACCOUNT</h3>
-            <input type="text" id="bank-name" placeholder="Bank Name" class="input-field">
-            <input type="text" id="account-holder" placeholder="Account Holder" class="input-field">
-            <input type="text" id="account-number" placeholder="Account Number" class="input-field">
-            <input type="text" id="ifsc-code" placeholder="IFSC Code" class="input-field">
-            <button class="submit-btn" onclick="addBankAccount()">ADD</button>
-            <button class="submit-btn" onclick="closeBankPopup()" style="margin-top: 10px; background: var(--bg-surface); color: white;">CLOSE</button>
-            <div id="bank-message" class="hidden message"></div>
-        </div>
-
-        <!-- SIDE MENU -->
-        <div id="side-menu" class="side-menu">
-            <div class="menu-header">
-                <h3>MENU</h3>
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="menu-item" onclick="showPage('profile-page'); closeMenu()">
-                <i class="fas fa-user"></i> PROFILE
-            </div>
-            <div class="menu-item" onclick="showPage('add-money-page'); closeMenu()">
-                <i class="fas fa-plus-circle"></i> DEPOSIT
-            </div>
-            <div class="menu-item" onclick="showPage('withdraw-page'); closeMenu()">
-                <i class="fas fa-minus-circle"></i> WITHDRAW
-            </div>
-            <div class="menu-item" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> LOGOUT
-            </div>
-        </div>
-
-        <!-- OVERLAY -->
-        <div id="overlay" class="overlay" onclick="closeMenu()"></div>
     </div>
 
-    <script>
-        // ========== FIREBASE CONFIG ==========
-        const firebaseConfig = {
-            apiKey: "AIzaSyB2dTlbmwvlGu-DJXsd3sAIHJMQo8cEnXg",
-            authDomain: "apex-day-game.firebaseapp.com",
-            projectId: "apex-day-game",
-            storageBucket: "apex-day-game.firebasestorage.app",
-            messagingSenderId: "455504824293",
-            appId: "1:455504824293:web:d4fe81e8944f138592910c"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+<!-- ========== SECTION 25: HTML - ADD MONEY & WITHDRAW ========== -->
+    <div id="add-money-page" class="hidden">
+        <div class="profile-container">
+            <div class="profile-header">
+                <button class="nav-btn" onclick="showPage('game-page')">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 style="color: var(--primary-gold); flex: 1; text-align: center;">DEPOSIT</h2>
+            </div>
 
-        // ========== TELEGRAM CHECK ==========
-        const tg = window.Telegram?.WebApp;
-        const telegramUser = tg?.initDataUnsafe?.user;
-        const BOT_LINK = "https://t.me/APEX_DAY_bot";
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">YOUR GOLD</div>
+                    <div class="stat-number" id="deposit-balance">20</div>
+                </div>
+            </div>
 
-        // ========== GLOBAL VARIABLES ==========
-        let currentUser = null;
-        let userData = null;
-        let selectedBank = null;
-        let currentBet = { green: 0, blue: 0 };
-        let gameTimer = null;
-        let resultTimeout = null;
-        let allBets = { green: [], blue: [] };
-        let gameTime = 15;
-        let roundActive = true;
-        let gameHistory = [];
-        let bankAccounts = [];
+            <div class="amount-grid">
+                <button class="amount-option" data-amount="100" onclick="selectAmount(this)">100</button>
+                <button class="amount-option" data-amount="500" onclick="selectAmount(this)">500</button>
+                <button class="amount-option" data-amount="1000" onclick="selectAmount(this)">1000</button>
+                <button class="amount-option" data-amount="2000" onclick="selectAmount(this)">2000</button>
+            </div>
 
-        // ========== INIT ==========
-        window.onload = function() {
-            console.log('App started');
-            if (!telegramUser) {
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('telegram-page').classList.remove('hidden');
+            <input type="number" id="add-amount" placeholder="CUSTOM AMOUNT" class="input-field">
+
+            <div class="info-panel">
+                <i class="fas fa-qrcode" style="color: var(--primary-gold); font-size: 2rem; margin-bottom: 10px;"></i>
+                <p style="color: var(--primary-gold);">GOLD VAULT UPI</p>
+                <div class="upi-code">gold@ybl</div>
+                <p style="color: var(--text-muted); font-size: 0.8rem;">enter UTR after payment</p>
+            </div>
+
+            <input type="text" id="utr-number" placeholder="UTR NUMBER" class="input-field">
+
+            <button class="submit-action" onclick="submitDeposit()">SUBMIT REQUEST</button>
+            <div id="deposit-message" class="hidden message"></div>
+        </div>
+    </div>
+
+    <div id="withdraw-page" class="hidden">
+        <div class="profile-container">
+            <div class="profile-header">
+                <button class="nav-btn" onclick="showPage('profile-page')">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 style="color: var(--primary-gold); flex: 1; text-align: center;">WITHDRAW</h2>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">AVAILABLE</div>
+                    <div class="stat-number" id="withdraw-balance">20</div>
+                </div>
+            </div>
+
+            <p class="fee-note">* 5% treasury fee applied</p>
+
+            <div class="amount-grid">
+                <button class="amount-option" data-amount="105" onclick="selectWithdrawAmount(this)">105</button>
+                <button class="amount-option" data-amount="210" onclick="selectWithdrawAmount(this)">210</button>
+                <button class="amount-option" data-amount="525" onclick="selectWithdrawAmount(this)">525</button>
+                <button class="amount-option" data-amount="1050" onclick="selectWithdrawAmount(this)">1050</button>
+            </div>
+
+            <input type="number" id="withdraw-amount" placeholder="AMOUNT" class="input-field">
+            <p id="withdraw-net" class="net-amount">YOU RECEIVE: ⏣ 0</p>
+
+            <button class="submit-action" onclick="submitWithdraw()">SUBMIT REQUEST</button>
+            <div id="withdraw-message" class="hidden message"></div>
+        </div>
+    </div>
+
+<!-- ========== SECTION 26: HTML - POPUPS & MENU ========== -->
+    <div id="bank-popup" class="popup hidden">
+        <h3>ADD GOLD VAULT</h3>
+        <input type="text" id="bank-name" placeholder="Bank Name" class="input-field">
+        <input type="text" id="account-holder" placeholder="Account Holder" class="input-field">
+        <input type="text" id="account-number" placeholder="Account Number" class="input-field">
+        <input type="text" id="ifsc-code" placeholder="IFSC Code" class="input-field">
+        <button class="submit-action" onclick="addBankAccount()">ADD VAULT</button>
+        <button class="submit-action" onclick="closeBankPopup()" style="background: var(--dark-surface); color: var(--text-muted); margin-top: 10px;">CLOSE</button>
+        <div id="bank-message" class="hidden message"></div>
+    </div>
+
+    <div id="side-menu" class="side-menu">
+        <div class="menu-header">
+            <h3>GOLD MENU</h3>
+            <button class="nav-btn" onclick="toggleMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="menu-item" onclick="showPage('profile-page'); closeMenu()">
+            <i class="fas fa-user"></i> GOLD PROFILE
+        </div>
+        <div class="menu-item" onclick="showPage('add-money-page'); closeMenu()">
+            <i class="fas fa-plus-circle"></i> DEPOSIT GOLD
+        </div>
+        <div class="menu-item" onclick="showPage('withdraw-page'); closeMenu()">
+            <i class="fas fa-minus-circle"></i> WITHDRAW GOLD
+        </div>
+        <div class="menu-item" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> EXIT
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeMenu()"></div>
+</div>
+
+<!-- ========== SECTION 27: JAVASCRIPT - FIREBASE CONFIG ========== -->
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyB2dTlbmwvlGu-DJXsd3sAIHJMQo8cEnXg",
+        authDomain: "apex-day-game.firebaseapp.com",
+        projectId: "apex-day-game",
+        storageBucket: "apex-day-game.firebasestorage.app",
+        messagingSenderId: "455504824293",
+        appId: "1:455504824293:web:d4fe81e8944f138592910c"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+</script>
+
+<!-- ========== SECTION 28: JAVASCRIPT - TELEGRAM & GLOBALS ========== -->
+<script>
+    const tg = window.Telegram?.WebApp;
+    const telegramUser = tg?.initDataUnsafe?.user;
+    const BOT_LINK = "https://t.me/APEX_DAY_bot";
+
+    let currentUser = null;
+    let userData = null;
+    let selectedBank = null;
+    let currentBet = { green: 0, blue: 0 };
+    let gameTimer = null;
+    let resultTimeout = null;
+    let allBets = { green: [], blue: [] };
+    let gameTime = 15;
+    let roundActive = true;
+    let gameHistory = [];
+    let bankAccounts = [];
+
+    // 24/7 Game Loop - localStorage में save
+    let persistentGame = JSON.parse(localStorage.getItem('apexPersistentGame')) || {
+        lastTimer: 15,
+        lastUpdate: Date.now(),
+        active: true
+    };
+</script>
+
+<!-- ========== SECTION 29: JAVASCRIPT - UTILITY FUNCTIONS ========== -->
+<script>
+    function getEl(id) { return document.getElementById(id); }
+    function setText(id, text) { const el = getEl(id); if (el) el.innerText = text; }
+    function hide(id) { const el = getEl(id); if (el) el.classList.add('hidden'); }
+    function show(id) { const el = getEl(id); if (el) el.classList.remove('hidden'); }
+    
+    function showMessage(elId, msg, isError) {
+        const el = document.getElementById(elId);
+        el.innerText = msg;
+        el.style.color = isError ? '#FF6B6B' : '#06d6a0';
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+</script>
+
+<!-- ========== SECTION 30: JAVASCRIPT - INIT & REDIRECT ========== -->
+<script>
+    window.onload = function() {
+        console.log('Golden Dusk Rising');
+        if (!telegramUser) {
+            hide('loading');
+            show('telegram-page');
+        } else {
+            tg.expand();
+            tg.ready();
+            autoLogin();
+        }
+    };
+
+    function redirectToTelegram() {
+        window.location.href = BOT_LINK;
+    }
+</script>
+
+<!-- ========== SECTION 31: JAVASCRIPT - AUTO LOGIN ========== -->
+<script>
+    async function autoLogin() {
+        try {
+            const cred = await auth.signInAnonymously();
+            currentUser = cred.user;
+            const doc = await db.collection('users').doc(currentUser.uid).get();
+            
+            if (!doc.exists) {
+                userData = {
+                    uid: currentUser.uid,
+                    telegramId: telegramUser.id.toString(),
+                    firstName: telegramUser.first_name || '',
+                    lastName: telegramUser.last_name || '',
+                    username: telegramUser.username || null,
+                    fullName: (telegramUser.first_name || '') + (telegramUser.last_name ? ' ' + telegramUser.last_name : ''),
+                    balance: 20,
+                    bankAccounts: [],
+                    games: [],
+                    transactions: [],
+                    createdAt: new Date()
+                };
+                await db.collection('users').doc(currentUser.uid).set(userData);
             } else {
-                tg.expand();
-                tg.ready();
-                autoLogin();
+                userData = doc.data();
             }
+            
+            updateUI();
+            hide('loading');
+            show('game-page');
+            
+            // 24/7 Game Loop Start
+            startPersistentGame();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            getEl('loading').innerHTML = '<p style="color: #FF6B6B;">Error: ' + error.message + '</p>';
+        }
+    }
+</script>
+
+<!-- ========== SECTION 32: JAVASCRIPT - 24/7 PERSISTENT GAME LOOP ========== -->
+<script>
+    function startPersistentGame() {
+        // LocalStorage से game state load करो
+        const saved = JSON.parse(localStorage.getItem('apexGameState')) || {
+            timer: 15,
+            lastTick: Date.now()
         };
-
-        // ========== REDIRECT ==========
-        function redirectToTelegram() {
-            window.location.href = BOT_LINK;
-        }
-
-        // ========== AUTO LOGIN ==========
-        async function autoLogin() {
-            try {
-                const cred = await auth.signInAnonymously();
-                currentUser = cred.user;
-                const doc = await db.collection('users').doc(currentUser.uid).get();
-                
-                if (!doc.exists) {
-                    userData = {
-                        uid: currentUser.uid,
-                        telegramId: telegramUser.id.toString(),
-                        firstName: telegramUser.first_name || '',
-                        lastName: telegramUser.last_name || '',
-                        username: telegramUser.username || null,
-                        fullName: (telegramUser.first_name || '') + (telegramUser.last_name ? ' ' + telegramUser.last_name : ''),
-                        balance: 20,
-                        bankAccounts: [],
-                        games: [],
-                        transactions: [],
-                        createdAt: new Date()
-                    };
-                    await db.collection('users').doc(currentUser.uid).set(userData);
-                } else {
-                    userData = doc.data();
-                }
-                
-                updateUI();
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('game-page').classList.remove('hidden');
-                startGameLoop();
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('loading').innerHTML = '<p style="color: var(--danger);">Error: ' + error.message + '</p>';
-            }
-        }
-
-        // ========== UPDATE UI ==========
-        function updateUI() {
-            if (!userData) return;
+        
+        // Calculate time passed while app was closed
+        const timePassed = Math.floor((Date.now() - saved.lastTick) / 1000);
+        saved.timer = Math.max(0, saved.timer - timePassed);
+        
+        // Timer ko 0-15 के बीच रखो (15 second cycle)
+        saved.timer = ((saved.timer % 15) + 15) % 15;
+        
+        gameTime = saved.timer;
+        setText('timer', Math.ceil(gameTime));
+        
+        // Real-time game loop
+        if (gameTimer) clearInterval(gameTimer);
+        gameTimer = setInterval(() => {
+            gameTime -= 0.1;
             
-            const name = userData.fullName || 'User';
-            const handle = userData.username ? '@' + userData.username : '';
-            const balance = Math.floor(userData.balance || 0);
-            
-            document.getElementById('user-name').innerText = name;
-            document.getElementById('user-handle').innerText = handle;
-            document.getElementById('balance-amount').innerText = balance;
-            document.getElementById('profile-name').innerText = name;
-            document.getElementById('profile-handle').innerText = handle;
-            document.getElementById('profile-balance').innerText = balance;
-            document.getElementById('deposit-balance').innerText = balance;
-            document.getElementById('withdraw-balance').innerText = balance;
-            document.getElementById('my-green-bet').innerText = currentBet.green;
-            document.getElementById('my-blue-bet').innerText = currentBet.blue;
-            document.getElementById('total-games').innerText = gameHistory.length;
-            
-            const firstLetter = name.charAt(0).toUpperCase();
-            document.getElementById('avatar').innerText = firstLetter;
-            document.getElementById('profile-avatar').innerText = firstLetter;
-            
-            updateWithdrawAlert();
-        }
-
-        function updateWithdrawAlert() {
-            const alert = document.getElementById('withdraw-alert');
-            if (userData && userData.balance >= 105) {
-                alert.classList.remove('hidden');
-            } else {
-                alert.classList.add('hidden');
-            }
-        }
-
-        // ========== NAVIGATION ==========
-        function showPage(pageId) {
-            document.querySelectorAll('#game-page, #profile-page, #add-money-page, #withdraw-page').forEach(p => {
-                p.classList.add('hidden');
-            });
-            document.getElementById(pageId).classList.remove('hidden');
-            closeMenu();
-        }
-
-        function toggleMenu() {
-            const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('overlay');
-            menu.classList.toggle('open');
-            overlay.classList.toggle('show');
-        }
-
-        function closeMenu() {
-            document.getElementById('side-menu').classList.remove('open');
-            document.getElementById('overlay').classList.remove('show');
-        }
-
-        // ========== GAME LOOP ==========
-        function startGameLoop() {
-            if (gameTimer) clearInterval(gameTimer);
-            gameTime = 15;
-            roundActive = true;
-            document.getElementById('timer').innerText = gameTime;
-            
-            gameTimer = setInterval(() => {
-                gameTime--;
-                document.getElementById('timer').innerText = gameTime;
-                if (gameTime <= 0) {
-                    clearInterval(gameTimer);
+            if (gameTime <= 0) {
+                gameTime = 15;
+                // Round end logic
+                if (roundActive) {
                     endRound();
                 }
-            }, 1000);
-        }
-
-        function endRound() {
-            roundActive = false;
-            const totalGreen = allBets.green.reduce((sum, bet) => sum + bet.amount, 0);
-            const totalBlue = allBets.blue.reduce((sum, bet) => sum + bet.amount, 0);
-            
-            let winner = 'gray';
-            if (totalGreen > 0 || totalBlue > 0) {
-                if (totalGreen < totalBlue) winner = 'green';
-                else if (totalBlue < totalGreen) winner = 'blue';
             }
             
-            processWin(winner);
-            updateHistory(winner);
+            setText('timer', Math.ceil(gameTime));
             
-            if (resultTimeout) clearTimeout(resultTimeout);
-            resultTimeout = setTimeout(() => {
-                allBets = { green: [], blue: [] };
-                currentBet = { green: 0, blue: 0 };
-                updateBetLists();
-                updateUI();
-                roundActive = true;
-                startGameLoop();
-            }, 3000);
-        }
+            // Save to localStorage every second
+            localStorage.setItem('apexGameState', JSON.stringify({
+                timer: gameTime,
+                lastTick: Date.now()
+            }));
+            
+        }, 100);
+    }
+</script>
 
-        function placeBet(color) {
-            if (!roundActive || !userData) return;
-            const amount = parseInt(document.getElementById('bet-amount').value);
-            
-            if (amount < 1 || amount > 10000) { alert('Invalid amount!'); return; }
-            if (amount > userData.balance) { alert('Insufficient balance!'); return; }
-            
-            userData.balance -= amount;
-            currentBet[color] += amount;
-            allBets[color].push({ user: userData.fullName || 'User', amount: amount });
-            
-            updateUI();
+<!-- ========== SECTION 33: JAVASCRIPT - UPDATE UI ========== -->
+<script>
+    function updateUI() {
+        if (!userData) return;
+        
+        const name = userData.fullName || 'User';
+        const handle = userData.username ? '@' + userData.username : '';
+        const balance = Math.floor(userData.balance || 0);
+        
+        setText('user-name', name);
+        setText('user-handle', handle);
+        setText('balance-amount', balance);
+        setText('profile-name', name);
+        setText('profile-handle', handle);
+        setText('profile-balance', balance);
+        setText('deposit-balance', balance);
+        setText('withdraw-balance', balance);
+        setText('my-green-bet', currentBet.green);
+        setText('my-blue-bet', currentBet.blue);
+        setText('total-games', gameHistory.length);
+        
+        const firstLetter = name.charAt(0).toUpperCase();
+        setText('avatar', firstLetter);
+        setText('profile-avatar', firstLetter);
+        
+        updateWithdrawAlert();
+    }
+
+    function updateWithdrawAlert() {
+        const alert = getEl('withdraw-alert');
+        if (userData && userData.balance >= 105) {
+            alert.classList.remove('hidden');
+        } else {
+            alert.classList.add('hidden');
+        }
+    }
+</script>
+
+<!-- ========== SECTION 34: JAVASCRIPT - NAVIGATION ========== -->
+<script>
+    function showPage(pageId) {
+        hide('game-page');
+        hide('profile-page');
+        hide('add-money-page');
+        hide('withdraw-page');
+        show(pageId);
+        closeMenu();
+    }
+
+    function toggleMenu() {
+        const menu = getEl('side-menu');
+        const overlay = getEl('overlay');
+        menu.classList.toggle('open');
+        overlay.classList.toggle('show');
+    }
+
+    function closeMenu() {
+        getEl('side-menu').classList.remove('open');
+        getEl('overlay').classList.remove('show');
+    }
+</script>
+
+<!-- ========== SECTION 35: JAVASCRIPT - GAME FUNCTIONS ========== -->
+<script>
+    function endRound() {
+        roundActive = false;
+        const totalGreen = allBets.green.reduce((sum, bet) => sum + bet.amount, 0);
+        const totalBlue = allBets.blue.reduce((sum, bet) => sum + bet.amount, 0);
+        
+        let winner = 'gray';
+        if (totalGreen > 0 || totalBlue > 0) {
+            if (totalGreen < totalBlue) winner = 'green';
+            else if (totalBlue < totalGreen) winner = 'blue';
+        }
+        
+        processWin(winner);
+        updateHistory(winner);
+        
+        resultTimeout = setTimeout(() => {
+            allBets = { green: [], blue: [] };
+            currentBet = { green: 0, blue: 0 };
             updateBetLists();
-        }
-
-        function updateBetLists() {
-            const greenList = document.getElementById('green-bets-list');
-            const blueList = document.getElementById('blue-bets-list');
-            
-            if (greenList) {
-                greenList.innerHTML = '';
-                allBets.green.slice(-10).forEach(bet => {
-                    greenList.innerHTML += `<div class="bet-item"><span>${bet.user}</span><span>₹${bet.amount}</span></div>`;
-                });
-                if (allBets.green.length === 0) greenList.innerHTML = '<div class="empty-state">No bets yet</div>';
-            }
-            
-            if (blueList) {
-                blueList.innerHTML = '';
-                allBets.blue.slice(-10).forEach(bet => {
-                    blueList.innerHTML += `<div class="bet-item"><span>${bet.user}</span><span>₹${bet.amount}</span></div>`;
-                });
-                if (allBets.blue.length === 0) blueList.innerHTML = '<div class="empty-state">No bets yet</div>';
-            }
-        }
-
-        function processWin(winner) {
-            if (!userData) return;
-            const userBet = winner === 'green' ? currentBet.green : currentBet.blue;
-            
-            if (winner !== 'gray' && userBet > 0) {
-                userData.balance += userBet * 2;
-                gameHistory.unshift({ time: new Date().toLocaleString(), result: 'win', bet: userBet });
-            } else if (winner === 'gray' && (currentBet.green > 0 || currentBet.blue > 0)) {
-                userData.balance += currentBet.green + currentBet.blue;
-                gameHistory.unshift({ time: new Date().toLocaleString(), result: 'draw', bet: currentBet.green + currentBet.blue });
-            }
             updateUI();
-            loadGameHistory();
-        }
+            roundActive = true;
+        }, 3000);
+    }
 
-        function updateHistory(color) {
-            const strip = document.getElementById('history-strip');
-            const item = document.createElement('div');
-            item.className = `history-item ${color}`;
-            strip.insertBefore(item, strip.firstChild);
-            if (strip.children.length > 20) strip.removeChild(strip.lastChild);
-        }
+    function placeBet(color) {
+        if (!roundActive || !userData) return;
+        const amount = parseInt(getEl('bet-amount').value);
+        
+        if (amount < 1 || amount > 10000) { alert('Invalid amount!'); return; }
+        if (amount > userData.balance) { alert('Insufficient balance!'); return; }
+        
+        userData.balance -= amount;
+        currentBet[color] += amount;
+        allBets[color].push({ user: userData.fullName || 'User', amount: amount });
+        
+        updateUI();
+        updateBetLists();
+    }
 
-        function loadGameHistory() {
-            const historyEl = document.getElementById('game-history');
-            if (!gameHistory.length) {
-                historyEl.innerHTML = '<div class="empty-state">No game history</div>';
-                return;
-            }
-            historyEl.innerHTML = gameHistory.slice(0, 10).map(g => 
-                `<div class="bet-item">${g.time} - ₹${g.bet} - ${g.result}</div>`
-            ).join('');
-        }
-
-        // ========== BET CONTROLS ==========
-        function setBetAmount(amount) { document.getElementById('bet-amount').value = amount; }
-        function adjustBetAmount(delta) {
-            let val = parseInt(document.getElementById('bet-amount').value) || 1;
-            document.getElementById('bet-amount').value = Math.max(1, val + delta);
-        }
-
-        // ========== DEPOSIT ==========
-        function selectAmount(btn) {
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            document.getElementById('add-amount').value = btn.dataset.amount;
-        }
-
-        function submitDeposit() {
-            const amount = parseFloat(document.getElementById('add-amount').value);
-            const utr = document.getElementById('utr-number').value.trim();
-            
-            if (!amount || amount < 10) { showMessage('deposit-message', 'Minimum deposit ₹10', true); return; }
-            if (!utr) { showMessage('deposit-message', 'Please enter UTR number', true); return; }
-            
-            alert('✅ Deposit request submitted for ₹' + amount);
-            document.getElementById('add-amount').value = '';
-            document.getElementById('utr-number').value = '';
-        }
-
-        // ========== WITHDRAW ==========
-        function selectWithdrawAmount(btn) {
-            document.querySelectorAll('#withdraw-page .amount-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            const amt = parseInt(btn.dataset.amount);
-            document.getElementById('withdraw-amount').value = amt;
-            document.getElementById('withdraw-net').innerText = 'You receive: ₹' + (Math.floor(amt / 105) * 100);
-        }
-
-        function submitWithdraw() {
-            const amount = parseFloat(document.getElementById('withdraw-amount').value);
-            if (!amount || amount < 105) { showMessage('withdraw-message', 'Minimum withdrawal ₹105', true); return; }
-            if (amount > userData.balance) { showMessage('withdraw-message', 'Insufficient balance', true); return; }
-            
-            alert('✅ Withdrawal request submitted for ₹' + amount);
-            document.getElementById('withdraw-amount').value = '';
-            document.getElementById('withdraw-net').innerText = 'You receive: ₹0';
-        }
-
-        // ========== BANK FUNCTIONS ==========
-        function showAddBankPopup() {
-            document.getElementById('bank-popup').classList.remove('hidden');
-            document.getElementById('overlay').classList.add('show');
-        }
-
-        function closeBankPopup() {
-            document.getElementById('bank-popup').classList.add('hidden');
-            document.getElementById('overlay').classList.remove('show');
-            ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => {
-                document.getElementById(id).value = '';
+    function updateBetLists() {
+        const greenList = getEl('green-bets-list');
+        const blueList = getEl('blue-bets-list');
+        
+        if (greenList) {
+            greenList.innerHTML = '';
+            allBets.green.slice(-10).forEach(bet => {
+                greenList.innerHTML += `<div class="bet-entry"><span>${bet.user}</span><span>⏣${bet.amount}</span></div>`;
             });
+            if (allBets.green.length === 0) greenList.innerHTML = '<div class="empty-msg">No bets yet</div>';
         }
-
-        function addBankAccount() {
-            const bank = document.getElementById('bank-name').value.trim();
-            const holder = document.getElementById('account-holder').value.trim();
-            const number = document.getElementById('account-number').value.trim();
-            const ifsc = document.getElementById('ifsc-code').value.trim().toUpperCase();
-            
-            if (!bank || !holder || !number || !ifsc) {
-                showMessage('bank-message', 'Please fill all fields', true);
-                return;
-            }
-            
-            bankAccounts.push({ bank, holder, number, ifsc });
-            document.getElementById('bank-list').innerHTML = bankAccounts.map(b => 
-                `<div class="bank-item">${b.bank}<br><small>${b.holder} | ****${b.number.slice(-4)}</small></div>`
-            ).join('');
-            
-            closeBankPopup();
+        
+        if (blueList) {
+            blueList.innerHTML = '';
+            allBets.blue.slice(-10).forEach(bet => {
+                blueList.innerHTML += `<div class="bet-entry"><span>${bet.user}</span><span>⏣${bet.amount}</span></div>`;
+            });
+            if (allBets.blue.length === 0) blueList.innerHTML = '<div class="empty-msg">No bets yet</div>';
         }
+    }
 
-        // ========== UTILITY ==========
-        function showMessage(elId, msg, isError) {
-            const el = document.getElementById(elId);
-            el.innerText = msg;
-            el.style.color = isError ? '#ff6b6b' : '#06d6a0';
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 3000);
+    function processWin(winner) {
+        if (!userData) return;
+        const userBet = winner === 'green' ? currentBet.green : currentBet.blue;
+        
+        if (winner !== 'gray' && userBet > 0) {
+            userData.balance += userBet * 2;
+            gameHistory.unshift({ time: new Date().toLocaleString(), result: 'win', bet: userBet });
+        } else if (winner === 'gray' && (currentBet.green > 0 || currentBet.blue > 0)) {
+            userData.balance += currentBet.green + currentBet.blue;
+            gameHistory.unshift({ time: new Date().toLocaleString(), result: 'draw', bet: currentBet.green + currentBet.blue });
         }
+        updateUI();
+        loadGameHistory();
+    }
 
-        function logout() {
-            if (confirm('Logout?')) {
-                auth.signOut().then(() => window.location.reload());
-            }
+    function updateHistory(color) {
+        const strip = getEl('history-track');
+        const item = document.createElement('div');
+        item.className = `history-marker ${color}`;
+        strip.insertBefore(item, strip.firstChild);
+        if (strip.children.length > 20) strip.removeChild(strip.lastChild);
+    }
+
+    function loadGameHistory() {
+        const historyEl = getEl('game-history');
+        if (!gameHistory.length) {
+            historyEl.innerHTML = '<div class="empty-msg">No game history</div>';
+            return;
         }
+        historyEl.innerHTML = gameHistory.slice(0, 10).map(g => 
+            `<div class="bank-item">${g.time} - ⏣${g.bet} - ${g.result}</div>`
+        ).join('');
+    }
+</script>
 
-        // ========== INPUT LISTENER ==========
-        document.getElementById('withdraw-amount').addEventListener('input', function(e) {
-            const amt = parseFloat(e.target.value) || 0;
-            document.getElementById('withdraw-net').innerText = 'You receive: ₹' + (Math.floor(amt / 105) * 100);
+<!-- ========== SECTION 36: JAVASCRIPT - BET CONTROLS ========== -->
+<script>
+    function setBetAmount(amount) { getEl('bet-amount').value = amount; }
+    function adjustBetAmount(delta) {
+        let val = parseInt(getEl('bet-amount').value) || 1;
+        getEl('bet-amount').value = Math.max(1, val + delta);
+    }
+</script>
+
+<!-- ========== SECTION 37: JAVASCRIPT - DEPOSIT ========== -->
+<script>
+    function selectAmount(btn) {
+        document.querySelectorAll('.amount-option').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        getEl('add-amount').value = btn.dataset.amount;
+    }
+
+    function submitDeposit() {
+        const amount = parseFloat(getEl('add-amount').value);
+        const utr = getEl('utr-number').value.trim();
+        
+        if (!amount || amount < 10) { showMessage('deposit-message', 'Minimum deposit ⏣10', true); return; }
+        if (!utr) { showMessage('deposit-message', 'Please enter UTR number', true); return; }
+        
+        alert('✅ Deposit request submitted for ⏣' + amount);
+        getEl('add-amount').value = '';
+        getEl('utr-number').value = '';
+    }
+</script>
+
+<!-- ========== SECTION 38: JAVASCRIPT - WITHDRAW ========== -->
+<script>
+    function selectWithdrawAmount(btn) {
+        document.querySelectorAll('#withdraw-page .amount-option').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        const amt = parseInt(btn.dataset.amount);
+        getEl('withdraw-amount').value = amt;
+        getEl('withdraw-net').innerText = 'YOU RECEIVE: ⏣ ' + (Math.floor(amt / 105) * 100);
+    }
+
+    function submitWithdraw() {
+        const amount = parseFloat(getEl('withdraw-amount').value);
+        if (!amount || amount < 105) { showMessage('withdraw-message', 'Minimum withdrawal ⏣105', true); return; }
+        if (amount > userData.balance) { showMessage('withdraw-message', 'Insufficient balance', true); return; }
+        
+        alert('✅ Withdrawal request submitted for ⏣' + amount);
+        getEl('withdraw-amount').value = '';
+        getEl('withdraw-net').innerText = 'YOU RECEIVE: ⏣ 0';
+    }
+
+    getEl('withdraw-amount').addEventListener('input', function(e) {
+        const amt = parseFloat(e.target.value) || 0;
+        getEl('withdraw-net').innerText = 'YOU RECEIVE: ⏣ ' + (Math.floor(amt / 105) * 100);
+    });
+</script>
+
+<!-- ========== SECTION 39: JAVASCRIPT - BANK FUNCTIONS ========== -->
+<script>
+    function showAddBankPopup() {
+        getEl('bank-popup').classList.remove('hidden');
+        getEl('overlay').classList.add('show');
+    }
+
+    function closeBankPopup() {
+        getEl('bank-popup').classList.add('hidden');
+        getEl('overlay').classList.remove('show');
+        ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => {
+            getEl(id).value = '';
         });
+    }
 
-        // ========== GLOBAL ==========
-        window.redirectToTelegram = redirectToTelegram;
-        window.showPage = showPage;
-        window.toggleMenu = toggleMenu;
-        window.closeMenu = closeMenu;
-        window.placeBet = placeBet;
-        window.setBetAmount = setBetAmount;
-        window.adjustBetAmount = adjustBetAmount;
-        window.selectAmount = selectAmount;
-        window.selectWithdrawAmount = selectWithdrawAmount;
-        window.submitDeposit = submitDeposit;
-        window.submitWithdraw = submitWithdraw;
-        window.showAddBankPopup = showAddBankPopup;
-        window.closeBankPopup = closeBankPopup;
-        window.addBankAccount = addBankAccount;
-        window.logout = logout;
-    </script>
+    function addBankAccount() {
+        const bank = getEl('bank-name').value.trim();
+        const holder = getEl('account-holder').value.trim();
+        const number = getEl('account-number').value.trim();
+        const ifsc = getEl('ifsc-code').value.trim().toUpperCase();
+        
+        if (!bank || !holder || !number || !ifsc) {
+            showMessage('bank-message', 'Please fill all fields', true);
+            return;
+        }
+        
+        bankAccounts.push({ bank, holder, number, ifsc });
+        getEl('bank-list').innerHTML = bankAccounts.map(b => 
+            `<div class="bank-item">${b.bank}<br><small>${b.holder} | ****${b.number.slice(-4)}</small></div>`
+        ).join('');
+        
+        closeBankPopup();
+    }
+</script>
+
+<!-- ========== SECTION 40: JAVASCRIPT - LOGOUT & GLOBALS ========== -->
+<script>
+    function logout() {
+        if (confirm('Exit the golden realm?')) {
+            auth.signOut().then(() => window.location.reload());
+        }
+    }
+
+    window.redirectToTelegram = redirectToTelegram;
+    window.showPage = showPage;
+    window.toggleMenu = toggleMenu;
+    window.closeMenu = closeMenu;
+    window.placeBet = placeBet;
+    window.setBetAmount = setBetAmount;
+    window.adjustBetAmount = adjustBetAmount;
+    window.selectAmount = selectAmount;
+    window.selectWithdrawAmount = selectWithdrawAmount;
+    window.submitDeposit = submitDeposit;
+    window.submitWithdraw = submitWithdraw;
+    window.showAddBankPopup = showAddBankPopup;
+    window.closeBankPopup = closeBankPopup;
+    window.addBankAccount = addBankAccount;
+    window.logout = logout;
+</script>
+
+<!-- ========== SECTION 41: HTML CLOSE ========== -->
 </body>
 </html>

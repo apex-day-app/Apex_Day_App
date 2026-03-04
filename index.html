@@ -1,912 +1,354 @@
-<!-- ========== SECTION 1: DOCUMENT SETUP ========== -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APEX · FUND MONEY</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fund Money</title>
 
-<!-- ========== SECTION 2: FIREBASE & TELEGRAM SCRIPTS ========== -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<!-- ========== SECTION 3: FONT AWESOME & GOOGLE FONTS ========== -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================
+   GLOBAL STYLE
+========================= */
+
+body{
+font-family:Poppins;
+margin:0;
+background:#f5f5f5;
+display:flex;
+justify-content:center;
+}
+
+.page{
+max-width:420px;
+width:100%;
+background:white;
+min-height:100vh;
+}
+
+.hidden{
+display:none;
+}
+
+/* =========================
+LOGIN PAGE
+========================= */
+
+.auth-container{
+padding:25px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.auth-input{
+padding:12px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.auth-btn{
+padding:12px;
+background:#D4AF37;
+border:none;
+font-weight:600;
+cursor:pointer;
+border-radius:6px;
+}
+
+.auth-header{
+text-align:center;
+color:#D4AF37;
+}
+
+/* =========================
+TOP BAR
+========================= */
+
+.top-bar{
+display:flex;
+justify-content:space-between;
+padding:10px;
+background:white;
+border-bottom:2px solid #D4AF37;
+}
+
+.balance{
+font-size:20px;
+font-weight:700;
+color:#D4AF37;
+}
+
+/* =========================
+GAME AREA
+========================= */
+
+.game-area{
+padding:15px;
+background:#1a1a1a;
+color:white;
+}
+
+.timer{
+font-size:40px;
+text-align:center;
+color:#FFD700;
+}
+
+.result{
+height:50px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#333;
+border-radius:8px;
+margin-top:10px;
+}
+
+/* =========================
+BET BUTTON
+========================= */
+
+.bet-buttons{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+.green{
+flex:1;
+background:#00C853;
+padding:15px;
+color:white;
+font-weight:700;
+border:none;
+border-radius:8px;
+}
+
+.blue{
+flex:1;
+background:#2962FF;
+padding:15px;
+color:white;
+font-weight:700;
+border:none;
+border-radius:8px;
+}
+
+</style>
 </head>
+
 <body>
 
-<!-- ========== SECTION 4: CSS - ROOT VARIABLES (GOLD THEME) ========== -->
-<style>
-    :root {
-        --primary: #D4AF37;
-        --primary-dark: #B8860B;
-        --secondary: #C41E3A;
-        --secondary-dark: #A00;
-        --bg: #FFFFFF;
-        --card-bg: #F8F9FA;
-        --text: #000000;
-        --text-light: #333333;
-        --gray: #E0E0E0;
-        --gray-dark: #CCCCCC;
-        --green: #00C853;
-        --blue: #2962FF;
-        --gold: #FFD700;
-        --danger: #FF4444;
-        --success: #00C853;
-        --shadow: 0 4px 12px rgba(0,0,0,0.1);
-        --shadow-lg: 0 8px 20px rgba(0,0,0,0.15);
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 20px;
-    }
-</style>
+<!-- LOGIN PAGE -->
 
-<!-- ========== SECTION 5: CSS - GLOBAL STYLES ========== -->
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-    body { background: var(--bg); color: var(--text); display: flex; justify-content: center; min-height: 100vh; }
-    .page { width: 100%; max-width: 450px; min-height: 100vh; background: var(--card-bg); display: none; }
-    .page.active { display: block !important; }
-    .hidden { display: none !important; }
-</style>
+<div id="login-page" class="page">
 
-<!-- ========== SECTION 6: CSS - HEADER & TOP BAR ========== -->
-<style>
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 20px;
-        background: white;
-        box-shadow: var(--shadow);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        cursor: pointer;
-    }
-    .avatar {
-        width: 45px;
-        height: 45px;
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-    .user-details {
-        display: flex;
-        flex-direction: column;
-    }
-    .user-name {
-        font-weight: 600;
-        font-size: 1rem;
-        color: var(--text);
-    }
-    .user-handle {
-        font-size: 0.7rem;
-        color: var(--text-light);
-    }
-    .header-actions {
-        display: flex;
-        gap: 8px;
-    }
-    .icon-btn {
-        width: 38px;
-        height: 38px;
-        background: rgba(212, 175, 55, 0.1);
-        border: 1px solid var(--primary);
-        border-radius: 50%;
-        color: var(--primary);
-        font-size: 1.1rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-    }
-    .icon-btn:hover {
-        background: var(--primary);
-        color: white;
-    }
-</style>
+<div class="auth-container">
 
-<!-- ========== SECTION 7: CSS - BALANCE CARD ========== -->
-<style>
-    .balance-card {
-        background: linear-gradient(135deg, #F0F0F0, #FFFFFF);
-        margin: 15px 20px;
-        padding: 20px;
-        border-radius: var(--radius-lg);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        border: 2px solid var(--primary);
-        box-shadow: var(--shadow);
-    }
-    .balance-icon i {
-        font-size: 2.5rem;
-        color: var(--primary);
-    }
-    .balance-info {
-        flex: 1;
-    }
-    .balance-label {
-        font-size: 0.85rem;
-        color: var(--text-light);
-    }
-    .balance-amount {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--primary);
-    }
-    .add-money-btn {
-        width: 40px;
-        height: 40px;
-        background: var(--primary);
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s;
-    }
-    .add-money-btn:hover {
-        transform: scale(1.1);
-    }
-</style>
+<h2 class="auth-header">Fund Money</h2>
 
-<!-- ========== SECTION 8: CSS - HISTORY STRIP ========== -->
-<style>
-    .history-strip {
-        display: flex;
-        gap: 5px;
-        overflow-x: auto;
-        padding: 10px 20px;
-        min-height: 45px;
-        scrollbar-width: none;
-    }
-    .history-strip::-webkit-scrollbar { display: none; }
-    .history-item {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .history-item.green { background: var(--green); }
-    .history-item.blue { background: var(--blue); }
-    .history-item.gray { background: #666; }
-</style>
+<input id="login-email" class="auth-input" placeholder="Email">
 
-<!-- ========== SECTION 9: CSS - GAME CONTAINER ========== -->
-<style>
-    .game-container {
-        padding: 15px 20px;
-        background: #1A1A1A;
-        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-        margin-top: 15px;
-    }
-    .timer-box {
-        background: #1A1A1A;
-        border: 2px solid var(--primary);
-        border-radius: var(--radius-md);
-        padding: 15px;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .timer-display {
-        font-size: 3rem;
-        font-weight: 700;
-        color: var(--primary);
-        font-family: monospace;
-    }
-    .result-box {
-        background: #2A2A2A;
-        border-radius: var(--radius-md);
-        min-height: 50px;
-        margin-bottom: 20px;
-        transition: background 0.3s;
-    }
-</style>
+<input id="login-password" class="auth-input" type="password" placeholder="Password">
 
-<!-- ========== SECTION 10: CSS - BETTING LISTS ========== -->
-<style>
-    .bets-header {
-        display: flex;
-        background: #F0F0F0;
-        border-radius: var(--radius-md) var(--radius-md) 0 0;
-        overflow: hidden;
-        margin-bottom: 2px;
-    }
-    .header-item {
-        flex: 1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 15px;
-        border-right: 1px solid var(--gray);
-    }
-    .header-item:last-child { border-right: none; }
-    .header-item h3 { font-size: 1rem; color: var(--text); }
-    .total-badge {
-        background: var(--primary);
-        color: black;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-weight: 600;
-    }
-    .bets-content {
-        display: flex;
-        height: 200px;
-        overflow: hidden;
-        background: white;
-        border-radius: 0 0 var(--radius-md) var(--radius-md);
-    }
-    .bets-column {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        border-right: 1px solid var(--gray);
-    }
-    .bets-column:last-child { border-right: none; }
-    .bets-list { font-size: 0.85rem; }
-    .bet-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 6px 0;
-        border-bottom: 1px dashed var(--gray);
-    }
-    .empty-bets {
-        text-align: center;
-        color: var(--text-light);
-        padding: 20px 0;
-    }
-</style>
+<button class="auth-btn" onclick="login()">Login</button>
 
-<!-- ========== SECTION 11: CSS - BETTING CONTROLS ========== -->
-<style>
-    .betting-panel {
-        background: #1A1A1A;
-        border-radius: var(--radius-md);
-        padding: 15px;
-        margin-top: 20px;
-    }
-    .amount-controls {
-        display: flex;
-        gap: 5px;
-        margin-bottom: 15px;
-    }
-    .amount-btn {
-        flex: 1;
-        padding: 8px 5px;
-        background: #F0F0F0;
-        border: 1px solid var(--gray);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        font-weight: 600;
-    }
-    .bet-input {
-        flex: 2;
-        padding: 8px 5px;
-        border: 1px solid var(--gray);
-        border-radius: var(--radius-sm);
-        text-align: center;
-        font-weight: 600;
-    }
-    .color-buttons {
-        display: flex;
-        gap: 10px;
-    }
-    .color-btn {
-        flex: 1;
-        height: 60px;
-        border: none;
-        border-radius: var(--radius-md);
-        cursor: pointer;
-        position: relative;
-        transition: transform 0.2s;
-    }
-    .color-btn:hover { transform: translateY(-2px); }
-    .green-btn { background: linear-gradient(135deg, var(--green), #009624); }
-    .blue-btn { background: linear-gradient(135deg, var(--blue), #0039CB); }
-    .bet-badge {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: var(--gold);
-        color: black;
-        padding: 2px 8px;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        font-weight: 700;
-    }
-</style>
+<button class="auth-btn" onclick="signup()">Sign Up</button>
 
-<!-- ========== SECTION 12: CSS - PROFILE PAGE ========== -->
-<style>
-    .profile-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 20px;
-        background: white;
-        border-bottom: 2px solid var(--primary);
-    }
-    .back-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        color: var(--primary);
-        cursor: pointer;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .logout-btn {
-        background: var(--danger);
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-    .profile-content { padding: 20px; }
-    .profile-avatar-large {
-        width: 100px;
-        height: 100px;
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 15px;
-        color: white;
-        font-size: 3rem;
-        font-weight: bold;
-    }
-    .profile-name { text-align: center; font-size: 1.3rem; font-weight: 600; }
-    .profile-id { text-align: center; color: var(--text-light); font-size: 0.9rem; margin-bottom: 20px; }
-    .stats-card {
-        background: #F0F0F0;
-        border-radius: var(--radius-md);
-        padding: 15px;
-        margin: 20px 0;
-    }
-    .stat-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--gray);
-    }
-    .stat-row:last-child { border-bottom: none; }
-</style>
+</div>
 
-<!-- ========== SECTION 13: CSS - BANK SECTION ========== -->
-<style>
-    .bank-section {
-        background: #E6F3E6;
-        border-radius: var(--radius-md);
-        padding: 15px;
-        margin: 20px 0;
-        border: 1px solid var(--green);
-    }
-    .bank-section h3 { color: var(--green); margin-bottom: 15px; }
-    .bank-list {
-        max-height: 150px;
-        overflow-y: auto;
-        margin-bottom: 15px;
-    }
-    .bank-item {
-        background: white;
-        padding: 12px;
-        border-radius: var(--radius-sm);
-        margin-bottom: 8px;
-        border-left: 4px solid var(--secondary);
-        font-size: 0.9rem;
-    }
-    .add-bank-btn {
-        width: 100%;
-        padding: 12px;
-        background: var(--secondary);
-        color: white;
-        border: none;
-        border-radius: var(--radius-sm);
-        font-weight: 600;
-        cursor: pointer;
-    }
-</style>
+</div>
 
-<!-- ========== SECTION 14: CSS - GAME HISTORY ========== -->
-<style>
-    .history-section {
-        background: #F0E6E6;
-        border-radius: var(--radius-md);
-        padding: 15px;
-        margin: 20px 0;
-        border: 1px solid var(--primary);
-    }
-    .history-section h3 { color: var(--primary); margin-bottom: 15px; }
-    .history-list {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    .history-item-detailed {
-        background: white;
-        padding: 10px;
-        border-radius: var(--radius-sm);
-        margin-bottom: 8px;
-        border-left: 4px solid var(--primary);
-        font-size: 0.85rem;
-    }
-</style>
 
-<!-- ========== SECTION 15: CSS - ADD/WITHDRAW PAGES ========== -->
-<style>
-    .page-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 15px 20px;
-        background: white;
-        border-bottom: 2px solid var(--primary);
-    }
-    .amount-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin: 20px 0;
-    }
-    .amount-option {
-        padding: 12px;
-        border: 1px solid var(--primary);
-        background: white;
-        color: var(--primary);
-        border-radius: var(--radius-sm);
-        font-weight: 600;
-        cursor: pointer;
-        text-align: center;
-    }
-    .amount-option.selected {
-        background: var(--primary);
-        color: white;
-    }
-    .input-field {
-        width: 100%;
-        padding: 14px;
-        border: 1px solid var(--gray);
-        border-radius: var(--radius-sm);
-        margin: 10px 0;
-    }
-    .payment-info {
-        background: #F8F9FA;
-        padding: 20px;
-        border-radius: var(--radius-md);
-        margin: 20px 0;
-        text-align: center;
-        border: 1px dashed var(--gray);
-    }
-    .submit-btn {
-        width: 100%;
-        padding: 16px;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: var(--radius-sm);
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 20px;
-    }
-    .back-btn {
-        background: #666;
-        color: white;
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: var(--radius-sm);
-        margin-top: 10px;
-        cursor: pointer;
-    }
-</style>
+<!-- DASHBOARD -->
 
-<!-- ========== SECTION 16: CSS - POPUPS ========== -->
-<style>
-    .popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255,255,255,0.9);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 100;
-    }
-    .popup-content {
-        background: white;
-        padding: 25px;
-        border-radius: var(--radius-lg);
-        width: 90%;
-        max-width: 350px;
-        border: 2px solid var(--primary);
-    }
-    .popup-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-    .close-btn {
-        background: none;
-        border: none;
-        font-size: 1.2rem;
-        cursor: pointer;
-        color: var(--text-light);
-    }
-    .promo-input-group {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-    .claim-btn {
-        background: var(--secondary);
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: var(--radius-sm);
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-    }
-</style>
+<div id="dashboard" class="page hidden">
 
-<!-- ========== SECTION 17: CSS - NOTIFICATION PANEL ========== -->
-<style>
-    .notification-panel {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 100%;
-        max-width: 450px;
-        height: 100%;
-        background: rgba(255,255,255,0.9);
-        z-index: 20;
-        display: flex;
-        justify-content: flex-end;
-    }
-    .notification-content {
-        background: white;
-        width: 80%;
-        max-width: 300px;
-        height: 100%;
-        padding: 20px;
-        border-left: 2px solid var(--primary);
-    }
-    .notification-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    .notification-item {
-        padding: 10px 0;
-        border-bottom: 1px solid var(--gray);
-        font-size: 0.9rem;
-    }
-</style>
+<div class="top-bar">
 
-<!-- ========== SECTION 18: CSS - MESSAGES & ANIMATIONS ========== -->
-<style>
-    .error-message {
-        background: #FFE6E6;
-        color: var(--danger);
-        padding: 12px;
-        border-radius: var(--radius-sm);
-        text-align: center;
-        margin-top: 10px;
-    }
-    .success-message {
-        background: #E6FFE6;
-        color: var(--success);
-        padding: 12px;
-        border-radius: var(--radius-sm);
-        text-align: center;
-        margin-top: 10px;
-    }
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-</style>
+<div class="balance">
+₹ <span id="balance">0</span>
+</div>
 
-<!-- ========== SECTION 19: HTML - TELEGRAM REDIRECT CHECK ========== -->
+<button onclick="logout()">Logout</button>
+
+</div>
+
+
+<div class="game-area">
+
+<div class="timer" id="timer">
+15
+</div>
+
+<div class="result" id="result"></div>
+
+<div class="bet-buttons">
+
+<button class="green" onclick="bet('green')">
+Green 2x
+</button>
+
+<button class="blue" onclick="bet('blue')">
+Blue 2x
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
 <script>
-    (function() {
-        const tg = window.Telegram?.WebApp;
-        const telegramUser = tg?.initDataUnsafe?.user;
-        if (!telegramUser) {
-            window.location.href = "https://t.me/APEX_DAY_bot";
-        } else {
-            tg.expand();
-            tg.ready();
-        }
-    })();
+
+/* =========================
+FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyB2dTlbmwvlGu-DJXsd3sAIHJMQo8cEnXg",
+authDomain: "apex-day-game.firebaseapp.com",
+projectId: "apex-day-game"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+
+let balance = 0;
+
+
+/* =========================
+AUTH
+========================= */
+
+function signup(){
+
+let email=document.getElementById("login-email").value
+let pass=document.getElementById("login-password").value
+
+auth.createUserWithEmailAndPassword(email,pass)
+
+.then(()=>{
+
+db.collection("users").doc(auth.currentUser.uid).set({
+
+balance:20
+
+})
+
+})
+
+}
+
+
+function login(){
+
+let email=document.getElementById("login-email").value
+let pass=document.getElementById("login-password").value
+
+auth.signInWithEmailAndPassword(email,pass)
+
+}
+
+
+function logout(){
+
+auth.signOut()
+
+}
+
+
+/* =========================
+USER LOAD
+========================= */
+
+auth.onAuthStateChanged(user=>{
+
+if(user){
+
+document.getElementById("login-page").classList.add("hidden")
+document.getElementById("dashboard").classList.remove("hidden")
+
+db.collection("users").doc(user.uid).onSnapshot(doc=>{
+
+balance=doc.data().balance
+document.getElementById("balance").innerText=balance
+
+})
+
+startGame()
+
+}
+
+})
+
+
+/* =========================
+GAME
+========================= */
+
+let time=15
+let timerInterval
+
+function startGame(){
+
+time=15
+
+timerInterval=setInterval(()=>{
+
+time--
+
+document.getElementById("timer").innerText=time
+
+if(time==0){
+
+clearInterval(timerInterval)
+
+let result=Math.random()>0.5?"green":"blue"
+
+document.getElementById("result").innerText=result
+
+setTimeout(startGame,3000)
+
+}
+
+},1000)
+
+}
+
+
+function bet(color){
+
+if(balance<10) return
+
+balance-=10
+
+document.getElementById("balance").innerText=balance
+
+db.collection("users").doc(auth.currentUser.uid).update({
+
+balance:balance
+
+})
+
+}
+
 </script>
 
-<!-- ========== SECTION 20: HTML - DASHBOARD PAGE START ========== -->
-<div id="dashboard-page" class="page active">
-    <!-- HEADER -->
-    <div class="header">
-        <div class="user-info" onclick="showPage('profile-page')">
-            <div class="avatar" id="header-avatar">👤</div>
-            <div class="user-details">
-                <span class="user-name" id="header-name">Loading...</span>
-                <span class="user-handle" id="header-handle"></span>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button class="icon-btn" onclick="showPromoPopup()">
-                <i class="fas fa-gift"></i>
-            </button>
-            <button class="icon-btn" onclick="toggleNotificationPanel()">
-                <i class="fas fa-bell"></i>
-                <span id="notification-dot" class="notification-dot" style="display: none;"></span>
-            </button>
-        </div>
-    </div>
-
-<!-- ========== SECTION 21: HTML - BALANCE CARD ========== -->
-    <div class="balance-card">
-        <div class="balance-icon">
-            <i class="fas fa-wallet"></i>
-        </div>
-        <div class="balance-info">
-            <div class="balance-label">Your Balance</div>
-            <div class="balance-amount">₹<span id="balance-amount">0</span></div>
-        </div>
-        <button class="add-money-btn" onclick="showPage('add-money-page')">
-            <i class="fas fa-plus"></i>
-        </button>
-    </div>
-
-<!-- ========== SECTION 22: HTML - HISTORY STRIP ========== -->
-    <div class="history-strip" id="history-strip"></div>
-
-<!-- ========== SECTION 23: HTML - GAME AREA START ========== -->
-    <div class="game-container">
-        <div class="timer-box">
-            <div class="timer-display" id="timer">15</div>
-        </div>
-        <div class="result-box" id="result-box"></div>
-
-<!-- ========== SECTION 24: HTML - BETTING LISTS ========== -->
-        <div class="bets-header">
-            <div class="header-item">
-                <h3><i class="fas fa-circle" style="color: var(--green);"></i> GREEN</h3>
-                <div class="total-badge">₹<span id="green-total">0</span></div>
-            </div>
-            <div class="header-item">
-                <h3><i class="fas fa-circle" style="color: var(--blue);"></i> BLUE</h3>
-                <div class="total-badge">₹<span id="blue-total">0</span></div>
-            </div>
-        </div>
-        <div class="bets-content">
-            <div class="bets-column">
-                <div class="bets-list" id="green-bets-list">
-                    <div class="empty-bets">No bets yet</div>
-                </div>
-            </div>
-            <div class="bets-column">
-                <div class="bets-list" id="blue-bets-list">
-                    <div class="empty-bets">No bets yet</div>
-                </div>
-            </div>
-        </div>
-
-<!-- ========== SECTION 25: HTML - BETTING CONTROLS ========== -->
-        <div class="betting-panel">
-            <div class="amount-controls">
-                <button class="amount-btn" onclick="setBetAmount(1)">Min</button>
-                <button class="amount-btn" onclick="adjustBetAmount(-1)">-1</button>
-                <input type="number" id="bet-amount" value="50" min="1" max="10000" class="bet-input">
-                <button class="amount-btn" onclick="adjustBetAmount(1)">+1</button>
-                <button class="amount-btn" onclick="setBetAmount(10000)">Max</button>
-            </div>
-            <div class="color-buttons">
-                <button class="color-btn green-btn" onclick="placeBet('green')" id="bet-green">
-                    <span class="bet-badge" id="green-badge">0</span>
-                </button>
-                <button class="color-btn blue-btn" onclick="placeBet('blue')" id="bet-blue">
-                    <span class="bet-badge" id="blue-badge">0</span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ========== SECTION 26: HTML - PROFILE PAGE START ========== -->
-<div id="profile-page" class="page hidden">
-    <div class="profile-header">
-        <button class="back-btn" onclick="showPage('dashboard-page')">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 style="color: var(--primary);">PROFILE</h2>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
-    <div class="profile-content">
-        <div class="profile-avatar-large" id="profile-avatar">👤</div>
-        <div class="profile-name" id="profile-name">-</div>
-        <div class="profile-id" id="profile-id">ID: -</div>
-
-<!-- ========== SECTION 27: HTML - PROFILE STATS ========== -->
-        <div class="stats-card">
-            <div class="stat-row">
-                <span>Email</span>
-                <strong id="profile-email">-</strong>
-            </div>
-            <div class="stat-row">
-                <span>Balance</span>
-                <strong id="profile-balance">₹0</strong>
-            </div>
-        </div>
-
-<!-- ========== SECTION 28: HTML - BANK ACCOUNTS ========== -->
-        <div class="bank-section">
-            <h3><i class="fas fa-university"></i> Bank Accounts</h3>
-            <div id="bank-accounts-list" class="bank-list">
-                <div class="empty-bets">No bank accounts</div>
-            </div>
-            <button class="add-bank-btn" onclick="showAddBankPopup()">
-                <i class="fas fa-plus"></i> Add Bank Account
-            </button>
-        </div>
-
-<!-- ========== SECTION 29: HTML - QUICK ACTIONS ========== -->
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <button class="add-bank-btn" style="background: var(--primary);" onclick="showPage('add-money-page')">
-                <i class="fas fa-arrow-up"></i> Deposit
-            </button>
-            <button class="add-bank-btn" style="background: var(--secondary);" onclick="showWithdrawPage()">
-                <i class="fas fa-arrow-down"></i> Withdraw
-            </button>
-        </div>
-
-<!-- ========== SECTION 30: HTML - GAME HISTORY ========== -->
-        <div class="history-section">
-            <h3><i class="fas fa-history"></i> Game History</h3>
-            <div id="game-history-list" class="history-list"></div>
-        </div>
-    </div>
-</div>
-
-<!-- ========== SECTION 31: HTML - ADD MONEY PAGE START ========== -->
-<div id="add-money-page" class="page hidden">
-    <div class="page-header">
-        <button class="back-btn" onclick="showPage('dashboard-page')">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 style="color: var(--primary);">Add Money</h2>
-    </div>
-    <div style="padding: 20px;">
-        <p style="text-align: center; color: var(--primary); font-weight: 600;" id="add-balance">Balance: ₹0</p>
-        <div class="amount-grid">
-            <button class="amount-option" data-amount="100" onclick="selectAmount(this)">₹100</button>
-            <button class="amount-option" data-amount="500" onclick="selectAmount(this)">₹500</button>
-            <button class="amount-option" data-amount="1000" onclick="selectAmount(this)">₹1000</button>
-            <button class="amount-option" data-amount="2000" onclick="selectAmount(this)">₹2000</button>
-        </div>
-        <input type="number" id="add-amount" placeholder="Custom amount" class="input-field">
-        <div class="payment-info">
-            <p style="font-size: 1.1rem;"><strong>UPI ID:</strong> <span id="upi-id">fundmoney@upi</span></p>
-            <p style="color: var(--text-light);">Enter UTR after payment</p>
-        </div>
-        <input type="text" id="txn-id" placeholder="UTR Number" class="input-field">
-        <button class="submit-btn" onclick="submitAddMoneyRequest()">Submit Request</button>
-        <p id="add-message" class="error-message hidden"></p>
-        <button class="back-btn" onclick="showPage('dashboard-page')">← Back</button>
-    </div>
-</div>
-
-<!-- ========== SECTION 32: HTML - WITHDRAW PAGE START ========== -->
-<div id="withdraw-page" class="page hidden">
-    <div class="page-header">
-        <button class="back-btn" onclick="showPage('profile-page')">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <h2 style="color: var(--primary);">Withdraw</h2>
-    </div>
-    <div style="padding: 20px;">
-        <p style="text-align: center; color: var(--primary); font-weight: 600;" id="withdraw-balance">Available: ₹0</p>
-        <div id="bank-selection" style="padding: 15px; border: 1px solid var(--gray); border-radius: var(--radius-md); margin-bottom: 20px;">
-            <h3 style="margin-bottom: 10px;">Select Bank</h3>
-            <div id="bank-options"></div>
-        </div>
-        <div class="amount-grid">
-            <button class="amount-option" data-amount="100" onclick="selectWithdrawAmount(this)">₹100</button>
-            <button class="amount-option" data-amount="500" onclick="selectWithdrawAmount(this)">₹500</button>
-            <button class="amount-option" data-amount="1000" onclick="selectWithdrawAmount(this)">₹1000</button>
-            <button class="amount-option" data-amount="2000" onclick="selectWithdrawAmount(this)">₹2000</button>
-        </div>
-        <input type="number" id="withdraw-amount" placeholder="Amount" class="input-field">
-        <button class="submit-btn" onclick="submitWithdrawRequest()">Submit Request</button>
-        <p id="withdraw-message" class="error-message hidden"></p>
-        <button class="back-btn" onclick="showPage('profile-page')">← Back</button>
-    </div>
-</div>
-
-<!-- ========== SECTION 33: HTML - PROMO POPUP ========== -->
-<div id="promo-popup" class="popup-overlay hidden">
-    <div class="popup-content">
-        <div class="popup-header">
-            <h3><i class="fas fa-gift"></i> Promo Code</h3>
-            <button class="close-btn" onclick="closePromoPopup()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="promo-input-group">
-            <input type="text" id="promo-code" placeholder="Enter promo code" class="input-field" maxlength="10">
-            <button class="claim-btn" onclick="claimPromoCode()">Claim</button>
-        </div>
-        <p id="promo-message" class="error-message hidden" style="margin-top: 10px;"></p>
-    </div>
-</div>
-
-<!-- ========== SECTION 34: HTML - ADD BANK POPUP ========== -->
-<div id="add-bank-popup" class="popup-overlay hidden">
-    <div class="popup-content">
-        <div class="popup-header">
-            <h3><i class="fas fa-university"></i> Add Bank</h3>
-            <button class="close-btn" onclick="closeAddBankPopup()"><i class="fas fa-times"></i></button>
-        </div>
-        <input type="text" id="bank-name" placeholder="Bank Name" class="input-field">
-        <input type="text" id="account-holder" placeholder="Account Holder" class="input-field">
-        <input type="text" id="account-number" placeholder="Account Number" class="input-field">
-        <input type="text" id="ifsc-code" placeholder="IFSC Code" class="input-field">
-        <button class="submit-btn" onclick="addBankAccount()">Add</button>
-        <p id="bank-message" class="error-message hidden"></p>
-    </div>
-</div>
-
-<!-- ========== SECTION 35: HTML - NOTIFICATION PANEL ========== -->
-<div id="notification-panel" class="notification-panel hidden">
-    <div class="notification-content">
-        <div class="notification-header">
-            <h3><i class="fas fa-bell"></i> Notifications</h3>
-            <button class="close-btn" onclick="toggleNotificationPanel()"><i class="fas fa-times"></i></button>
-        </div>
-        <div id="notification-list" class="notification-list"></div>
-    </div>
-</div>
-
-<!-- ========== SECTION 36: HTML - IMPORTANT NOTIFICATION ========== -->
-<div id="important-popup" class="popup-overlay hidden">
-    <div class="popup-content">
-        <div class="popup-header">
-            <h3 style="color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Notice</h3>
-            <button class="close-btn" onclick="closeImportantNotification()"><i class="fas fa-times"></i></button>
-        </div>
-        <p id="important-message" style="text-align: center;"></p>
-        <button class="submit-btn" onclick="closeImportantNotification()">OK</button>
-    </div>
-</div>
-
-<!-- ========== SECTION 37: JAVASCRIPT - FIREBASE CONFIG ========== -->
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyB
+</body>
+</html>

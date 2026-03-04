@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APEX · TELEGRAM</title>
+    <title>APEX · PREMIUM</title>
     
     <!-- Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -16,49 +16,120 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0a0a0f; min-height: 100vh; display: flex; justify-content: center; align-items: center; color: white; }
-        .container { width: 100%; max-width: 450px; background: #121218; border-radius: 30px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid #2a2a35; }
+        /* ========== GLOBAL STYLES ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F0E68C;
+            --gold-dark: #AA8C2F;
+            --bg-dark: #0A0A0F;
+            --bg-card: #121218;
+            --bg-surface: #1A1A24;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0B0;
+            --emerald: #0F4C3A;
+            --sapphire: #1A3B5C;
+            --danger: #B22234;
+            --success: #0F4C3A;
+            --shadow: 0 20px 40px rgba(0,0,0,0.5);
+            --glow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        body {
+            background: var(--bg-dark);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--bg-card);
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
         .hidden { display: none !important; }
         
-        /* Loading */
-        .loading { text-align: center; padding: 50px; }
-        .loader { width: 50px; height: 50px; border: 3px solid #2a2a35; border-top: 3px solid gold; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        /* ========== LOADING ========== */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--bg-surface);
+            border-top: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Telegram Redirect */
+        /* ========== TELEGRAM REDIRECT ========== */
         .telegram-card {
-            background: #1a1a24;
-            border-radius: 20px;
+            background: var(--bg-surface);
+            border-radius: 25px;
             padding: 40px 20px;
             text-align: center;
-            border: 1px solid gold;
+            border: 1px solid var(--gold);
+            box-shadow: var(--glow);
         }
-        .telegram-logo { font-size: 5rem; color: gold; margin-bottom: 20px; }
+        .telegram-icon {
+            font-size: 5rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .telegram-title {
+            font-size: 1.8rem;
+            color: var(--gold);
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 10px;
+        }
+        .telegram-sub {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
         .telegram-btn {
-            background: gold;
-            color: #000;
+            background: var(--gold);
+            color: var(--bg-dark);
             border: none;
             padding: 15px 30px;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 20px;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             transition: all 0.3s;
         }
-        .telegram-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .telegram-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
         
-        /* Header */
+        /* ========== HEADER ========== */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding: 10px 0;
         }
         .user-info {
             display: flex;
@@ -66,74 +137,146 @@
             gap: 15px;
             cursor: pointer;
         }
+        .avatar-ring {
+            padding: 2px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 50%;
+        }
         .avatar {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, gold, #b8860b);
+            background: var(--bg-surface);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
-            font-weight: bold;
+            color: var(--gold);
             font-size: 1.5rem;
+            font-weight: bold;
         }
-        .name { font-weight: 600; }
-        .handle { font-size: 0.8rem; color: #888; }
-        .menu-btn { background: none; border: none; color: gold; font-size: 1.3rem; cursor: pointer; }
-        
-        /* Balance Card */
-        .balance-card {
-            background: linear-gradient(145deg, #1a1a24, #121218);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid gold;
-            position: relative;
+        .user-details {
+            display: flex;
+            flex-direction: column;
         }
-        .balance-label { color: #888; font-size: 0.8rem; margin-bottom: 5px; }
-        .balance-amount { font-size: 3rem; font-weight: bold; color: gold; }
-        .add-btn {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .user-handle {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            color: var(--gold);
+            font-size: 1.3rem;
+            cursor: pointer;
             width: 45px;
             height: 45px;
-            background: gold;
-            border: none;
             border-radius: 50%;
-            color: #000;
-            font-size: 1.2rem;
-            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .menu-btn:hover {
+            background: var(--bg-surface);
         }
         
-        /* Withdraw Alert */
+        /* ========== BALANCE CARD ========== */
+        .balance-card {
+            background: linear-gradient(145deg, var(--bg-card), var(--bg-surface));
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .balance-glow {
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(212,175,55,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .balance-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        .balance-main {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+        .currency {
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+        .balance-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--text-primary);
+        }
+        .add-btn {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: var(--gold);
+            border: none;
+            border-radius: 50%;
+            color: var(--bg-dark);
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .add-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: var(--glow);
+        }
+        
+        /* ========== WITHDRAW ALERT ========== */
         .withdraw-alert {
-            background: rgba(178,34,34,0.1);
-            border: 1px solid #b22234;
+            background: rgba(178, 34, 34, 0.1);
+            border: 1px solid var(--danger);
             border-radius: 50px;
             padding: 15px;
-            text-align: center;
             margin-bottom: 20px;
+            text-align: center;
             color: #ff6b6b;
             font-weight: bold;
             cursor: pointer;
             position: relative;
             overflow: hidden;
         }
-        .pulse {
+        .alert-pulse {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: pulse 2s infinite;
+            animation: slide 2s infinite;
         }
-        @keyframes pulse { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
         
-        /* History Strip */
+        /* ========== HISTORY STRIP ========== */
         .history-strip {
             display: flex;
             gap: 8px;
@@ -147,24 +290,29 @@
             border-radius: 8px;
             flex-shrink: 0;
         }
-        .history-item.green { background: #0f4c3a; }
-        .history-item.blue { background: #1a3b5c; }
-        .history-item.gray { background: #2a2a35; }
+        .history-item.green { background: linear-gradient(135deg, var(--emerald), #1A5F4A); }
+        .history-item.blue { background: linear-gradient(135deg, var(--sapphire), #2A4B6C); }
+        .history-item.gray { background: linear-gradient(135deg, #2A2A35, #3A3A45); }
         
-        /* Timer */
+        /* ========== TIMER ========== */
+        .timer-container {
+            margin-bottom: 20px;
+        }
         .timer-box {
-            background: #1a1a24;
+            background: var(--bg-surface);
             border-radius: 20px;
             padding: 20px;
             text-align: center;
-            font-size: 3rem;
-            font-weight: bold;
-            color: gold;
-            margin-bottom: 20px;
-            border: 1px solid gold;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .timer-display {
+            font-size: 3.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
         }
         
-        /* Color Buttons */
+        /* ========== COLOR BUTTONS ========== */
         .color-buttons {
             display: flex;
             gap: 15px;
@@ -172,44 +320,68 @@
         }
         .color-btn {
             flex: 1;
-            height: 70px;
+            height: 80px;
             border: none;
             border-radius: 20px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .color-btn.green { background: linear-gradient(145deg, #0f4c3a, #0a3a2a); }
-        .color-btn.blue { background: linear-gradient(145deg, #1a3b5c, #0f2a4a); }
+        .color-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .color-btn:hover::after { opacity: 1; }
         .color-btn:active { transform: scale(0.95); }
+        .color-btn.green { background: linear-gradient(145deg, #0F3A2A, #0A2A1F); border: 1px solid var(--emerald); }
+        .color-btn.blue { background: linear-gradient(145deg, #1A2A4A, #0F1A2A); border: 1px solid var(--sapphire); }
         
-        /* Bet Controls */
+        /* ========== BET CONTROLS ========== */
         .bet-controls {
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
         }
-        .ctrl-btn {
+        .control-btn {
             flex: 1;
             padding: 12px 5px;
-            background: #1a1a24;
-            border: 1px solid gold;
-            border-radius: 10px;
-            color: gold;
+            background: var(--bg-surface);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: var(--gold);
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .control-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
         }
         .bet-input {
             flex: 2;
             padding: 12px;
-            background: #1a1a24;
-            border: 1px solid gold;
-            border-radius: 10px;
-            color: white;
+            background: var(--bg-surface);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
             text-align: center;
             font-size: 1rem;
+            font-weight: 600;
+        }
+        .bet-input:focus {
+            outline: none;
+            border-color: var(--gold);
         }
         
-        /* My Bets */
+        /* ========== MY BETS ========== */
         .my-bets {
             display: flex;
             gap: 15px;
@@ -220,14 +392,23 @@
             padding: 15px;
             border-radius: 15px;
             text-align: center;
-            background: #1a1a24;
         }
-        .my-bet.green { border: 1px solid #0f4c3a; }
-        .my-bet.blue { border: 1px solid #1a3b5c; }
-        .my-bet .label { font-size: 0.7rem; color: #888; }
-        .my-bet .value { font-size: 1.3rem; font-weight: bold; color: gold; }
+        .my-bet.green { background: rgba(15, 76, 58, 0.2); border: 1px solid var(--emerald); }
+        .my-bet.blue { background: rgba(26, 59, 92, 0.2); border: 1px solid var(--sapphire); }
+        .bet-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .bet-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
         
-        /* Bets Lists */
+        /* ========== BETS LISTS ========== */
         .bets-container {
             display: flex;
             gap: 15px;
@@ -236,135 +417,202 @@
         }
         .bet-list {
             flex: 1;
-            background: #1a1a24;
+            background: var(--bg-surface);
             border-radius: 20px;
             padding: 15px;
             overflow-y: auto;
         }
-        .bet-list.green { border: 1px solid #0f4c3a; }
-        .bet-list.blue { border: 1px solid #1a3b5c; }
-        .bet-list .header {
-            color: gold;
+        .bet-list.green { border: 1px solid var(--emerald); }
+        .bet-list.blue { border: 1px solid var(--sapphire); }
+        .list-header {
+            color: var(--gold);
             font-size: 0.8rem;
             margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .bet-item {
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid #2a2a35;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
             font-size: 0.9rem;
         }
-        .empty { color: #888; text-align: center; padding: 20px 0; }
+        .bet-item:last-child { border-bottom: none; }
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 20px 0;
+            font-style: italic;
+        }
         
-        /* Profile Page */
+        /* ========== PROFILE PAGE ========== */
         .profile-header {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 30px;
+            padding: 10px 0;
         }
         .back-btn {
-            background: none;
+            width: 45px;
+            height: 45px;
+            background: var(--bg-surface);
             border: none;
-            color: gold;
+            border-radius: 50%;
+            color: var(--gold);
             font-size: 1.2rem;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s;
         }
-        .back-btn:hover { background: #2a2a35; }
+        .back-btn:hover {
+            background: var(--gold);
+            color: var(--bg-dark);
+        }
         .profile-avatar {
             width: 100px;
             height: 100px;
-            background: linear-gradient(135deg, gold, #b8860b);
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
             font-size: 3rem;
-            color: #000;
+            color: var(--bg-dark);
+            font-weight: bold;
         }
-        .profile-name { font-size: 1.5rem; font-weight: bold; text-align: center; margin-bottom: 5px; }
-        .profile-handle { text-align: center; color: #888; margin-bottom: 30px; }
-        .stats {
+        .profile-name {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .profile-handle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+        .stats-grid {
             display: flex;
             gap: 15px;
             margin-bottom: 30px;
         }
-        .stat {
+        .stat-card {
             flex: 1;
-            background: #1a1a24;
+            background: var(--bg-surface);
             border-radius: 15px;
             padding: 15px;
             text-align: center;
         }
-        .stat-label { color: #888; font-size: 0.7rem; }
-        .stat-value { font-size: 1.3rem; font-weight: bold; color: gold; }
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            margin-bottom: 5px;
+        }
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
         
-        /* Bank Section */
+        /* ========== BANK SECTION ========== */
         .bank-section {
-            background: #1a1a24;
+            background: var(--bg-surface);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
         }
-        .bank-section h3 { color: gold; margin-bottom: 15px; }
-        .bank-list { max-height: 120px; overflow-y: auto; margin-bottom: 15px; }
+        .section-title {
+            color: var(--gold);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .bank-list {
+            max-height: 120px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
         .bank-item {
-            background: #121218;
+            background: var(--bg-card);
             padding: 12px;
             border-radius: 10px;
             margin-bottom: 8px;
-            border-left: 3px solid gold;
+            border-left: 3px solid var(--gold);
+        }
+        .bank-item small {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
         }
         .add-bank-btn {
             width: 100%;
             padding: 12px;
             background: transparent;
-            border: 1px dashed gold;
+            border: 1px dashed var(--gold);
             border-radius: 10px;
-            color: gold;
+            color: var(--gold);
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .add-bank-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
         }
         
-        /* Action Buttons */
+        /* ========== ACTION BUTTONS ========== */
         .action-buttons {
             display: flex;
             gap: 15px;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
         .action-btn {
             flex: 1;
             padding: 15px;
             border: none;
             border-radius: 15px;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
         }
-        .action-btn.deposit { background: #0f4c3a; color: white; }
-        .action-btn.withdraw { background: #1a3b5c; color: white; }
+        .action-btn.deposit {
+            background: linear-gradient(145deg, #0F3A2A, #0A2A1F);
+            border: 1px solid var(--emerald);
+            color: white;
+        }
+        .action-btn.withdraw {
+            background: linear-gradient(145deg, #1A2A4A, #0F1A2A);
+            border: 1px solid var(--sapphire);
+            color: white;
+        }
+        .action-btn:hover { transform: translateY(-2px); }
         
-        /* History Section */
+        /* ========== HISTORY SECTION ========== */
         .history-section {
-            background: #1a1a24;
+            background: var(--bg-surface);
             border-radius: 20px;
             padding: 20px;
         }
-        .history-section h3 { color: gold; margin-bottom: 15px; }
-        .history-list { max-height: 200px; overflow-y: auto; }
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
         
-        /* Deposit/Withdraw Pages */
-        .page-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+        /* ========== ADD/WITHDRAW PAGES ========== */
+        .page-content {
+            padding: 10px 0;
         }
         .amount-grid {
             display: grid;
@@ -375,52 +623,98 @@
         .amount-btn {
             padding: 12px;
             background: transparent;
-            border: 1px solid gold;
+            border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 10px;
-            color: gold;
+            color: var(--gold);
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
         }
-        .amount-btn.selected { background: gold; color: #000; }
+        .amount-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
+        }
+        .amount-btn.selected {
+            background: var(--gold);
+            color: var(--bg-dark);
+            border-color: var(--gold);
+        }
         .input-field {
             width: 100%;
             padding: 15px;
-            background: #1a1a24;
-            border: 1px solid gold;
-            border-radius: 10px;
-            color: white;
-            margin-bottom: 20px;
+            background: var(--bg-surface);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--gold);
         }
         .info-box {
-            background: #1a1a24;
+            background: var(--bg-surface);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
             margin: 20px 0;
         }
+        .info-box i {
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .upi-id {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        .fee-note {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .net-amount {
+            color: var(--gold);
+            font-weight: 600;
+            text-align: center;
+            margin: 10px 0;
+        }
         .submit-btn {
             width: 100%;
-            padding: 15px;
-            background: gold;
+            padding: 16px;
+            background: var(--gold);
             border: none;
-            border-radius: 10px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
         }
         
-        /* Menu */
+        /* ========== SIDE MENU ========== */
         .side-menu {
             position: fixed;
             top: 0;
             right: 0;
             width: 80%;
-            max-width: 300px;
+            max-width: 320px;
             height: 100%;
-            background: #121218;
+            background: var(--bg-card);
             z-index: 200;
             padding: 30px 20px;
-            border-left: 1px solid gold;
+            border-left: 1px solid rgba(212, 175, 55, 0.3);
             transform: translateX(100%);
-            transition: transform 0.3s;
+            transition: transform 0.3s ease;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
         }
         .side-menu.open { transform: translateX(0); }
         .menu-header {
@@ -429,26 +723,65 @@
             align-items: center;
             margin-bottom: 30px;
         }
+        .menu-header h3 {
+            color: var(--gold);
+            font-size: 1.3rem;
+        }
         .menu-item {
             padding: 15px;
-            border-radius: 10px;
             margin-bottom: 5px;
+            border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 15px;
+            color: var(--text-primary);
+            transition: all 0.3s;
         }
-        .menu-item:hover { background: #1a1a24; }
+        .menu-item:hover {
+            background: var(--bg-surface);
+            color: var(--gold);
+        }
+        .menu-item i { width: 25px; color: var(--gold); }
         
-        /* Overlay */
+        /* ========== OVERLAY ========== */
         .overlay {
             position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
             z-index: 150;
             display: none;
+            backdrop-filter: blur(5px);
         }
         .overlay.show { display: block; }
+        
+        /* ========== POPUP ========== */
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border-radius: 25px;
+            padding: 25px;
+            width: 90%;
+            max-width: 350px;
+            border: 1px solid var(--gold);
+            z-index: 300;
+        }
+        .popup h3 {
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .message {
+            color: var(--success);
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -456,17 +789,17 @@
         <!-- LOADING SCREEN -->
         <div id="loading" class="loading">
             <div class="loader"></div>
-            <p>Connecting to Telegram...</p>
+            <p style="color: var(--gold);">Connecting to Telegram...</p>
         </div>
 
-        <!-- TELEGRAM REDIRECT PAGE (जब Telegram से न खोला हो) -->
+        <!-- TELEGRAM REDIRECT PAGE -->
         <div id="telegram-page" class="hidden">
             <div class="telegram-card">
-                <div class="telegram-logo">
+                <div class="telegram-icon">
                     <i class="fab fa-telegram"></i>
                 </div>
-                <h2 style="color: gold; margin-bottom: 10px;">Open with Telegram</h2>
-                <p style="color: #888; margin-bottom: 20px;">This game only works inside Telegram</p>
+                <h2 class="telegram-title">APEX PREMIUM</h2>
+                <p class="telegram-sub">This game only works inside Telegram</p>
                 <button class="telegram-btn" onclick="redirectToTelegram()">
                     <i class="fab fa-telegram"></i> Open Telegram
                 </button>
@@ -478,21 +811,27 @@
             <!-- Header -->
             <div class="header">
                 <div class="user-info" onclick="showPage('profile-page')">
-                    <div class="avatar" id="avatar">👤</div>
-                    <div>
-                        <div class="name" id="user-name">Loading...</div>
-                        <div class="handle" id="user-handle"></div>
+                    <div class="avatar-ring">
+                        <div class="avatar" id="avatar">A</div>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="user-name">Loading...</span>
+                        <span class="user-handle" id="user-handle"></span>
                     </div>
                 </div>
                 <button class="menu-btn" onclick="toggleMenu()">
-                    <i class="fas fa-bars"></i>
+                    <i class="fas fa-sliders-h"></i>
                 </button>
             </div>
 
             <!-- Balance Card -->
             <div class="balance-card">
-                <div class="balance-label">Your Balance</div>
-                <div class="balance-amount" id="balance-amount">0</div>
+                <div class="balance-glow"></div>
+                <div class="balance-label">Available Balance</div>
+                <div class="balance-main">
+                    <span class="currency">₹</span>
+                    <span class="balance-amount" id="balance-amount">0</span>
+                </div>
                 <button class="add-btn" onclick="showPage('add-money-page')">
                     <i class="fas fa-plus"></i>
                 </button>
@@ -501,14 +840,18 @@
             <!-- Withdraw Alert -->
             <div id="withdraw-alert" class="withdraw-alert hidden" onclick="showPage('withdraw-page')">
                 <i class="fas fa-arrow-down"></i> WITHDRAW AVAILABLE
-                <div class="pulse"></div>
+                <div class="alert-pulse"></div>
             </div>
 
             <!-- History Strip -->
             <div class="history-strip" id="history-strip"></div>
 
             <!-- Timer -->
-            <div class="timer-box" id="timer">15</div>
+            <div class="timer-container">
+                <div class="timer-box">
+                    <div class="timer-display" id="timer">15</div>
+                </div>
+            </div>
 
             <!-- Color Buttons -->
             <div class="color-buttons">
@@ -518,33 +861,33 @@
 
             <!-- Bet Controls -->
             <div class="bet-controls">
-                <button class="ctrl-btn" onclick="setBetAmount(1)">MIN</button>
-                <button class="ctrl-btn" onclick="adjustBetAmount(-1)">-1</button>
+                <button class="control-btn" onclick="setBetAmount(1)">MIN</button>
+                <button class="control-btn" onclick="adjustBetAmount(-1)">-1</button>
                 <input type="number" id="bet-amount" value="1" min="1" max="10000" class="bet-input">
-                <button class="ctrl-btn" onclick="adjustBetAmount(1)">+1</button>
-                <button class="ctrl-btn" onclick="setBetAmount(10000)">MAX</button>
+                <button class="control-btn" onclick="adjustBetAmount(1)">+1</button>
+                <button class="control-btn" onclick="setBetAmount(10000)">MAX</button>
             </div>
 
             <!-- My Bets -->
             <div class="my-bets">
                 <div class="my-bet green">
-                    <div class="label">MY BET</div>
-                    <div class="value" id="my-green-bet">0</div>
+                    <div class="bet-label">MY BET</div>
+                    <div class="bet-value" id="my-green-bet">0</div>
                 </div>
                 <div class="my-bet blue">
-                    <div class="label">MY BET</div>
-                    <div class="value" id="my-blue-bet">0</div>
+                    <div class="bet-label">MY BET</div>
+                    <div class="bet-value" id="my-blue-bet">0</div>
                 </div>
             </div>
 
             <!-- Bets Lists -->
             <div class="bets-container">
                 <div class="bet-list green">
-                    <div class="header">GREEN</div>
+                    <div class="list-header">GREEN</div>
                     <div id="green-bets-list"></div>
                 </div>
                 <div class="bet-list blue">
-                    <div class="header">BLUE</div>
+                    <div class="list-header">BLUE</div>
                     <div id="blue-bets-list"></div>
                 </div>
             </div>
@@ -556,22 +899,22 @@
                 <button class="back-btn" onclick="showPage('game-page')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2 style="color: gold;">PROFILE</h2>
+                <h2 style="color: var(--gold); flex: 1; text-align: center;">PROFILE</h2>
                 <button class="back-btn" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
 
-            <div class="profile-avatar" id="profile-avatar">👤</div>
+            <div class="profile-avatar" id="profile-avatar">A</div>
             <div class="profile-name" id="profile-name">-</div>
             <div class="profile-handle" id="profile-handle"></div>
 
-            <div class="stats">
-                <div class="stat">
+            <div class="stats-grid">
+                <div class="stat-card">
                     <div class="stat-label">Balance</div>
                     <div class="stat-value" id="profile-balance">0</div>
                 </div>
-                <div class="stat">
+                <div class="stat-card">
                     <div class="stat-label">Games</div>
                     <div class="stat-value" id="total-games">0</div>
                 </div>
@@ -579,9 +922,12 @@
 
             <!-- Bank Accounts -->
             <div class="bank-section">
-                <h3>🏦 BANK ACCOUNTS</h3>
+                <div class="section-title">
+                    <i class="fas fa-university"></i>
+                    <span>BANK ACCOUNTS</span>
+                </div>
                 <div id="bank-list" class="bank-list">
-                    <div class="empty">No bank accounts</div>
+                    <div class="empty-state">No bank accounts</div>
                 </div>
                 <button class="add-bank-btn" onclick="showAddBankPopup()">
                     <i class="fas fa-plus"></i> ADD ACCOUNT
@@ -600,7 +946,10 @@
 
             <!-- Game History -->
             <div class="history-section">
-                <h3>📜 GAME HISTORY</h3>
+                <div class="section-title">
+                    <i class="fas fa-history"></i>
+                    <span>GAME HISTORY</span>
+                </div>
                 <div id="game-history" class="history-list"></div>
             </div>
         </div>
@@ -611,12 +960,12 @@
                 <button class="back-btn" onclick="showPage('game-page')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2 style="color: gold;">DEPOSIT</h2>
+                <h2 style="color: var(--gold); flex: 1; text-align: center;">DEPOSIT</h2>
             </div>
 
-            <div style="padding: 0 10px;">
-                <div class="stats" style="margin-bottom: 20px;">
-                    <div class="stat">
+            <div class="page-content">
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card">
                         <div class="stat-label">Balance</div>
                         <div class="stat-value" id="deposit-balance">0</div>
                     </div>
@@ -632,15 +981,16 @@
                 <input type="number" id="add-amount" placeholder="Custom amount" class="input-field">
 
                 <div class="info-box">
-                    <i class="fas fa-qrcode" style="color: gold; font-size: 2rem; margin-bottom: 10px;"></i>
-                    <p style="color: gold; margin-bottom: 10px;"><strong>UPI ID:</strong> apex@ybl</p>
-                    <p style="color: #888; font-size: 0.9rem;">Enter UTR after payment</p>
+                    <i class="fas fa-qrcode"></i>
+                    <p style="color: var(--gold); margin-bottom: 5px;">UPI ID</p>
+                    <div class="upi-id">apex@ybl</div>
+                    <p style="color: var(--text-secondary); font-size: 0.8rem;">Enter UTR after payment</p>
                 </div>
 
                 <input type="text" id="utr-number" placeholder="UTR Number" class="input-field">
 
                 <button class="submit-btn" onclick="submitDeposit()">SUBMIT REQUEST</button>
-                <p id="deposit-message" class="hidden" style="color: #06d6a0; text-align: center; margin-top: 10px;"></p>
+                <div id="deposit-message" class="hidden message"></div>
             </div>
         </div>
 
@@ -650,18 +1000,18 @@
                 <button class="back-btn" onclick="showPage('profile-page')">
                     <i class="fas fa-arrow-left"></i>
                 </button>
-                <h2 style="color: gold;">WITHDRAW</h2>
+                <h2 style="color: var(--gold); flex: 1; text-align: center;">WITHDRAW</h2>
             </div>
 
-            <div style="padding: 0 10px;">
-                <div class="stats" style="margin-bottom: 20px;">
-                    <div class="stat">
+            <div class="page-content">
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-card">
                         <div class="stat-label">Available</div>
                         <div class="stat-value" id="withdraw-balance">0</div>
                     </div>
                 </div>
 
-                <p style="color: #888; text-align: center; margin-bottom: 20px;">* 5% service fee applies</p>
+                <p class="fee-note">* 5% service fee applies</p>
 
                 <div class="amount-grid">
                     <button class="amount-btn" data-amount="105" onclick="selectWithdrawAmount(this)">105</button>
@@ -671,53 +1021,50 @@
                 </div>
 
                 <input type="number" id="withdraw-amount" placeholder="Amount" class="input-field">
-                <p id="withdraw-net" style="color: gold; text-align: center; margin: 10px 0;">You receive: ₹0</p>
+                <p id="withdraw-net" class="net-amount">You receive: ₹0</p>
 
                 <button class="submit-btn" onclick="submitWithdraw()">SUBMIT REQUEST</button>
-                <p id="withdraw-message" class="hidden" style="color: #06d6a0; text-align: center; margin-top: 10px;"></p>
+                <div id="withdraw-message" class="hidden message"></div>
             </div>
         </div>
 
         <!-- ADD BANK POPUP -->
-        <div id="bank-popup" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #121218; border-radius: 20px; padding: 25px; width: 90%; max-width: 350px; border: 2px solid gold; z-index: 300;">
-            <h3 style="color: gold; text-align: center; margin-bottom: 20px;">ADD BANK ACCOUNT</h3>
-            <input type="text" id="bank-name" placeholder="Bank Name" class="input-field" style="margin-bottom: 10px;">
-            <input type="text" id="account-holder" placeholder="Account Holder" class="input-field" style="margin-bottom: 10px;">
-            <input type="text" id="account-number" placeholder="Account Number" class="input-field" style="margin-bottom: 10px;">
-            <input type="text" id="ifsc-code" placeholder="IFSC Code" class="input-field" style="margin-bottom: 20px;">
-            <button class="submit-btn" onclick="addBankAccount()" style="margin-bottom: 10px;">ADD</button>
-            <button class="submit-btn" onclick="closeBankPopup()" style="background: #2a2a35; color: white;">CLOSE</button>
-            <p id="bank-message" class="hidden" style="color: #06d6a0; text-align: center; margin-top: 10px;"></p>
+        <div id="bank-popup" class="popup hidden">
+            <h3>ADD BANK ACCOUNT</h3>
+            <input type="text" id="bank-name" placeholder="Bank Name" class="input-field">
+            <input type="text" id="account-holder" placeholder="Account Holder" class="input-field">
+            <input type="text" id="account-number" placeholder="Account Number" class="input-field">
+            <input type="text" id="ifsc-code" placeholder="IFSC Code" class="input-field">
+            <button class="submit-btn" onclick="addBankAccount()">ADD</button>
+            <button class="submit-btn" onclick="closeBankPopup()" style="margin-top: 10px; background: var(--bg-surface); color: white;">CLOSE</button>
+            <div id="bank-message" class="hidden message"></div>
         </div>
-
-        <!-- OVERLAY -->
-        <div id="overlay" class="overlay" onclick="closeMenu()"></div>
 
         <!-- SIDE MENU -->
         <div id="side-menu" class="side-menu">
             <div class="menu-header">
-                <h3 style="color: gold;">MENU</h3>
-                <button class="menu-btn" onclick="toggleMenu()" style="font-size: 1.5rem;">
+                <h3>MENU</h3>
+                <button class="menu-btn" onclick="toggleMenu()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="menu-item" onclick="showPage('profile-page'); closeMenu()">
-                <i class="fas fa-user" style="color: gold;"></i> PROFILE
+                <i class="fas fa-user"></i> PROFILE
             </div>
             <div class="menu-item" onclick="showPage('add-money-page'); closeMenu()">
-                <i class="fas fa-plus-circle" style="color: gold;"></i> DEPOSIT
+                <i class="fas fa-plus-circle"></i> DEPOSIT
             </div>
             <div class="menu-item" onclick="showPage('withdraw-page'); closeMenu()">
-                <i class="fas fa-minus-circle" style="color: gold;"></i> WITHDRAW
+                <i class="fas fa-minus-circle"></i> WITHDRAW
             </div>
             <div class="menu-item" onclick="logout()">
-                <i class="fas fa-sign-out-alt" style="color: #b22234;"></i> LOGOUT
+                <i class="fas fa-sign-out-alt"></i> LOGOUT
             </div>
         </div>
-    </div>
 
-    <!-- OVERLAY FOR MENU -->
-    <div id="menu-overlay" class="overlay" onclick="closeMenu()"></div>
+        <!-- OVERLAY -->
+        <div id="overlay" class="overlay" onclick="closeMenu()"></div>
+    </div>
 
     <script>
         // ========== FIREBASE CONFIG ==========
@@ -751,23 +1098,20 @@
         let gameHistory = [];
         let bankAccounts = [];
 
-        // ========== INITIAL CHECK ==========
+        // ========== INIT ==========
         window.onload = function() {
             console.log('App started');
-            
             if (!telegramUser) {
-                // अगर Telegram से नहीं खोला तो redirect page दिखाओ
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('telegram-page').classList.remove('hidden');
             } else {
-                // Telegram से खोला है तो auto login करो
                 tg.expand();
                 tg.ready();
                 autoLogin();
             }
         };
 
-        // ========== REDIRECT TO TELEGRAM ==========
+        // ========== REDIRECT ==========
         function redirectToTelegram() {
             window.location.href = BOT_LINK;
         }
@@ -775,17 +1119,11 @@
         // ========== AUTO LOGIN ==========
         async function autoLogin() {
             try {
-                document.getElementById('loading').classList.remove('hidden');
-                
-                // Anonymous sign in
                 const cred = await auth.signInAnonymously();
                 currentUser = cred.user;
-                
-                // Check if user exists in Firestore
                 const doc = await db.collection('users').doc(currentUser.uid).get();
                 
                 if (!doc.exists) {
-                    // New user - create profile
                     userData = {
                         uid: currentUser.uid,
                         telegramId: telegramUser.id.toString(),
@@ -801,21 +1139,17 @@
                     };
                     await db.collection('users').doc(currentUser.uid).set(userData);
                 } else {
-                    // Existing user
                     userData = doc.data();
                 }
                 
-                // Update UI
                 updateUI();
-                
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('game-page').classList.remove('hidden');
-                
                 startGameLoop();
                 
             } catch (error) {
-                console.error('Auto login error:', error);
-                document.getElementById('loading').innerHTML = '<p>Error: ' + error.message + '</p>';
+                console.error('Error:', error);
+                document.getElementById('loading').innerHTML = '<p style="color: var(--danger);">Error: ' + error.message + '</p>';
             }
         }
 
@@ -837,8 +1171,8 @@
             document.getElementById('withdraw-balance').innerText = balance;
             document.getElementById('my-green-bet').innerText = currentBet.green;
             document.getElementById('my-blue-bet').innerText = currentBet.blue;
+            document.getElementById('total-games').innerText = gameHistory.length;
             
-            // Avatar
             const firstLetter = name.charAt(0).toUpperCase();
             document.getElementById('avatar').innerText = firstLetter;
             document.getElementById('profile-avatar').innerText = firstLetter;
@@ -855,7 +1189,7 @@
             }
         }
 
-        // ========== PAGE NAVIGATION ==========
+        // ========== NAVIGATION ==========
         function showPage(pageId) {
             document.querySelectorAll('#game-page, #profile-page, #add-money-page, #withdraw-page').forEach(p => {
                 p.classList.add('hidden');
@@ -866,20 +1200,14 @@
 
         function toggleMenu() {
             const menu = document.getElementById('side-menu');
-            const overlay = document.getElementById('menu-overlay');
-            
-            if (menu.style.transform === 'translateX(0px)') {
-                menu.style.transform = 'translateX(100%)';
-                overlay.classList.remove('show');
-            } else {
-                menu.style.transform = 'translateX(0)';
-                overlay.classList.add('show');
-            }
+            const overlay = document.getElementById('overlay');
+            menu.classList.toggle('open');
+            overlay.classList.toggle('show');
         }
 
         function closeMenu() {
-            document.getElementById('side-menu').style.transform = 'translateX(100%)';
-            document.getElementById('menu-overlay').classList.remove('show');
+            document.getElementById('side-menu').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
         }
 
         // ========== GAME LOOP ==========
@@ -887,13 +1215,11 @@
             if (gameTimer) clearInterval(gameTimer);
             gameTime = 15;
             roundActive = true;
-            
             document.getElementById('timer').innerText = gameTime;
             
             gameTimer = setInterval(() => {
                 gameTime--;
                 document.getElementById('timer').innerText = gameTime;
-                
                 if (gameTime <= 0) {
                     clearInterval(gameTimer);
                     endRound();
@@ -903,7 +1229,6 @@
 
         function endRound() {
             roundActive = false;
-            
             const totalGreen = allBets.green.reduce((sum, bet) => sum + bet.amount, 0);
             const totalBlue = allBets.blue.reduce((sum, bet) => sum + bet.amount, 0);
             
@@ -918,33 +1243,25 @@
             
             if (resultTimeout) clearTimeout(resultTimeout);
             resultTimeout = setTimeout(() => {
-                resetGame();
+                allBets = { green: [], blue: [] };
+                currentBet = { green: 0, blue: 0 };
+                updateBetLists();
+                updateUI();
+                roundActive = true;
                 startGameLoop();
             }, 3000);
         }
 
         function placeBet(color) {
             if (!roundActive || !userData) return;
-            
             const amount = parseInt(document.getElementById('bet-amount').value);
             
-            if (amount < 1 || amount > 10000) {
-                alert('Invalid amount! Bet between ₹1 and ₹10000');
-                return;
-            }
-            
-            if (amount > userData.balance) {
-                alert('Insufficient balance!');
-                return;
-            }
+            if (amount < 1 || amount > 10000) { alert('Invalid amount!'); return; }
+            if (amount > userData.balance) { alert('Insufficient balance!'); return; }
             
             userData.balance -= amount;
             currentBet[color] += amount;
-            
-            allBets[color].push({
-                user: userData.fullName || 'User',
-                amount: amount
-            });
+            allBets[color].push({ user: userData.fullName || 'User', amount: amount });
             
             updateUI();
             updateBetLists();
@@ -959,7 +1276,7 @@
                 allBets.green.slice(-10).forEach(bet => {
                     greenList.innerHTML += `<div class="bet-item"><span>${bet.user}</span><span>₹${bet.amount}</span></div>`;
                 });
-                if (allBets.green.length === 0) greenList.innerHTML = '<div class="empty">No bets yet</div>';
+                if (allBets.green.length === 0) greenList.innerHTML = '<div class="empty-state">No bets yet</div>';
             }
             
             if (blueList) {
@@ -967,37 +1284,21 @@
                 allBets.blue.slice(-10).forEach(bet => {
                     blueList.innerHTML += `<div class="bet-item"><span>${bet.user}</span><span>₹${bet.amount}</span></div>`;
                 });
-                if (allBets.blue.length === 0) blueList.innerHTML = '<div class="empty">No bets yet</div>';
+                if (allBets.blue.length === 0) blueList.innerHTML = '<div class="empty-state">No bets yet</div>';
             }
         }
 
         function processWin(winner) {
             if (!userData) return;
-            
             const userBet = winner === 'green' ? currentBet.green : currentBet.blue;
             
             if (winner !== 'gray' && userBet > 0) {
-                const winAmount = userBet * 2;
-                userData.balance += winAmount;
-                gameHistory.unshift({
-                    time: new Date().toLocaleString(),
-                    result: 'win',
-                    color: winner,
-                    bet: userBet,
-                    win: winAmount
-                });
+                userData.balance += userBet * 2;
+                gameHistory.unshift({ time: new Date().toLocaleString(), result: 'win', bet: userBet });
             } else if (winner === 'gray' && (currentBet.green > 0 || currentBet.blue > 0)) {
-                const refund = currentBet.green + currentBet.blue;
-                userData.balance += refund;
-                gameHistory.unshift({
-                    time: new Date().toLocaleString(),
-                    result: 'draw',
-                    color: 'gray',
-                    bet: refund,
-                    win: refund
-                });
+                userData.balance += currentBet.green + currentBet.blue;
+                gameHistory.unshift({ time: new Date().toLocaleString(), result: 'draw', bet: currentBet.green + currentBet.blue });
             }
-            
             updateUI();
             loadGameHistory();
         }
@@ -1010,41 +1311,25 @@
             if (strip.children.length > 20) strip.removeChild(strip.lastChild);
         }
 
-        function resetGame() {
-            allBets = { green: [], blue: [] };
-            currentBet = { green: 0, blue: 0 };
-            updateBetLists();
-            updateUI();
-            roundActive = true;
-        }
-
         function loadGameHistory() {
             const historyEl = document.getElementById('game-history');
             if (!gameHistory.length) {
-                historyEl.innerHTML = '<div class="empty">No game history</div>';
+                historyEl.innerHTML = '<div class="empty-state">No game history</div>';
                 return;
             }
-            
-            let html = '';
-            gameHistory.slice(0, 20).forEach(game => {
-                const color = game.color === 'green' ? '🟢' : game.color === 'blue' ? '🔵' : '⚫';
-                html += `<div class="bet-item">${color} ₹${game.bet} - ${game.result}</div>`;
-            });
-            historyEl.innerHTML = html;
+            historyEl.innerHTML = gameHistory.slice(0, 10).map(g => 
+                `<div class="bet-item">${g.time} - ₹${g.bet} - ${g.result}</div>`
+            ).join('');
         }
 
-        // ========== BET AMOUNT CONTROLS ==========
-        function setBetAmount(amount) {
-            document.getElementById('bet-amount').value = amount;
-        }
-
+        // ========== BET CONTROLS ==========
+        function setBetAmount(amount) { document.getElementById('bet-amount').value = amount; }
         function adjustBetAmount(delta) {
             let val = parseInt(document.getElementById('bet-amount').value) || 1;
-            val = Math.max(1, val + delta);
-            document.getElementById('bet-amount').value = val;
+            document.getElementById('bet-amount').value = Math.max(1, val + delta);
         }
 
-        // ========== DEPOSIT FUNCTIONS ==========
+        // ========== DEPOSIT ==========
         function selectAmount(btn) {
             document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
@@ -1055,54 +1340,31 @@
             const amount = parseFloat(document.getElementById('add-amount').value);
             const utr = document.getElementById('utr-number').value.trim();
             
-            if (!amount || amount < 10) {
-                document.getElementById('deposit-message').innerText = 'Minimum deposit ₹10';
-                document.getElementById('deposit-message').classList.remove('hidden');
-                return;
-            }
-            
-            if (!utr) {
-                document.getElementById('deposit-message').innerText = 'Please enter UTR number';
-                document.getElementById('deposit-message').classList.remove('hidden');
-                return;
-            }
+            if (!amount || amount < 10) { showMessage('deposit-message', 'Minimum deposit ₹10', true); return; }
+            if (!utr) { showMessage('deposit-message', 'Please enter UTR number', true); return; }
             
             alert('✅ Deposit request submitted for ₹' + amount);
             document.getElementById('add-amount').value = '';
             document.getElementById('utr-number').value = '';
-            document.getElementById('deposit-message').classList.add('hidden');
         }
 
-        // ========== WITHDRAW FUNCTIONS ==========
+        // ========== WITHDRAW ==========
         function selectWithdrawAmount(btn) {
             document.querySelectorAll('#withdraw-page .amount-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             const amt = parseInt(btn.dataset.amount);
             document.getElementById('withdraw-amount').value = amt;
-            const net = Math.floor(amt / 105) * 100;
-            document.getElementById('withdraw-net').innerText = 'You receive: ₹' + net;
+            document.getElementById('withdraw-net').innerText = 'You receive: ₹' + (Math.floor(amt / 105) * 100);
         }
 
         function submitWithdraw() {
             const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            if (!amount || amount < 105) { showMessage('withdraw-message', 'Minimum withdrawal ₹105', true); return; }
+            if (amount > userData.balance) { showMessage('withdraw-message', 'Insufficient balance', true); return; }
             
-            if (!amount || amount < 105) {
-                document.getElementById('withdraw-message').innerText = 'Minimum withdrawal ₹105';
-                document.getElementById('withdraw-message').classList.remove('hidden');
-                return;
-            }
-            
-            if (amount > userData.balance) {
-                document.getElementById('withdraw-message').innerText = 'Insufficient balance';
-                document.getElementById('withdraw-message').classList.remove('hidden');
-                return;
-            }
-            
-            const net = Math.floor(amount / 105) * 100;
-            alert('✅ Withdrawal request submitted for ₹' + amount + ' (you receive ₹' + net + ')');
+            alert('✅ Withdrawal request submitted for ₹' + amount);
             document.getElementById('withdraw-amount').value = '';
             document.getElementById('withdraw-net').innerText = 'You receive: ₹0';
-            document.getElementById('withdraw-message').classList.add('hidden');
         }
 
         // ========== BANK FUNCTIONS ==========
@@ -1114,6 +1376,9 @@
         function closeBankPopup() {
             document.getElementById('bank-popup').classList.add('hidden');
             document.getElementById('overlay').classList.remove('show');
+            ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
         }
 
         function addBankAccount() {
@@ -1123,39 +1388,40 @@
             const ifsc = document.getElementById('ifsc-code').value.trim().toUpperCase();
             
             if (!bank || !holder || !number || !ifsc) {
-                document.getElementById('bank-message').innerText = 'Please fill all fields';
-                document.getElementById('bank-message').classList.remove('hidden');
+                showMessage('bank-message', 'Please fill all fields', true);
                 return;
             }
             
             bankAccounts.push({ bank, holder, number, ifsc });
-            
-            const bankList = document.getElementById('bank-list');
-            bankList.innerHTML = bankAccounts.map(b => 
-                `<div class="bank-item">${b.bank}<br><small>****${b.number.slice(-4)}</small></div>`
+            document.getElementById('bank-list').innerHTML = bankAccounts.map(b => 
+                `<div class="bank-item">${b.bank}<br><small>${b.holder} | ****${b.number.slice(-4)}</small></div>`
             ).join('');
             
             closeBankPopup();
-            document.getElementById('bank-message').classList.add('hidden');
         }
 
-        // ========== LOGOUT ==========
+        // ========== UTILITY ==========
+        function showMessage(elId, msg, isError) {
+            const el = document.getElementById(elId);
+            el.innerText = msg;
+            el.style.color = isError ? '#ff6b6b' : '#06d6a0';
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
         function logout() {
             if (confirm('Logout?')) {
-                auth.signOut().then(() => {
-                    window.location.reload();
-                });
+                auth.signOut().then(() => window.location.reload());
             }
         }
 
-        // ========== WITHDRAW INPUT LISTENER ==========
+        // ========== INPUT LISTENER ==========
         document.getElementById('withdraw-amount').addEventListener('input', function(e) {
             const amt = parseFloat(e.target.value) || 0;
-            const net = Math.floor(amt / 105) * 100;
-            document.getElementById('withdraw-net').innerText = 'You receive: ₹' + net;
+            document.getElementById('withdraw-net').innerText = 'You receive: ₹' + (Math.floor(amt / 105) * 100);
         });
 
-        // ========== GLOBAL FUNCTIONS ==========
+        // ========== GLOBAL ==========
         window.redirectToTelegram = redirectToTelegram;
         window.showPage = showPage;
         window.toggleMenu = toggleMenu;

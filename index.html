@@ -1,1104 +1,1903 @@
-<!-- ============================================ -->
-<!-- SECTION 1: DOCUMENT HEAD & META TAGS        -->
-<!-- ============================================ -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ============================================ -->
+    <!-- SECTION 1: DOCUMENT HEAD & META TAGS         -->
+    <!-- ============================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Day App</title>
     
-    <!-- ======================================== -->
-    <!-- TELEGRAM WEB APP SDK - USER NAME KE LIYE -->
-    <!-- ======================================== -->
+    <!-- ============================================ -->
+    <!-- SECTION 2: TELEGRAM WEB APP SDK              -->
+    <!-- ============================================ -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- ======================================== -->
-    <!-- FIREBASE 8.x CDN                         -->
-    <!-- ======================================== -->
+    <!-- ============================================ -->
+    <!-- SECTION 3: FIREBASE 8.x CDN                  -->
+    <!-- ============================================ -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- ======================================== -->
-    <!-- FONT AWESOME 6                            -->
-    <!-- ======================================== -->
+    <!-- ============================================ -->
+    <!-- SECTION 4: FONT AWESOME 6                    -->
+    <!-- ============================================ -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- ======================================== -->
-    <!-- GOOGLE FONTS                              -->
-    <!-- ======================================== -->
+    <!-- ============================================ -->
+    <!-- SECTION 5: GOOGLE FONTS                      -->
+    <!-- ============================================ -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- ============================================ -->
+    <!-- SECTION 6: GLOBAL RESET STYLES               -->
+    <!-- ============================================ -->
     <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-input, textarea, button {
-    user-select: text;
-    -webkit-user-select: text;
-}
-
-body {
-    background: #ced8e6 !important;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    font-family: 'Poppins', sans-serif;
-    overflow: auto;
-    margin: 0;
-    padding: 0;
-}
-
-.game-screen {
-    width: 100%;
-    max-width: 450px;
-    min-height: 100vh;
-    height: auto;
-    position: relative;
-    overflow: visible;
-    border-radius: 0;
-    box-shadow: 0 0 50px rgba(255,126,95,0.5);
-}
-
-/* ===== WOODEN BACKGROUND ===== */
-.sunset-ocean {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #8b5a2b;
-    z-index: 0;
-}
-
-.sunset-ocean::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        linear-gradient(90deg, #2a1a0a 0.2vw, transparent 0.2vw),
-        linear-gradient(0deg, #2a1a0a 0.2vw, transparent 0.2vw);
-    background-size: 11.11% 11.11%;
-    pointer-events: none;
-    z-index: 1;
-}
-
-/* ===== APP CONTAINER ===== */
-.app-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-    z-index: 100;
-    overflow-y: visible;
-    background-color: transparent;
-}
-
-.page {
-    width: 100%;
-    min-height: 100vh;
-    height: auto;
-    background-color: transparent;
-    position: relative;
-}
-
-.hidden { display: none !important; }
-
-/* ===== TOP BAR ===== */
-.top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 15px;
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 2px solid #D4AF37;
-    position: sticky;
-    top: 15px;
-    margin-top: 5px;
-    z-index: 10;
-    width: 100%;
-}
-
-.left-buttons {
-    position: relative;
-    display: inline-block;
-}
-
-.balance-btn-black {
-    background: linear-gradient(145deg, #2a2a2a, #0a0a2a);
-    border: none;
-    border-radius: 50px;
-    padding: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #ffffff;
-    height: 46px;
-    width: auto;
-    min-width: 160px;
-    max-width: 220px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding-right: 40px;
-}
-
-.balance-number-bg {
-    background: #1A1A1A;
-    border-radius: 20px;
-    padding: 5px 12px;
-    margin-left: 5px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 36px;
-    border: 1px solid #333;
-    min-width: 70px;
-}
-
-#current-balance {
-    color: #ffffff;
-    font-weight: 500;
-    font-size: 1.2rem;
-}
-
-.plus-btn-maroon {
-    position: absolute;
-    top: 50%;
-    right: 6px;
-    transform: translateY(-50%);
-    z-index: 10;
-    background: radial-gradient(circle at 35% 35%, #8b3a3a, #3a0000 90%);
-    border: none;
-    border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.profile-section {
-    display: flex;
-    gap: 10px;
-}
-
-.notification-btn, .profile-btn {
-    background: rgba(45, 45, 45, 0.8);
-    backdrop-filter: blur(10px);
-    border: 2px solid #D4AF37;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    color: #D4AF37;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* ===== HISTORY CONTAINER ===== */
-.history-container {
-    padding: 0px 12px !important;
-    background: #ced8e6 !important;
-    border-bottom: 2px solid #00BFFF;
-    margin: 0px 8px 4px 8px !important;
-    border-radius: 60px !important;
-    min-height: 42px !important;
-    height: 44px !important;
-    width: 95% !important;
-    max-width: 95% !important;
-    min-width: 350px !important;
-    border: 1px solid white !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    display: flex;
-    align-items: center !important;
-    justify-content: center;
-}
-
-.history-strip {
-    display: flex;
-    gap: 4px !important;
-    overflow-x: auto;
-    padding: 0px 2px;
-    min-height: 38px;
-    align-items: center;
-    width: 100%;
-}
-
-.history-strip::-webkit-scrollbar {
-    display: none;
-}
-
-.history-item {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    color: white;
-    flex-shrink: 0;
-    border: 1.5px solid #ffffff !important;
-}
-
-.history-item.green {
-    background: #00C853 !important;
-}
-
-.history-item.blue {
-    background: #2962FF !important;
-}
-
-.history-item.gray {
-    background: #9e9e9e !important;
-}
-
-/* ===== GAME CONTAINER ===== */
-.game-container {
-    padding: 15px 20px;
-    background: transparent;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    height: calc(100vh - 140px);
-    overflow-y: auto;
-}
-
-.game-center {
-    background: #d0d0d0;
-    padding: 15px 12px;
-    border-radius: 16px;
-    text-align: center;
-}
-
-.timer-display {
-    background: #ffffff;
-    padding: 5px 15px;
-    border-radius: 40px;
-    border: 1px solid #cccccc;
-    margin-bottom: 12px;
-    width: 140px;
-    height: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 2px;
-}
-
-.timer-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #333333;
-}
-
-.result-3d-btn {
-    width: 140px;
-    height: 50px;
-    border-radius: 8px;
-    background: #4a4a4a;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px auto;
-    box-shadow: 0 4px 0 #2a2a2a;
-    transition: all 0.2s ease;
-}
-
-.result-3d-btn.green-result {
-    background: #00C853 !important;
-}
-
-.result-3d-btn.blue-result {
-    background: #2962FF !important;
-}
-
-.result-3d-btn.gray-result {
-    background: #9e9e9e !important;
-}
-
-/* ===== BETTING LISTS ===== */
-.combined-betting-lists {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.bets-header {
-    display: flex;
-    background: rgba(255, 255, 255, 0.12);
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    height: 36px;
-    width: 100%;
-}
-
-.list-title-amount {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 4px 20px;
-}
-
-.list-title-amount h3 {
-    font-size: 0.9rem;
-    color: #ffffff;
-    margin: 0;
-}
-
-.total-amount-box {
-    background: rgba(212, 175, 55, 0.3);
-    color: #ffffff;
-    padding: 2px 15px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    min-width: 70px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bets-content {
-    display: flex;
-    height: 180px;
-    overflow-y: auto;
-}
-
-.bets-column {
-    flex: 1;
-    padding: 2px 8px;
-    background: rgba(0, 0, 0, 0.3);
-}
-
-.bets-list {
-    font-size: 0.7rem;
-    color: #ffffff;
-}
-
-.bet-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1px 0;
-    color: #ffffff;
-    font-size: 0.65rem;
-}
-
-.bet-user-name {
-    font-size: 0.65rem;
-    color: #ffffff;
-    max-width: 70px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.bet-amount {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #000000;
-    background: #ffffff;
-    padding: 2px 8px;
-    border-radius: 12px;
-    min-width: 40px;
-    text-align: center;
-}
-
-.empty-bets {
-    font-size: 0.65rem;
-    color: rgba(255,255,255,0.5);
-    text-align: center;
-    padding: 3px 0;
-}
-
-/* ===== BETTING KEYBOARD ===== */
-.betting-keyboard {
-    background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
-    border-radius: 16px;
-    padding: 15px;
-    margin-top: 10px;
-}
-
-.quick-amounts {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
-    margin-bottom: 12px;
-}
-
-.quick-amount-btn {
-    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-    color: #D4AF37;
-    border: 1px solid #444;
-    padding: 8px 0;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-}
-
-.amount-controls {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 10px;
-}
-
-.amount-btn {
-    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-    color: white;
-    border: 1px solid #444;
-    padding: 10px 5px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-}
-
-.bet-input {
-    flex: 2;
-    text-align: center;
-    padding: 10px 5px;
-    border: 1px solid #444;
-    border-radius: 6px;
-    font-weight: 600;
-    background: #1A1A1A;
-    color: white;
-}
-
-.color-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.color-btn {
-    flex: 1;
-    height: 60px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
-}
-
-.green-btn { 
-    background: linear-gradient(135deg, #00C853, #009624); 
-}
-
-.blue-btn { 
-    background: linear-gradient(135deg, #2962FF, #0039CB);
-}
-
-/* ===== PROFILE PAGE ===== */
-.profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: linear-gradient(145deg, #5D3A1A, #3D2A0F);
-    border-bottom: 3px solid #D4AF37;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.back-btn-text {
-    background: linear-gradient(145deg, #7B5A3A, #5D3A1A);
-    border: none;
-    font-size: 1.5rem;
-    color: #D4AF37;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #D4AF37;
-}
-
-.logout-btn-header {
-    background: linear-gradient(135deg, #B84A2C, #8B2E1A);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    border: 1px solid #D4AF37;
-}
-
-#profile-page {
-    overflow-y: auto !important;
-    background: linear-gradient(135deg, #C49A6C 0%, #B5824E 50%, #9B6A3A 100%);
-    position: relative;
-}
-
-.profile-content {
-    padding: 20px;
-    max-width: 500px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 5;
-}
-
-.profile-left-section {
-    background: rgba(93, 58, 26, 0.75);
-    backdrop-filter: blur(15px);
-    border-radius: 24px;
-    padding: 25px 20px;
-    border: 2px solid #D4AF37;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-}
-
-.profile-avatar-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 15px;
-    position: relative;
-}
-
-.profile-avatar {
-    font-size: 6rem;
-    color: #D4AF37;
-    background: linear-gradient(135deg, #5D3A1A, #3D2A0F);
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid #D4AF37;
-}
-
-.panel-icon {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: linear-gradient(135deg, #D4AF37, #B8860B);
-    color: #3D2A0F;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    border: 2px solid #FFD700;
-}
-
-.edit-avatar-icon {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background: linear-gradient(135deg, #D4AF37, #B8860B);
-    color: #3D2A0F;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 2px solid #D4AF37;
-}
-
-.profile-name-id {
-    text-align: center;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.profile-name-id .name {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #FFE4B5;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-
-.profile-name-id .user-id {
-    font-size: 1rem;
-    color: #FFD700;
-    background: rgba(61, 42, 15, 0.7);
-    padding: 8px 20px;
-    border-radius: 30px;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    border: 1px solid #D4AF37;
-}
-
-#telegram-badge {
-    display: none;
-    background: #27AE60;
-    color: white;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    margin-top: 5px;
-    align-items: center;
-    gap: 5px;
-}
-
-#telegram-username {
-    color: #D4AF37;
-    font-size: 0.9rem;
-    margin-top: 5px;
-}
-
-.action-buttons {
-    display: flex;
-    flex-direction: row !important;
-    gap: 15px;
-    width: 100%;
-    margin: 15px 0;
-}
-
-.action-btn {
-    flex: 1;
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 600;
-    color: #FFE4B5;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 1rem;
-}
-
-.action-btn.deposit { 
-    background: linear-gradient(135deg, #7B5A3A, #5D3A1A);
-    border: 2px solid #D4AF37;
-}
-
-.action-btn.withdraw { 
-    background: linear-gradient(135deg, #9B4A2A, #7B2E1A);
-    border: 2px solid #FF6B4A;
-}
-
-.profile-three-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    margin: 10px 0;
-}
-
-.fullscreen-action-btn {
-    background: linear-gradient(145deg, #7B5A3A, #5D3A1A);
-    border: 2px solid #D4AF37;
-    border-radius: 14px;
-    padding: 12px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-}
-
-.btn-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.btn-icon {
-    width: 42px;
-    height: 42px;
-    background: linear-gradient(135deg, #D4AF37, #B8860B);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #3D2A0F;
-    font-size: 1.3rem;
-    border: 2px solid #FFD700;
-}
-
-.btn-text h3 {
-    font-size: 1.2rem;
-    color: #FFE4B5;
-    font-weight: 600;
-    margin: 0;
-}
-
-.btn-right {
-    color: #D4AF37;
-    font-size: 1.3rem;
-}
-
-/* ===== FULL SCREEN PAGES ===== */
-#full-withdraw-page,
-#full-history-page,
-#full-transaction-page {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: linear-gradient(135deg, #5D3A1A, #3D2A0F);
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
-    display: none;
-}
-
-#full-withdraw-page.active,
-#full-history-page.active,
-#full-transaction-page.active {
-    display: block;
-}
-
-.fullscreen-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0 20px 0;
-    border-bottom: 2px solid #D4AF37;
-    margin-bottom: 20px;
-}
-
-.fullscreen-header h2 {
-    font-size: 1.6rem;
-    color: #FFE4B5;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.close-fullscreen {
-    background: linear-gradient(145deg, #7B5A3A, #5D3A1A);
-    border: 2px solid #D4AF37;
-    color: #D4AF37;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
-.fullscreen-filters {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-}
-
-.fullscreen-filter-btn {
-    background: rgba(93, 58, 26, 0.8);
-    border: 1px solid #D4AF37;
-    padding: 8px 20px;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    color: #FFE4B5;
-}
-
-.fullscreen-filter-btn.active {
-    background: #D4AF37;
-    color: #3D2A0F;
-}
-
-.fullscreen-content {
-    background: rgba(75, 45, 20, 0.6);
-    border-radius: 20px;
-    padding: 20px;
-    border: 2px solid #D4AF37;
-    min-height: calc(100vh - 150px);
-}
-
-.fullscreen-item {
-    background: rgba(93, 58, 26, 0.8);
-    border-radius: 14px;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-left: 4px solid #D4AF37;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fullscreen-item-left {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.fullscreen-item-date {
-    font-size: 0.8rem;
-    color: #D4AF37;
-}
-
-.fullscreen-item-details {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1rem;
-    color: #FFE4B5;
-}
-
-.fullscreen-item-badge {
-    padding: 3px 10px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.badge-won { background: #00C853; color: #000; }
-.badge-lost { background: #C41E3A; color: white; }
-.badge-pending { background: #D4AF37; color: #000; }
-
-.fullscreen-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: #D4AF37;
-    font-size: 1rem;
-    background: rgba(61, 42, 15, 0.6);
-    border-radius: 16px;
-    border: 2px dashed #D4AF37;
-}
-
-/* ===== AUTH PAGES ===== */
-.auth-container {
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: rgba(255, 249, 196, 0.8);
-    min-height: 100vh;
-}
-
-.auth-header {
-    font-weight: 700;
-    font-size: 1.8rem;
-    color: #D4AF37;
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-.auth-input {
-    padding: 12px 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    background: rgba(255, 224, 130, 0.8);
-}
-
-.auth-btn {
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    background: linear-gradient(135deg, #D4AF37, #B8860B);
-    color: #000;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.balance-text {
-    text-align: center;
-    font-weight: 600;
-    color: #D4AF37;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.amount-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.amount-option {
-    padding: 10px;
-    border: 1px solid #D4AF37;
-    background: rgba(255, 224, 130, 0.8);
-    color: #D4AF37;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.amount-option.selected { background: #D4AF37; color: #000; }
-
-.payment-info {
-    background: rgba(255, 213, 79, 0.8);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px dashed #e0e0e0;
-}
-
-.back-btn {
-    background: #9e9e9e;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    width: 100%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-/* ===== MANAGE ACCOUNT ===== */
-.manage-account-page {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 300;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.manage-account-content {
-    background: rgba(255, 249, 196, 0.95);
-    width: 90%;
-    max-width: 400px;
-    max-height: 80vh;
-    overflow-y: auto;
-    border-radius: 12px;
-    padding: 20px;
-    border: 2px solid #D4AF37;
-}
-
-.manage-account-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.manage-account-header h3 {
-    color: #D4AF37;
-    font-size: 1.3rem;
-}
-
-.add-new-btn {
-    background: #D4AF37;
-    color: #000;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 400;
-}
-
-.popup-content {
-    background: rgba(255, 224, 130, 0.95);
-    border-radius: 12px;
-    width: 90%;
-    max-width: 350px;
-    padding: 20px;
-    border: 2px solid #D4AF37;
-}
-
-.popup-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.popup-header h3 { 
-    color: #D4AF37; 
-    font-size: 1.1rem;
-}
-
-.error-message {
-    color: #FF4444;
-    font-size: 0.9rem;
-    padding: 5px;
-    text-align: center;
-}
-
-.success-message {
-    color: #00C853;
-    font-size: 0.9rem;
-    padding: 5px;
-    text-align: center;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        input, textarea, button {
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        body {
+            background: #ced8e6 !important;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: 'Poppins', sans-serif;
+            overflow: auto;
+            margin: 0;
+            padding: 0;
+        }
+
+        .game-screen {
+            width: 100%;
+            max-width: 450px;
+            min-height: 100vh;
+            height: auto;
+            position: relative;
+            overflow: visible;
+            border-radius: 0;
+        }
+
+        /* ============================================ */
+        /* SECTION 7: WOODEN BACKGROUND STYLES         */
+        /* ============================================ */
+        .sunset-ocean {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #8b5a2b;
+            z-index: 0;
+        }
+
+        .sunset-ocean::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(90deg, #2a1a0a 0.2vw, transparent 0.2vw),
+                linear-gradient(0deg, #2a1a0a 0.2vw, transparent 0.2vw);
+            background-size: 11.11% 11.11%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ============================================ */
+        /* SECTION 8: APP CONTAINER                     */
+        /* ============================================ */
+        .app-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            min-height: 100vh;
+            height: auto;
+            z-index: 100;
+            overflow-y: visible;
+            background-color: transparent;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+            height: auto;
+            background-color: transparent;
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ============================================ */
+        /* SECTION 9: LOADING PAGE STYLES              */
+        /* ============================================ */
+        .loading-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a2a3a, #0f1a24);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-page.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            font-size: 4rem;
+            color: #D4AF37;
+            margin-bottom: 20px;
+            animation: pulseLogo 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseLogo {
+            0% { transform: scale(1); opacity: 0.7; text-shadow: 0 0 10px #D4AF37; }
+            50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 30px #D4AF37; }
+            100% { transform: scale(1); opacity: 0.7; text-shadow: 0 0 10px #D4AF37; }
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(212, 175, 55, 0.3);
+            border-top: 4px solid #D4AF37;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #ffffff;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            font-weight: 400;
+        }
+
+        .loading-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #D4AF37;
+            border-radius: 50%;
+            animation: dots 1.4s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: 0s; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dots {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-15px); opacity: 1; }
+        }
+
+        .loading-progress {
+            width: 250px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            border-radius: 4px;
+            animation: progress 2.5s ease-out forwards;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            20% { width: 20%; }
+            40% { width: 40%; }
+            60% { width: 60%; }
+            80% { width: 80%; }
+            100% { width: 100%; }
+        }
+
+        .loading-status {
+            color: #D4AF37;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        /* ============================================ */
+        /* SECTION 10: TOP BAR STYLES                  */
+        /* ============================================ */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #D4AF37;
+            position: sticky;
+            top: 15px;
+            margin-top: 5px;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .left-buttons {
+            position: relative;
+            display: inline-block;
+        }
+
+        .balance-btn-black {
+            background: linear-gradient(145deg, #2a2a2a, #0a0a2a);
+            border: none;
+            border-radius: 50px;
+            padding: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            height: 46px;
+            width: auto;
+            min-width: 160px;
+            max-width: 220px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding-right: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .balance-btn-black:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .balance-number-bg {
+            background: #1A1A1A;
+            border-radius: 20px;
+            padding: 5px 12px;
+            margin-left: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            border: 1px solid #333;
+            min-width: 70px;
+        }
+
+        #current-balance {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+
+        .plus-btn-maroon {
+            position: absolute;
+            top: 50%;
+            right: 6px;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: radial-gradient(circle at 35% 35%, #8b3a3a, #3a0000 90%);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .plus-btn-maroon:hover {
+            transform: translateY(-50%) scale(1.1);
+            background: radial-gradient(circle at 35% 35%, #a54a4a, #4a0000 90%);
+        }
+
+        .plus-btn-maroon:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .plus-btn-maroon .plus-icon {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plus-btn-maroon .plus-horizontal {
+            position: absolute;
+            background: white;
+            width: 16px;
+            height: 3px;
+            border-radius: 3px;
+        }
+
+        .plus-btn-maroon .plus-vertical {
+            position: absolute;
+            background: white;
+            width: 3px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        .profile-section {
+            display: flex;
+            gap: 10px;
+        }
+
+        .notification-btn, .profile-btn {
+            background: rgba(45, 45, 45, 0.8);
+            backdrop-filter: blur(10px);
+            border: 2px solid #D4AF37;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: #D4AF37;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .notification-btn:hover, .profile-btn:hover {
+            transform: scale(1.1);
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        /* ============================================ */
+        /* SECTION 11: HISTORY STRIP STYLES            */
+        /* ============================================ */
+        .history-container {
+            padding: 0px 12px !important;
+            background: #ced8e6 !important;
+            border-bottom: 2px solid #00BFFF;
+            margin: 0px 8px 4px 8px !important;
+            border-radius: 60px !important;
+            min-height: 42px !important;
+            height: 44px !important;
+            width: 95% !important;
+            max-width: 95% !important;
+            min-width: 350px !important;
+            border: 1px solid white !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: flex;
+            align-items: center !important;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .history-section {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .history-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .history-strip {
+            display: flex;
+            gap: 4px;
+            padding: 0 4px;
+            min-height: 38px;
+            align-items: center;
+            width: max-content;
+        }
+
+        .history-item {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+            flex-shrink: 0;
+            border: 1.5px solid #ffffff !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+            margin: 0 2px;
+        }
+
+        .history-item:hover {
+            transform: scale(1.05);
+        }
+
+        .history-item:first-child {
+            margin-left: 0;
+        }
+
+        .history-item.green {
+            background: #00C853 !important;
+        }
+
+        .history-item.blue {
+            background: #2962FF !important;
+        }
+
+        .history-item.gray {
+            background: #9e9e9e !important;
+        }
+
+        .history-container::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 20px;
+            background: linear-gradient(90deg, transparent, #ced8e6);
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .history-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 20px;
+            background: linear-gradient(270deg, transparent, #ced8e6);
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        /* ============================================ */
+        /* SECTION 12: GAME CONTAINER STYLES           */
+        /* ============================================ */
+        .game-container {
+            padding: 15px 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        .game-center {
+            background: #d0d0d0;
+            padding: 15px 12px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .timer-display {
+            background: #ffffff;
+            padding: 5px 15px;
+            border-radius: 40px;
+            border: 1px solid #cccccc;
+            margin-bottom: 12px;
+            width: 140px;
+            height: 50px;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .timer-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333333;
+        }
+
+        .timer-unit {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333333;
+        }
+
+        .result-3d-btn {
+            width: 140px;
+            height: 50px;
+            border-radius: 8px;
+            background: #4a4a4a;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+            box-shadow: 0 4px 0 #2a2a2a;
+            transition: all 0.2s ease;
+        }
+
+        .result-3d-btn.green-result {
+            background: #00C853 !important;
+        }
+
+        .result-3d-btn.blue-result {
+            background: #2962FF !important;
+        }
+
+        .result-3d-btn.gray-result {
+            background: #9e9e9e !important;
+        }
+
+        /* ============================================ */
+        /* SECTION 13: BETTING LISTS STYLES            */
+        /* ============================================ */
+        .combined-betting-lists {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bets-header {
+            display: flex;
+            background: rgba(255, 255, 255, 0.12);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            height: 36px;
+            width: 100%;
+        }
+
+        .list-title-amount {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 20px;
+        }
+
+        .list-title-amount h3 {
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .total-amount-box {
+            background: rgba(212, 175, 55, 0.3);
+            color: #ffffff;
+            padding: 2px 15px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            min-width: 70px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bets-content {
+            display: flex;
+            height: 180px;
+            overflow-y: auto;
+        }
+
+        .bets-column {
+            flex: 1;
+            padding: 2px 8px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .bets-list {
+            font-size: 0.7rem;
+            color: #ffffff;
+        }
+
+        .bet-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1px 0;
+            color: #ffffff;
+            font-size: 0.65rem;
+        }
+
+        .bet-user-name {
+            font-size: 0.65rem;
+            color: #ffffff;
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bet-amount {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #000000;
+            background: #ffffff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .empty-bets {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 3px 0;
+        }
+
+        /* ============================================ */
+        /* SECTION 14: BETTING KEYBOARD STYLES         */
+        /* ============================================ */
+        .betting-keyboard {
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .quick-amounts {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .quick-amount-btn {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            color: #D4AF37;
+            border: 1px solid #444;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .amount-controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .amount-btn {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            color: white;
+            border: 1px solid #444;
+            padding: 10px 5px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .bet-input {
+            flex: 2;
+            text-align: center;
+            padding: 10px 5px;
+            border: 1px solid #444;
+            border-radius: 6px;
+            font-weight: 600;
+            background: #1A1A1A;
+            color: white;
+        }
+
+        .color-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .color-btn {
+            flex: 1;
+            height: 60px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+        }
+
+        .green-btn { 
+            background: linear-gradient(135deg, #00C853, #009624); 
+        }
+
+        .blue-btn { 
+            background: linear-gradient(135deg, #2962FF, #0039CB);
+        }
+
+        /* ============================================ */
+        /* SECTION 15: BET CONFIRMATION POPUP STYLES   */
+        /* ============================================ */
+        .bet-confirmation-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .bet-confirmation-popup .popup-content {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 350px;
+            overflow: hidden;
+            border: 2px solid #D4AF37;
+            animation: slideUp 0.3s ease;
+        }
+
+        .bet-confirmation-popup .popup-header {
+            background: #D4AF37;
+            color: #000;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .bet-confirmation-popup .popup-header.green {
+            background: #00C853;
+        }
+
+        .bet-confirmation-popup .popup-header.blue {
+            background: #2962FF;
+        }
+
+        .bet-confirmation-popup .popup-body {
+            padding: 20px;
+        }
+
+        .bet-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .color-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .color-badge.green {
+            background: #00C853;
+            color: #000;
+        }
+
+        .color-badge.blue {
+            background: #2962FF;
+            color: white;
+        }
+
+        .amount-badge {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+
+        .multiplier-badge {
+            background: #D4AF37;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .win-badge {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00C853;
+        }
+
+        .bet-confirmation-popup .popup-footer {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+            border-top: 1px solid #444;
+        }
+
+        .cancel-btn, .confirm-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cancel-btn {
+            background: #666;
+            color: white;
+        }
+
+        .confirm-btn {
+            background: #D4AF37;
+            color: #000;
+        }
+
+        .confirm-btn.green {
+            background: #00C853;
+            color: #000;
+        }
+
+        .confirm-btn.blue {
+            background: #2962FF;
+            color: white;
+        }
+
+        .cancel-btn:hover, .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ============================================ */
+        /* SECTION 16: CUSTOM POPUP STYLES             */
+        /* ============================================ */
+        .custom-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 25000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .custom-popup .popup-content {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 320px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 2px solid #D4AF37;
+            animation: slideUp 0.3s ease;
+        }
+
+        .custom-popup .popup-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .custom-popup.success .popup-icon { color: #00C853; }
+        .custom-popup.error .popup-icon { color: #C41E3A; }
+        .custom-popup.info .popup-icon { color: #D4AF37; }
+
+        .custom-popup h3 {
+            color: #FFE4B5;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .custom-popup p {
+            color: #D4AF37;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .custom-popup button {
+            background: #D4AF37;
+            color: #000;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .custom-popup button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        /* ============================================ */
+        /* SECTION 17: PROFILE PAGE STYLES             */
+        /* ============================================ */
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(145deg, #5D3A1A, #3D2A0F);
+            border-bottom: 3px solid #D4AF37;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-btn-text {
+            background: linear-gradient(145deg, #7B5A3A, #5D3A1A);
+            border: none;
+            font-size: 1.5rem;
+            color: #D4AF37;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #D4AF37;
+        }
+
+        .logout-btn-header {
+            background: linear-gradient(135deg, #B84A2C, #8B2E1A);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            border: 1px solid #D4AF37;
+        }
+
+        #profile-page {
+            overflow-y: auto !important;
+            background: linear-gradient(135deg, #C49A6C 0%, #B5824E 50%, #9B6A3A 100%);
+            position: relative;
+        }
+
+        .profile-content {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 5;
+        }
+
+        .profile-left-section {
+            background: rgba(93, 58, 26, 0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 25px 20px;
+            border: 2px solid #D4AF37;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-info-simple {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .profile-avatar-simple {
+            font-size: 5rem;
+            color: #D4AF37;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #5D3A1A, #3D2A0F);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #D4AF37;
+        }
+
+        .profile-details {
+            text-align: center;
+            width: 100%;
+        }
+
+        .profile-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #FFE4B5;
+            margin-bottom: 10px;
+        }
+
+        .profile-user-id-container {
+            background: rgba(61, 42, 15, 0.7);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #D4AF37;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .profile-user-id-container:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .user-id-label {
+            color: #D4AF37;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-user-id {
+            color: #FFD700;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .copy-icon {
+            color: #D4AF37;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .telegram-badge {
+            background: #27AE60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .quick-action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #FFE4B5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #7B5A3A, #5D3A1A);
+            border: 1px solid #D4AF37;
+            transition: all 0.2s ease;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        /* ============================================ */
+        /* SECTION 18: ACCOUNT SWITCHER STYLES         */
+        /* ============================================ */
+        .account-switcher {
+            width: 100%;
+            background: rgba(93, 58, 26, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 2px solid #D4AF37;
+        }
+
+        .account-switcher h4 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .saved-accounts-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .saved-account-item {
+            background: rgba(61, 42, 15, 0.8);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .saved-account-item:hover {
+            border-color: #D4AF37;
+            transform: translateX(5px);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .account-avatar-small {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3D2A0F;
+        }
+
+        .account-info-small {
+            flex: 1;
+        }
+
+        .account-name-small {
+            font-weight: 600;
+            color: #FFE4B5;
+        }
+
+        .account-id-small {
+            font-size: 0.8rem;
+            color: #D4AF37;
+            font-family: monospace;
+        }
+
+        .add-account-btn, .close-switcher-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .add-account-btn {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            color: #3D2A0F;
+        }
+
+        .close-switcher-btn {
+            background: #666;
+            color: white;
+        }
+
+        .add-account-btn:hover, .close-switcher-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        /* ============================================ */
+        /* SECTION 19: FULL SCREEN PAGES STYLES        */
+        /* ============================================ */
+        #full-withdraw-page,
+        #full-history-page,
+        #full-transaction-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #5D3A1A, #3D2A0F);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 0;
+            display: none;
+        }
+
+        #full-withdraw-page.active,
+        #full-history-page.active,
+        #full-transaction-page.active {
+            display: block;
+        }
+
+        .fullscreen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: rgba(93, 58, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #D4AF37;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .back-button {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(145deg, #7B5A3A, #5D3A1A);
+            border: 1px solid #D4AF37;
+            border-radius: 50%;
+            color: #D4AF37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+
+        .header-balance {
+            background: rgba(212, 175, 55, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #FFD700;
+            font-weight: 600;
+            border: 1px solid #D4AF37;
+        }
+
+        .withdraw-content {
+            padding: 20px;
+        }
+
+        .amount-section {
+            background: rgba(93, 58, 26, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #D4AF37;
+        }
+
+        .amount-section label {
+            color: #D4AF37;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .amount-input-group {
+            display: flex;
+            align-items: center;
+            background: rgba(61, 42, 15, 0.8);
+            border-radius: 12px;
+            padding: 0 15px;
+            margin-bottom: 15px;
+            border: 1px solid #D4AF37;
+        }
+
+        .amount-input-group span {
+            color: #D4AF37;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .amount-input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 15px 0;
+            color: #FFE4B5;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .amount-input-group input:focus {
+            outline: none;
+        }
+
+        .payment-section h3 {
+            color: #D4AF37;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .payment-methods-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method-card {
+            background: rgba(93, 58, 26, 0.6);
+            border: 1px solid #D4AF37;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .payment-method-card:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateX(5px);
+        }
+
+        .payment-method-card.selected {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: #FFD700;
+        }
+
+        .payment-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3D2A0F;
+            font-size: 1.2rem;
+        }
+
+        .payment-details {
+            flex: 1;
+        }
+
+        .payment-details h4 {
+            color: #FFE4B5;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .payment-details p {
+            color: #D4AF37;
+            font-size: 0.8rem;
+        }
+
+        .submit-withdraw-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border: none;
+            border-radius: 12px;
+            color: #3D2A0F;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .submit-withdraw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .history-filters, .transaction-filters {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .history-filters::-webkit-scrollbar,
+        .transaction-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            background: rgba(93, 58, 26, 0.6);
+            border: 1px solid #D4AF37;
+            padding: 8px 20px;
+            border-radius: 25px;
+            color: #FFE4B5;
+            font-size: 0.9rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .filter-btn.active {
+            background: #D4AF37;
+            color: #3D2A0F;
+            font-weight: 600;
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .stat-card {
+            background: rgba(93, 58, 26, 0.6);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #D4AF37;
+        }
+
+        .stat-label {
+            color: #D4AF37;
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #FFE4B5;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .history-list, .transaction-list {
+            padding: 0 20px 20px;
+        }
+
+        .history-item-compact, .transaction-item-compact {
+            background: rgba(93, 58, 26, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 4px solid #D4AF37;
+            transition: all 0.2s ease;
+        }
+
+        .history-item-compact:hover, .transaction-item-compact:hover {
+            transform: translateX(5px);
+            background: rgba(93, 58, 26, 0.8);
+        }
+
+        .history-item-left, .transaction-item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-item-date, .transaction-item-date {
+            font-size: 0.7rem;
+            color: #D4AF37;
+        }
+
+        .history-item-details {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #FFE4B5;
+        }
+
+        .history-item-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .history-item-badge.won {
+            background: #00C853;
+            color: #000;
+        }
+
+        .history-item-badge.lost {
+            background: #C41E3A;
+            color: white;
+        }
+
+        .history-item-badge.pending {
+            background: #D4AF37;
+            color: #000;
+        }
+
+        .history-item-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #D4AF37;
+        }
+
+        .transaction-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .summary-card {
+            background: rgba(93, 58, 26, 0.6);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid #D4AF37;
+        }
+
+        .summary-card .deposit-icon {
+            color: #00C853;
+            font-size: 1.2rem;
+        }
+
+        .summary-card .withdraw-icon {
+            color: #C41E3A;
+            font-size: 1.2rem;
+        }
+
+        .summary-label {
+            color: #D4AF37;
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .summary-value {
+            color: #FFE4B5;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .transaction-item-compact.deposit {
+            border-left-color: #00C853;
+        }
+
+        .transaction-item-compact.withdraw {
+            border-left-color: #C41E3A;
+        }
+
+        .transaction-item-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .transaction-item-amount.deposit {
+            color: #00C853;
+        }
+
+        .transaction-item-amount.withdraw {
+            color: #C41E3A;
+        }
+
+        /* ============================================ */
+        /* SECTION 20: ADD MONEY / WITHDRAW PAGES      */
+        /* ============================================ */
+        .auth-container {
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: rgba(255, 249, 196, 0.8);
+            min-height: 100vh;
+        }
+
+        .auth-header {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #D4AF37;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .auth-input {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255, 224, 130, 0.8);
+        }
+
+        .auth-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            color: #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .balance-text {
+            text-align: center;
+            font-weight: 600;
+            color: #D4AF37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .amount-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .amount-option {
+            padding: 10px;
+            border: 1px solid #D4AF37;
+            background: rgba(255, 224, 130, 0.8);
+            color: #D4AF37;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .amount-option.selected { 
+            background: #D4AF37; 
+            color: #000; 
+        }
+
+        .payment-info {
+            background: rgba(255, 213, 79, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed #e0e0e0;
+        }
+
+        .back-btn {
+            background: #9e9e9e;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        /* ============================================ */
+        /* SECTION 21: MANAGE ACCOUNT PAGE & POPUPS    */
+        /* ============================================ */
+        .manage-account-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .manage-account-content {
+            background: rgba(255, 249, 196, 0.95);
+            width: 90%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #D4AF37;
+        }
+
+        .manage-account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .manage-account-header h3 {
+            color: #D4AF37;
+            font-size: 1.3rem;
+        }
+
+        .bank-account-item {
+            background: rgba(255, 224, 130, 0.8);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #D4AF37;
+        }
+
+        .upi-item {
+            background: rgba(255, 224, 130, 0.8);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #00C853;
+        }
+
+        .add-new-btn {
+            background: #D4AF37;
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 400;
+        }
+
+        .popup-content {
+            background: rgba(255, 224, 130, 0.95);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 350px;
+            padding: 20px;
+            border: 2px solid #D4AF37;
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .popup-header h3 { 
+            color: #D4AF37; 
+            font-size: 1.1rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #D4AF37;
+            cursor: pointer;
+        }
+
+        .error-message {
+            color: #FF4444;
+            font-size: 0.9rem;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #00C853;
+            font-size: 0.9rem;
+            padding: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <!-- ============================================ -->
+    <!-- SECTION 22: LOADING PAGE HTML                -->
+    <!-- ============================================ -->
+    <div class="loading-page" id="loading-page">
+        <div class="loading-logo">
+            <i class="fas fa-dice-d20"></i>
+        </div>
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">Loading your profile</div>
+        <div class="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar"></div>
+        </div>
+        <div class="loading-status" id="loading-status">Connecting to Telegram...</div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SECTION 23: MAIN GAME SCREEN                 -->
+    <!-- ============================================ -->
     <div class="game-screen">
         <div class="sunset-ocean"></div>
         
         <div class="app-container" id="appContainer">
-            <!-- DASHBOARD PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 24: DASHBOARD PAGE           -->
+            <!-- ==================================== -->
             <div id="dashboard-page" class="page active">
                 <div class="top-bar">
                     <div class="left-buttons">
@@ -1115,7 +1914,7 @@ body {
                         </button>
                     </div>
                     <div class="profile-section">
-                        <button class="notification-btn" onclick="toggleNotificationPanel()">
+                        <button class="notification-btn" onclick="showCustomPopup('🔔 Notifications', 'No new notifications', 'info')">
                             <i class="fas fa-bell"></i>
                         </button>
                         <button class="profile-btn" onclick="showPage('profile-page')">
@@ -1124,14 +1923,18 @@ body {
                     </div>
                 </div>
                 
-                <!-- HISTORY STRIP -->
+                <!-- ================================ -->
+                <!-- SECTION 25: HISTORY STRIP         -->
+                <!-- ================================ -->
                 <div class="history-container">
                     <div class="history-section">
                         <div id="result-history" class="history-strip"></div>
                     </div>
                 </div>
                 
-                <!-- GAME AREA -->
+                <!-- ================================ -->
+                <!-- SECTION 26: GAME AREA             -->
+                <!-- ================================ -->
                 <div class="game-container">
                     <div class="game-center">
                         <div class="timer-section">
@@ -1145,7 +1948,9 @@ body {
                         </div>
                     </div>
                     
-                    <!-- BETTING LISTS -->
+                    <!-- ================================ -->
+                    <!-- SECTION 27: BETTING LISTS        -->
+                    <!-- ================================ -->
                     <div class="combined-betting-lists">
                         <div class="bets-header">
                             <div class="list-title-amount">
@@ -1171,7 +1976,9 @@ body {
                         </div>
                     </div>
                     
-                    <!-- BETTING KEYBOARD -->
+                    <!-- ================================ -->
+                    <!-- SECTION 28: BETTING KEYBOARD     -->
+                    <!-- ================================ -->
                     <div class="betting-keyboard">
                         <div class="quick-amounts">
                             <button class="quick-amount-btn" onclick="setBetAmount(1)">1</button>
@@ -1202,159 +2009,192 @@ body {
                 </div>
             </div>
 
-            <!-- PROFILE PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 29: PROFILE PAGE             -->
+            <!-- ==================================== -->
             <div id="profile-page" class="page hidden">
                 <div class="profile-header">
                     <button class="back-btn-text" onclick="showPage('dashboard-page')">
                         <i class="fas fa-arrow-left"></i>
                     </button>
-                    <h2 class="auth-header">Your Profile</h2>
-                    <button class="logout-btn-header" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                    <h2 class="auth-header">Profile</h2>
+                    <button class="logout-btn-header" onclick="showAccountSwitcher()">
+                        <i class="fas fa-exchange-alt"></i> Switch
                     </button>
                 </div>
                 
                 <div class="profile-content">
                     <div class="profile-layout">
                         <div class="profile-left-section">
-                            <div class="profile-avatar-container">
-                                <div class="profile-avatar">
+                            <div class="profile-info-simple">
+                                <div class="profile-avatar-simple">
                                     <i class="fas fa-user-circle"></i>
                                 </div>
-                                <div class="panel-icon">
-                                    <i class="fas fa-sliders-h"></i>
-                                </div>
-                                <div class="edit-avatar-icon" onclick="editAvatar()">
-                                    <i class="fas fa-pencil-alt"></i>
+                                <div class="profile-details">
+                                    <div class="profile-name" id="profile-name">Loading...</div>
+                                    <div class="profile-user-id-container" onclick="copyUserId()">
+                                        <span class="user-id-label">USER ID</span>
+                                        <span class="profile-user-id" id="profile-user-id">••••••</span>
+                                        <i class="fas fa-copy copy-icon"></i>
+                                    </div>
+                                    <div class="telegram-badge" id="telegram-badge">
+                                        <i class="fab fa-telegram"></i> Connected
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div class="profile-name-id">
-                                <div class="name">
-                                    <span id="profile-name">Loading...</span>
-                                    <i class="fas fa-pencil-alt edit-field-icon" onclick="editName()"></i>
-                                </div>
-                                <div class="user-id" onclick="copyUserId()">
-                                    <i class="fas fa-id-card"></i>
-                                    <span id="profile-user-id">USER••••••</span>
-                                    <i class="fas fa-copy"></i>
-                                </div>
-                                
-                                <div id="telegram-badge">
-                                    <i class="fas fa-check-circle"></i> Connected via Telegram
-                                </div>
-                                <div id="telegram-username"></div>
-                            </div>
-                            
-                            <div class="action-buttons">
-                                <button class="action-btn deposit" onclick="showPage('add-money-page')">
-                                    <i class="fas fa-plus-circle"></i> Add Money
+                            <div class="quick-actions">
+                                <button class="quick-action-btn" onclick="showPage('add-money-page')">
+                                    <i class="fas fa-plus-circle"></i> Add
                                 </button>
-                                <button class="action-btn withdraw" onclick="openFullWithdraw()">
+                                <button class="quick-action-btn" onclick="openFullWithdraw()">
                                     <i class="fas fa-arrow-up"></i> Withdraw
                                 </button>
+                                <button class="quick-action-btn" onclick="openFullHistory()">
+                                    <i class="fas fa-history"></i> History
+                                </button>
                             </div>
                             
-                            <div class="profile-three-buttons">
-                                <div class="fullscreen-action-btn manage-payment-btn" onclick="openFullWithdraw()">
-                                    <div class="btn-left">
-                                        <div class="btn-icon">
-                                            <i class="fas fa-credit-card"></i>
-                                        </div>
-                                        <div class="btn-text">
-                                            <h3>Manage Payment</h3>
-                                        </div>
-                                    </div>
-                                    <div class="btn-right">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="fullscreen-action-btn" onclick="openFullHistory()">
-                                    <div class="btn-left">
-                                        <div class="btn-icon">
-                                            <i class="fas fa-history"></i>
-                                        </div>
-                                        <div class="btn-text">
-                                            <h3>Game History</h3>
-                                        </div>
-                                    </div>
-                                    <div class="btn-right">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="fullscreen-action-btn" onclick="openFullTransaction()">
-                                    <div class="btn-left">
-                                        <div class="btn-icon">
-                                            <i class="fas fa-exchange-alt"></i>
-                                        </div>
-                                        <div class="btn-text">
-                                            <h3>Transactions</h3>
-                                        </div>
-                                    </div>
-                                    <div class="btn-right">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </div>
-                                </div>
+                            <!-- ================================ -->
+                            <!-- SECTION 30: ACCOUNT SWITCHER    -->
+                            <!-- ================================ -->
+                            <div id="account-switcher" class="account-switcher hidden">
+                                <h4><i class="fas fa-exchange-alt"></i> Switch Account</h4>
+                                <div id="saved-accounts-list" class="saved-accounts-list"></div>
+                                <button class="add-account-btn" onclick="addNewAccount()">
+                                    <i class="fas fa-plus-circle"></i> Add New Account
+                                </button>
+                                <button class="close-switcher-btn" onclick="toggleAccountSwitcher()">
+                                    <i class="fas fa-times"></i> Close
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- FULL SCREEN WITHDRAW PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 31: FULL SCREEN WITHDRAW PAGE -->
+            <!-- ==================================== -->
             <div id="full-withdraw-page">
                 <div class="fullscreen-header">
-                    <h2><i class="fas fa-arrow-up"></i> Withdraw Money</h2>
-                    <button class="close-fullscreen" onclick="closeFullWithdraw()">
-                        <i class="fas fa-times"></i>
+                    <button class="back-button" onclick="closeFullWithdraw()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2><i class="fas fa-arrow-up"></i> Withdraw</h2>
+                    <div class="header-balance">₹<span id="withdraw-header-balance">0</span></div>
+                </div>
+                
+                <div class="withdraw-content">
+                    <div class="amount-section">
+                        <label>Amount</label>
+                        <div class="amount-input-group">
+                            <span>₹</span>
+                            <input type="number" id="withdraw-amount-full" placeholder="0" min="100">
+                        </div>
+                        <div class="quick-amounts">
+                            <button class="quick-amount-btn" onclick="setWithdrawAmount(100)">100</button>
+                            <button class="quick-amount-btn" onclick="setWithdrawAmount(500)">500</button>
+                            <button class="quick-amount-btn" onclick="setWithdrawAmount(1000)">1K</button>
+                            <button class="quick-amount-btn" onclick="setWithdrawAmount(5000)">5K</button>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-section">
+                        <h3>Select Payment Method</h3>
+                        <div id="payment-methods-list" class="payment-methods-list"></div>
+                    </div>
+                    
+                    <button class="submit-withdraw-btn" onclick="processWithdraw()">
+                        <i class="fas fa-check-circle"></i> Request Withdrawal
                     </button>
                 </div>
-                <div class="payment-methods-container" id="payment-methods-container"></div>
             </div>
 
-            <!-- FULL SCREEN HISTORY PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 32: FULL SCREEN HISTORY PAGE -->
+            <!-- ==================================== -->
             <div id="full-history-page">
                 <div class="fullscreen-header">
-                    <h2><i class="fas fa-history"></i> Game History</h2>
-                    <button class="close-fullscreen" onclick="closeFullHistory()">
-                        <i class="fas fa-times"></i>
+                    <button class="back-button" onclick="closeFullHistory()">
+                        <i class="fas fa-arrow-left"></i>
                     </button>
-                </div>
-                <div class="fullscreen-filters">
-                    <button class="fullscreen-filter-btn active" onclick="filterFullHistory('all')">All</button>
-                    <button class="fullscreen-filter-btn" onclick="filterFullHistory('won')">Won</button>
-                    <button class="fullscreen-filter-btn" onclick="filterFullHistory('lost')">Lost</button>
-                </div>
-                <div class="fullscreen-content" id="full-history-content">
-                    <div class="fullscreen-empty">
-                        <i class="fas fa-history"></i> No game history yet
+                    <h2><i class="fas fa-history"></i> Game History</h2>
+                    <div class="filter-badge" onclick="toggleHistoryFilter()">
+                        <i class="fas fa-filter"></i>
                     </div>
                 </div>
+                
+                <div class="history-filters" id="history-filters">
+                    <button class="filter-btn active" onclick="filterHistory('all')">All</button>
+                    <button class="filter-btn" onclick="filterHistory('won')">Won</button>
+                    <button class="filter-btn" onclick="filterHistory('lost')">Lost</button>
+                    <button class="filter-btn" onclick="filterHistory('green')">Green</button>
+                    <button class="filter-btn" onclick="filterHistory('blue')">Blue</button>
+                </div>
+                
+                <div class="history-stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Games</span>
+                        <span class="stat-value" id="total-games">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value" id="win-rate">0%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Total Won</span>
+                        <span class="stat-value" id="total-won">₹0</span>
+                    </div>
+                </div>
+                
+                <div class="history-list" id="history-list"></div>
             </div>
 
-            <!-- FULL SCREEN TRANSACTION PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 33: FULL SCREEN TRANSACTION PAGE -->
+            <!-- ==================================== -->
             <div id="full-transaction-page">
                 <div class="fullscreen-header">
-                    <h2><i class="fas fa-exchange-alt"></i> Transactions</h2>
-                    <button class="close-fullscreen" onclick="closeFullTransaction()">
-                        <i class="fas fa-times"></i>
+                    <button class="back-button" onclick="closeFullTransaction()">
+                        <i class="fas fa-arrow-left"></i>
                     </button>
-                </div>
-                <div class="fullscreen-filters">
-                    <button class="fullscreen-filter-btn active" onclick="filterFullTransaction('all')">All</button>
-                    <button class="fullscreen-filter-btn" onclick="filterFullTransaction('deposit')">Deposit</button>
-                    <button class="fullscreen-filter-btn" onclick="filterFullTransaction('withdraw')">Withdraw</button>
-                </div>
-                <div class="fullscreen-content" id="full-transaction-content">
-                    <div class="fullscreen-empty">
-                        <i class="fas fa-exchange-alt"></i> No transactions yet
+                    <h2><i class="fas fa-exchange-alt"></i> Transactions</h2>
+                    <div class="filter-badge" onclick="toggleTransactionFilter()">
+                        <i class="fas fa-filter"></i>
                     </div>
                 </div>
+                
+                <div class="transaction-filters" id="transaction-filters">
+                    <button class="filter-btn active" onclick="filterTransaction('all')">All</button>
+                    <button class="filter-btn" onclick="filterTransaction('deposit')">Deposit</button>
+                    <button class="filter-btn" onclick="filterTransaction('withdraw')">Withdraw</button>
+                    <button class="filter-btn" onclick="filterTransaction('pending')">Pending</button>
+                </div>
+                
+                <div class="transaction-summary">
+                    <div class="summary-card">
+                        <i class="fas fa-arrow-down deposit-icon"></i>
+                        <div>
+                            <span class="summary-label">Total Deposit</span>
+                            <span class="summary-value" id="total-deposit">₹0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-arrow-up withdraw-icon"></i>
+                        <div>
+                            <span class="summary-label">Total Withdraw</span>
+                            <span class="summary-value" id="total-withdraw">₹0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="transaction-list" id="transaction-list"></div>
             </div>
 
-            <!-- ADD MONEY PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 34: ADD MONEY PAGE           -->
+            <!-- ==================================== -->
             <div id="add-money-page" class="page hidden">
                 <div class="auth-container">
                     <h2 class="auth-header"><i class="fas fa-plus-circle"></i> Add Money</h2>
@@ -1377,7 +2217,9 @@ body {
                 </div>
             </div>
 
-            <!-- WITHDRAW PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 35: WITHDRAW PAGE           -->
+            <!-- ==================================== -->
             <div id="withdraw-page" class="page hidden">
                 <div class="auth-container">
                     <h2 class="auth-header"><i class="fas fa-arrow-up"></i> Withdraw Money</h2>
@@ -1395,7 +2237,9 @@ body {
                 </div>
             </div>
 
-            <!-- MANAGE ACCOUNT PAGE -->
+            <!-- ==================================== -->
+            <!-- SECTION 36: MANAGE ACCOUNT PAGE      -->
+            <!-- ==================================== -->
             <div id="manage-account-page" class="manage-account-page hidden">
                 <div class="manage-account-content">
                     <div class="manage-account-header">
@@ -1419,7 +2263,9 @@ body {
                 </div>
             </div>
 
-            <!-- POPUPS -->
+            <!-- ==================================== -->
+            <!-- SECTION 37: ADD BANK POPUP           -->
+            <!-- ==================================== -->
             <div id="add-bank-popup" class="popup-overlay hidden">
                 <div class="popup-content">
                     <div class="popup-header">
@@ -1437,6 +2283,9 @@ body {
                 </div>
             </div>
             
+            <!-- ==================================== -->
+            <!-- SECTION 38: ADD UPI POPUP           -->
+            <!-- ==================================== -->
             <div id="add-upi-popup" class="popup-overlay hidden">
                 <div class="popup-content">
                     <div class="popup-header">
@@ -1452,6 +2301,9 @@ body {
                 </div>
             </div>
             
+            <!-- ==================================== -->
+            <!-- SECTION 39: NOTIFICATION POPUP       -->
+            <!-- ==================================== -->
             <div id="important-notification-popup" class="popup-overlay hidden">
                 <div class="popup-content">
                     <div class="popup-header">
@@ -1468,10 +2320,10 @@ body {
         </div>
     </div>
 
+    <!-- ============================================ -->
+    <!-- SECTION 40: FIREBASE CONFIGURATION          -->
+    <!-- ============================================ -->
     <script>
-        // ========================================
-        // FIREBASE CONFIGURATION
-        // ========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBJSM6TzyOnkW_TO8NHFqv4raNuFCRLhMI",
             authDomain: "fund-money-app-dcd8e.firebaseapp.com",
@@ -1480,26 +2332,26 @@ body {
             messagingSenderId: "623388729434",
             appId: "1:623388729434:web:ffb8a201f857a49ae87863"
         };
-        
+
         if (!firebase.apps.length) { 
             firebase.initializeApp(firebaseConfig); 
         }
-        
+
         const auth = firebase.auth();
         const db = firebase.firestore();
         const usersCollection = db.collection('users');
         const transactionsCollection = db.collection('transactions');
         const gameHistoryCollection = db.collection('game_history');
         const userBetsCollection = db.collection('user_bets');
-        
+
         // ========================================
-        // GLOBAL VARIABLES
+        // SECTION 41: GLOBAL VARIABLES
         // ========================================
         let currentUserData = {
-            userId: 'USER' + Math.floor(100000 + Math.random() * 900000),
-            name: 'Demo User',
-            email: 'demo@example.com',
-            phone: 'Not Set',
+            userId: '',
+            name: '',
+            email: '',
+            phone: '',
             balance: 1000,
             bank_accounts: [],
             upis: [],
@@ -1507,12 +2359,15 @@ body {
             totalWins: 0,
             gamesPlayed: 0,
             createdAt: new Date(),
-            telegramUsername: ''
+            telegramUsername: '',
+            telegramId: '',
+            avatar: ''
         };
-        
+
+        let savedAccounts = JSON.parse(localStorage.getItem('savedAccounts')) || [];
         const MAX_BALANCE = 99999;
         const BETTING_TIME = 15;
-        
+
         let selectedBankIndex = null;
         let selectedUPIIndex = null;
         let gameTimerInterval = null;
@@ -1524,45 +2379,86 @@ body {
             allBets: [],
             currentTime: 0
         };
-        
+
         // ========================================
-        // TELEGRAM USER DATA
+        // SECTION 42: TELEGRAM INITIALIZATION
         // ========================================
-        (function() {
+        function initTelegramData() {
+            const loadingPage = document.getElementById('loading-page');
+            const loadingText = document.getElementById('loading-text');
+            const loadingStatus = document.getElementById('loading-status');
+
             let tg = window.Telegram?.WebApp;
             
             if (tg) {
                 tg.ready();
+                tg.expand();
+                
                 const user = tg.initDataUnsafe?.user;
                 
                 if (user) {
+                    loadingStatus.textContent = 'Loading profile...';
+                    loadingText.textContent = 'Fetching user data';
+                    
                     const firstName = user.first_name || '';
                     const lastName = user.last_name || '';
                     const username = user.username || '';
                     const fullName = `${firstName} ${lastName}`.trim();
+                    const telegramId = user.id.toString();
                     
-                    currentUserData.name = fullName || firstName || 'Telegram User';
-                    currentUserData.telegramUsername = username;
-                    currentUserData.telegramId = user.id;
-                    currentUserData.userId = `USER${user.id.toString().slice(-6)}`;
+                    currentUserData = {
+                        ...currentUserData,
+                        userId: `USER${telegramId.slice(-6)}`,
+                        name: fullName || firstName || 'Telegram User',
+                        telegramUsername: username,
+                        telegramId: telegramId,
+                        balance: 1000
+                    };
                     
-                    console.log("Telegram user loaded:", fullName);
+                    const existingAccount = savedAccounts.find(acc => acc.telegramId === telegramId);
+                    if (!existingAccount) {
+                        savedAccounts.push({
+                            userId: currentUserData.userId,
+                            name: currentUserData.name,
+                            telegramId: telegramId,
+                            avatar: user.photo_url || '',
+                            lastLogin: new Date().toISOString()
+                        });
+                        localStorage.setItem('savedAccounts', JSON.stringify(savedAccounts));
+                    }
                     
-                    // Show Telegram badge
+                    loadingStatus.textContent = 'Almost there...';
+                    loadingText.textContent = 'Setting up game';
+                    
                     setTimeout(() => {
-                        const badge = document.getElementById('telegram-badge');
-                        if (badge) badge.style.display = 'inline-flex';
-                    }, 500);
+                        updateProfileDisplay();
+                        loadingPage.classList.add('fade-out');
+                        setTimeout(() => {
+                            loadingPage.style.display = 'none';
+                        }, 800);
+                        showCustomPopup('👋 Welcome!', `Hello ${currentUserData.name}!`, 'success');
+                    }, 4000);
+                    
+                } else {
+                    loadingStatus.textContent = 'Error...';
+                    loadingText.textContent = 'Telegram data not found';
+                    setTimeout(() => {
+                        alert('This app only works in Telegram!');
+                        loadingPage.style.display = 'none';
+                    }, 2000);
                 }
             } else {
-                console.log("Not in Telegram Web App - using demo");
+                loadingStatus.textContent = 'Error...';
+                loadingText.textContent = 'Telegram required';
+                setTimeout(() => {
+                    alert('This app only works in Telegram!');
+                    loadingPage.style.display = 'none';
+                }, 2000);
             }
-            
-            setTimeout(updateProfileDisplay, 500);
-        })();
-        
+        }
+
         // ========================================
-        // UI FUNCTIONS
+        // SECTION 43: UI FUNCTIONS
         // ========================================
         function formatBalance(amount) {
             if (amount > MAX_BALANCE) amount = MAX_BALANCE;
@@ -1573,17 +2469,17 @@ body {
             if (otherNumbers !== '') lastThree = ',' + lastThree;
             return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
         }
-        
+
         function updateProfileDisplay() {
             if (!currentUserData) return;
-            const balance = formatBalance(currentUserData.balance || 0);
             
             const elements = {
-                'current-balance': balance,
-                'add-balance-display': balance,
-                'withdraw-balance-display': balance,
+                'current-balance': formatBalance(currentUserData.balance || 0),
+                'add-balance-display': formatBalance(currentUserData.balance || 0),
+                'withdraw-balance-display': formatBalance(currentUserData.balance || 0),
+                'withdraw-header-balance': formatBalance(currentUserData.balance || 0),
                 'profile-name': currentUserData.name || 'User',
-                'profile-user-id': currentUserData.userId || 'USER123456'
+                'profile-user-id': currentUserData.userId || 'USER••••••'
             };
             
             for (let [id, value] of Object.entries(elements)) {
@@ -1591,487 +2487,223 @@ body {
                 if (el) el.textContent = value;
             }
             
-            const tgUsernameEl = document.getElementById('telegram-username');
-            if (tgUsernameEl && currentUserData.telegramUsername) {
-                tgUsernameEl.textContent = `@${currentUserData.telegramUsername}`;
+            const tgBadge = document.getElementById('telegram-badge');
+            if (tgBadge && currentUserData.telegramUsername) {
+                tgBadge.style.display = 'inline-flex';
+                tgBadge.innerHTML = `<i class="fab fa-telegram"></i> @${currentUserData.telegramUsername}`;
             }
         }
-        
+
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
                 window.scrollTo(0, 0);
-                
-                if (pageId === 'profile-page') {
-                    updateProfileDisplay();
-                }
+                if (pageId === 'profile-page') updateProfileDisplay();
             }
             document.getElementById('manage-account-page')?.classList.add('hidden');
         }
-        
-        function toggleNotificationPanel() {
-            alert('No new notifications');
-        }
-        
-        function copyUserId() {
-            const userIdEl = document.getElementById('profile-user-id');
-            if (!userIdEl) return;
-            navigator.clipboard.writeText(userIdEl.innerText)
-                .then(() => alert('User ID copied!'))
-                .catch(() => alert('Failed to copy'));
-        }
-        
-        function editAvatar() { alert('Avatar edit coming soon!'); }
-        function editName() { 
-            const newName = prompt('Enter new name:', currentUserData?.name);
-            if (newName) {
-                currentUserData.name = newName;
-                updateProfileDisplay();
-            }
-        }
-        
-        function updateBalance(newBalance) {
-            if (newBalance > MAX_BALANCE) newBalance = MAX_BALANCE;
-            if (newBalance < 0) newBalance = 0;
-            currentUserData.balance = newBalance;
-            updateProfileDisplay();
-            return newBalance;
-        }
-        
-        function addBalance(amount) { 
-            return updateBalance(currentUserData.balance + amount); 
-        }
-        
-        function subtractBalance(amount) { 
-            return updateBalance(currentUserData.balance - amount); 
-        }
-        
-        // ========================================
-        // FULL SCREEN FUNCTIONS
-        // ========================================
-        function openFullWithdraw() {
-            document.getElementById('full-withdraw-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadPaymentMethods();
-        }
-        
-        function closeFullWithdraw() {
-            document.getElementById('full-withdraw-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function openFullHistory() {
-            document.getElementById('full-history-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadDemoGameHistory('all');
-        }
-        
-        function closeFullHistory() {
-            document.getElementById('full-history-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function openFullTransaction() {
-            document.getElementById('full-transaction-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadDemoTransactionHistory('all');
-        }
-        
-        function closeFullTransaction() {
-            document.getElementById('full-transaction-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function loadPaymentMethods() {
-            const container = document.getElementById('payment-methods-container');
-            if (!container) return;
-            
-            let html = '<div class="payment-section-title">Select Payment Method</div>';
-            
-            if (currentUserData?.bank_accounts?.length > 0) {
-                currentUserData.bank_accounts.forEach((bank, index) => {
-                    html += `<div class="payment-method-item">
-                        <div class="payment-icon"><i class="fas fa-university"></i></div>
-                        <div class="payment-details">
-                            <h4>${bank.bankName}</h4>
-                            <p>****${bank.accountNumber.slice(-4)}</p>
+
+        function showCustomPopup(title, message, type = 'info') {
+            const popupHTML = `
+                <div class="custom-popup ${type}" id="custom-popup">
+                    <div class="popup-content">
+                        <div class="popup-icon">
+                            <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
                         </div>
-                    </div>`;
-                });
-            }
-            
-            if (currentUserData?.upis?.length > 0) {
-                currentUserData.upis.forEach((upi, index) => {
-                    html += `<div class="payment-method-item">
-                        <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
-                        <div class="payment-details">
-                            <h4>${upi.upiId}</h4>
-                            <p>${upi.holderName}</p>
-                        </div>
-                    </div>`;
-                });
-            }
-            
-            if (!currentUserData?.bank_accounts?.length && !currentUserData?.upis?.length) {
-                html += `<div class="fullscreen-empty">
-                    <i class="fas fa-credit-card"></i> No payment methods added
-                </div>`;
-            }
-            
-            html += `<div class="add-payment-btn" onclick="showAddPaymentOptions()">
-                <i class="fas fa-plus-circle"></i> Add Payment Method
-            </div>`;
-            
-            container.innerHTML = html;
-        }
-        
-        function showAddPaymentOptions() {
-            const container = document.getElementById('payment-methods-container');
-            container.innerHTML = `
-                <div class="fullscreen-header" style="padding-top: 0;">
-                    <h2><i class="fas fa-plus-circle"></i> Add Payment</h2>
-                    <button class="close-fullscreen" onclick="loadPaymentMethods()">
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                </div>
-                <div class="payment-methods-container">
-                    <div class="payment-method-item" onclick="showAddBankPopup(); closeFullWithdraw();">
-                        <div class="payment-icon"><i class="fas fa-university"></i></div>
-                        <div class="payment-details">
-                            <h4>Bank Account</h4>
-                            <p>Add your bank details</p>
-                        </div>
-                    </div>
-                    <div class="payment-method-item" onclick="showAddUPIPopup(); closeFullWithdraw();">
-                        <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
-                        <div class="payment-details">
-                            <h4>UPI ID</h4>
-                            <p>Add your UPI ID</p>
-                        </div>
+                        <h3>${title}</h3>
+                        <p>${message}</p>
+                        <button onclick="closeCustomPopup()">OK</button>
                     </div>
                 </div>
             `;
+            
+            const existing = document.getElementById('custom-popup');
+            if (existing) existing.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', popupHTML);
+            
+            if (type === 'success') {
+                setTimeout(closeCustomPopup, 2000);
+            }
         }
-        
-        function filterFullHistory(filter) {
-            loadDemoGameHistory(filter);
-            document.querySelectorAll('#full-history-page .fullscreen-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase() === filter || 
-                    (filter === 'all' && btn.textContent === 'All')) {
-                    btn.classList.add('active');
+
+        function closeCustomPopup() {
+            const popup = document.getElementById('custom-popup');
+            if (popup) popup.remove();
+        }
+
+        // ========================================
+        // SECTION 44: ACCOUNT SWITCHING
+        // ========================================
+        function showAccountSwitcher() {
+            const switcher = document.getElementById('account-switcher');
+            if (switcher) {
+                switcher.classList.remove('hidden');
+                loadSavedAccounts();
+            }
+        }
+
+        function toggleAccountSwitcher() {
+            const switcher = document.getElementById('account-switcher');
+            if (switcher) switcher.classList.toggle('hidden');
+        }
+
+        function loadSavedAccounts() {
+            const list = document.getElementById('saved-accounts-list');
+            if (!list) return;
+            
+            savedAccounts = JSON.parse(localStorage.getItem('savedAccounts')) || [];
+            
+            if (savedAccounts.length === 0) {
+                list.innerHTML = '<div class="empty-accounts">No saved accounts</div>';
+                return;
+            }
+            
+            let html = '';
+            savedAccounts.forEach((acc, index) => {
+                if (acc.telegramId !== currentUserData.telegramId) {
+                    html += `
+                        <div class="saved-account-item" onclick="switchToAccount(${index})">
+                            <div class="account-avatar-small">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="account-info-small">
+                                <div class="account-name-small">${acc.name}</div>
+                                <div class="account-id-small">${acc.userId}</div>
+                            </div>
+                        </div>
+                    `;
                 }
             });
+            
+            list.innerHTML = html || '<div class="empty-accounts">No other accounts</div>';
         }
-        
-        function loadDemoGameHistory(filter = 'all') {
-            const contentEl = document.getElementById('full-history-content');
-            if (!contentEl) return;
+
+        function switchToAccount(index) {
+            const account = savedAccounts[index];
+            if (!account) return;
             
-            const demoHistory = [
-                { date: '2024-03-15 14:30', color: 'green', amount: 100, result: 'Won' },
-                { date: '2024-03-15 14:15', color: 'blue', amount: 50, result: 'Lost' },
-                { date: '2024-03-15 14:00', color: 'green', amount: 200, result: 'Won' },
-                { date: '2024-03-15 13:45', color: 'blue', amount: 75, result: 'Pending' },
-            ];
+            currentUserData.userId = account.userId;
+            currentUserData.name = account.name;
+            currentUserData.telegramId = account.telegramId;
             
-            const filtered = filter === 'all' ? demoHistory : 
-                demoHistory.filter(item => item.result.toLowerCase() === filter.toLowerCase());
-            
-            if (filtered.length === 0) {
-                contentEl.innerHTML = `<div class="fullscreen-empty">
-                    <i class="fas fa-history"></i> No ${filter !== 'all' ? filter + ' ' : ''}game history yet
-                </div>`;
-                return;
-            }
-            
-            let html = '';
-            filtered.forEach(item => {
-                const badgeClass = item.result === 'Won' ? 'badge-won' : 
-                                  item.result === 'Lost' ? 'badge-lost' : 'badge-pending';
-                html += `<div class="fullscreen-item">
-                    <div class="fullscreen-item-left">
-                        <div class="fullscreen-item-date">${item.date}</div>
-                        <div class="fullscreen-item-details">
-                            <span>${item.color === 'green' ? '🟢 Green' : '🔵 Blue'}</span>
-                            <span class="fullscreen-item-badge ${badgeClass}">${item.result}</span>
-                        </div>
-                    </div>
-                    <div class="fullscreen-item-amount">₹${item.amount}</div>
-                </div>`;
-            });
-            contentEl.innerHTML = html;
+            updateProfileDisplay();
+            toggleAccountSwitcher();
+            showCustomPopup('✅ Account Switched', `Now logged in as ${account.name}`, 'success');
         }
-        
-        function filterFullTransaction(filter) {
-            loadDemoTransactionHistory(filter);
-            document.querySelectorAll('#full-transaction-page .fullscreen-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase() === filter || 
-                    (filter === 'all' && btn.textContent === 'All')) {
-                    btn.classList.add('active');
-                }
-            });
+
+        function addNewAccount() {
+            showCustomPopup('📱 New Account', 'Please open Telegram and start the app with new account', 'info');
         }
-        
-        function loadDemoTransactionHistory(filter = 'all') {
-            const contentEl = document.getElementById('full-transaction-content');
-            if (!contentEl) return;
-            
-            const demoTransactions = [
-                { date: '2024-03-15 10:30', type: 'deposit', amount: 1000, status: 'Approved' },
-                { date: '2024-03-14 15:20', type: 'withdraw', amount: 500, status: 'Pending' },
-                { date: '2024-03-13 09:15', type: 'deposit', amount: 2000, status: 'Approved' },
-                { date: '2024-03-12 18:45', type: 'withdraw', amount: 300, status: 'Approved' },
-            ];
-            
-            const filtered = filter === 'all' ? demoTransactions : 
-                demoTransactions.filter(item => item.type === filter);
-            
-            if (filtered.length === 0) {
-                contentEl.innerHTML = `<div class="fullscreen-empty">
-                    <i class="fas fa-exchange-alt"></i> No ${filter !== 'all' ? filter + ' ' : ''}transactions yet
-                </div>`;
-                return;
-            }
-            
-            let html = '';
-            filtered.forEach(item => {
-                const statusClass = item.status === 'Approved' ? 'badge-won' : 
-                                   item.status === 'Pending' ? 'badge-pending' : 'badge-lost';
-                html += `<div class="fullscreen-item">
-                    <div class="fullscreen-item-left">
-                        <div class="fullscreen-item-date">${item.date}</div>
-                        <div class="fullscreen-item-details">
-                            <span>${item.type === 'deposit' ? '📥 Deposit' : '📤 Withdraw'}</span>
-                            <span class="fullscreen-item-badge ${statusClass}">${item.status}</span>
-                        </div>
-                    </div>
-                    <div class="fullscreen-item-amount ${item.type}">₹${item.amount}</div>
-                </div>`;
-            });
-            contentEl.innerHTML = html;
-        }
-        
+
         // ========================================
-        // BANK & UPI FUNCTIONS
-        // ========================================
-        function showAddBankPopup() {
-            document.getElementById('add-bank-popup')?.classList.remove('hidden');
-            document.getElementById('bank-message')?.classList.add('hidden');
-            hideManageAccount();
-        }
-        
-        function closeAddBankPopup() {
-            document.getElementById('add-bank-popup')?.classList.add('hidden');
-            ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => {
-                const el = document.getElementById(id); if (el) el.value = '';
-            });
-        }
-        
-        function addBankAccount() {
-            const bankName = document.getElementById('bank-name')?.value.trim();
-            const accountHolder = document.getElementById('account-holder')?.value.trim();
-            const accountNumber = document.getElementById('account-number')?.value.trim();
-            const ifscCode = document.getElementById('ifsc-code')?.value.trim().toUpperCase();
-            
-            if (!bankName || !accountHolder || !accountNumber || !ifscCode) {
-                alert('All fields are required');
-                return;
-            }
-            
-            if (!currentUserData.bank_accounts) currentUserData.bank_accounts = [];
-            currentUserData.bank_accounts.push({ bankName, accountHolder, accountNumber, ifscCode });
-            
-            closeAddBankPopup();
-            alert('Bank account added successfully!');
-            showManageAccount();
-        }
-        
-        function showAddUPIPopup() {
-            document.getElementById('add-upi-popup')?.classList.remove('hidden');
-            document.getElementById('upi-message')?.classList.add('hidden');
-            hideManageAccount();
-        }
-        
-        function closeAddUPIPopup() {
-            document.getElementById('add-upi-popup')?.classList.add('hidden');
-            ['upi-id','upi-holder'].forEach(id => {
-                const el = document.getElementById(id); if (el) el.value = '';
-            });
-        }
-        
-        function addUPI() {
-            const upiId = document.getElementById('upi-id')?.value.trim();
-            const holderName = document.getElementById('upi-holder')?.value.trim();
-            if (!upiId || !holderName) {
-                alert('All fields are required');
-                return;
-            }
-            
-            if (!currentUserData.upis) currentUserData.upis = [];
-            currentUserData.upis.push({ upiId, holderName });
-            
-            closeAddUPIPopup();
-            alert('UPI ID added successfully!');
-            showManageAccount();
-        }
-        
-        function showManageAccount() {
-            document.getElementById('manage-account-page')?.classList.remove('hidden');
-            loadBankAccountsManage();
-            loadUPIsManage();
-        }
-        
-        function hideManageAccount() {
-            document.getElementById('manage-account-page')?.classList.add('hidden');
-        }
-        
-        function loadBankAccountsManage() {
-            const bankList = document.getElementById('bank-accounts-list-manage');
-            if (!bankList || !currentUserData?.bank_accounts) return;
-            
-            if (!currentUserData.bank_accounts.length) {
-                bankList.innerHTML = '<div class="empty-bets">No bank accounts</div>';
-                return;
-            }
-            
-            let html = '';
-            currentUserData.bank_accounts.forEach((bank, i) => {
-                html += `<div class="bank-account-item">
-                    <div><strong>${bank.bankName}</strong></div>
-                    <div>${bank.accountHolder}</div>
-                    <div>****${bank.accountNumber.slice(-4)}</div>
-                </div>`;
-            });
-            bankList.innerHTML = html;
-        }
-        
-        function loadUPIsManage() {
-            const upiList = document.getElementById('upi-list-manage');
-            if (!upiList || !currentUserData?.upis) return;
-            
-            if (!currentUserData.upis.length) {
-                upiList.innerHTML = '<div class="empty-bets">No UPI IDs</div>';
-                return;
-            }
-            
-            let html = '';
-            currentUserData.upis.forEach((upi, i) => {
-                html += `<div class="upi-item">
-                    <div><strong>${upi.upiId}</strong></div>
-                    <div>${upi.holderName}</div>
-                </div>`;
-            });
-            upiList.innerHTML = html;
-        }
-        
-        // ========================================
-        // ADD MONEY / WITHDRAW
-        // ========================================
-        function selectAmount(btn) {
-            document.querySelectorAll('#add-money-page .amount-option').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            const input = document.getElementById('add-amount'); 
-            if (input) input.value = btn.getAttribute('data-amount');
-        }
-        
-        function selectWithdrawAmount(btn) {
-            document.querySelectorAll('#withdraw-page .amount-option').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            const input = document.getElementById('withdraw-amount'); 
-            if (input) input.value = btn.getAttribute('data-amount');
-        }
-        
-        function submitAddMoneyRequest() {
-            const amount = parseFloat(document.getElementById('add-amount')?.value);
-            const txId = document.getElementById('transaction-id')?.value.trim();
-            
-            if (isNaN(amount) || amount < 10 || !txId) {
-                alert('Valid amount (Min 10) and UTR ID required');
-                return;
-            }
-            
-            if (currentUserData.balance + amount > MAX_BALANCE) {
-                alert('Cannot exceed maximum balance of ' + formatBalance(MAX_BALANCE));
-                return;
-            }
-            
-            alert(`₹${amount} request submitted (Pending)`);
-            document.getElementById('add-amount').value = '';
-            document.getElementById('transaction-id').value = '';
-            
-            setTimeout(() => {
-                addBalance(amount);
-                alert(`₹${amount} added to balance!`);
-            }, 2000);
-        }
-        
-        function submitWithdrawRequest() {
-            const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
-            
-            if (isNaN(amount) || amount < 100 || amount > (currentUserData.balance || 0)) {
-                alert(`Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance || 0)}`);
-                return;
-            }
-            
-            subtractBalance(amount);
-            alert(`₹${amount} withdrawal requested`);
-            document.getElementById('withdraw-amount').value = '';
-        }
-        
-        function closeImportantNotification() {
-            document.getElementById('important-notification-popup')?.classList.add('hidden');
-        }
-        
-        // ========================================
-        // GAME FUNCTIONS
+        // SECTION 45: BETTING FUNCTIONS
         // ========================================
         function setBetAmount(amount) { 
             const input = document.getElementById('bet-amount'); 
             if (input) input.value = amount; 
         }
-        
+
         function adjustBetAmount(delta) {
             const input = document.getElementById('bet-amount'); 
             if (!input) return;
             let cur = parseInt(input.value) || 1;
-            if (cur + delta < 1) input.value = 1;
-            else input.value = cur + delta;
+            input.value = Math.max(1, cur + delta);
         }
-        
+
         function placeBet(color) {
             const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
+            
             if (isNaN(betAmount) || betAmount < 1) {
-                alert('Enter valid amount (Min 1)');
+                showCustomPopup('❌ Invalid Amount', 'Please enter a valid bet amount (Min 1)', 'error');
                 return;
             }
+            
             if (betAmount > currentUserData.balance) {
-                alert('Insufficient balance!');
+                showCustomPopup('⚠️ Insufficient Balance', `Your balance: ₹${formatBalance(currentUserData.balance)}`, 'error');
                 return;
             }
             
-            currentUserData.balance -= betAmount;
-            currentBet[color] += betAmount;
+            showBetConfirmation(color, betAmount);
+        }
+
+        function showBetConfirmation(color, amount) {
+            const colorName = color === 'green' ? '🟢 GREEN' : '🔵 BLUE';
+            
+            const popupHTML = `
+                <div class="bet-confirmation-popup" id="bet-confirmation">
+                    <div class="popup-content">
+                        <div class="popup-header ${color}">
+                            <i class="fas fa-dice"></i> Confirm Bet
+                        </div>
+                        <div class="popup-body">
+                            <div class="bet-details">
+                                <div class="detail-row">
+                                    <span>Color:</span>
+                                    <span class="color-badge ${color}">${colorName}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Amount:</span>
+                                    <span class="amount-badge">₹${amount}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Multiplier:</span>
+                                    <span class="multiplier-badge">2x</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Potential Win:</span>
+                                    <span class="win-badge">₹${amount * 2}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="popup-footer">
+                            <button class="cancel-btn" onclick="closeBetConfirmation()">Cancel</button>
+                            <button class="confirm-btn ${color}" onclick="executeBet('${color}', ${amount})">Confirm Bet</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const existing = document.getElementById('bet-confirmation');
+            if (existing) existing.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', popupHTML);
+        }
+
+        function closeBetConfirmation() {
+            const popup = document.getElementById('bet-confirmation');
+            if (popup) popup.remove();
+        }
+
+        function executeBet(color, amount) {
+            closeBetConfirmation();
+            
+            currentUserData.balance -= amount;
+            currentBet[color] += amount;
+            
+            if (!userBetMap[color][currentUserData.userId]) {
+                userBetMap[color][currentUserData.userId] = {
+                    userName: currentUserData.name,
+                    amount: 0
+                };
+            }
+            userBetMap[color][currentUserData.userId].amount += amount;
+            
+            if (color === 'green') gameState.totalGreenBets += amount;
+            else gameState.totalBlueBets += amount;
+            
             updateProfileDisplay();
-            
-            if (color === 'green') gameState.totalGreenBets += betAmount;
-            else gameState.totalBlueBets += betAmount;
-            
             updateBetListDisplay(color);
             updateTotalDisplay();
-            alert(`Bet placed: ${color} ₹${betAmount}`);
+            
+            showCustomPopup('✅ Bet Placed!', `${color === 'green' ? '🟢 Green' : '🔵 Blue'} - ₹${amount}`, 'success');
         }
-        
+
         function updateBetListDisplay(color) {
             const list = document.getElementById(`${color}-bets-list`);
             if (!list) return;
-            
-            if (!userBetMap[color]['demo']) {
-                userBetMap[color]['demo'] = { userName: currentUserData.name, amount: currentBet[color] };
-            }
             
             const users = Object.entries(userBetMap[color] || {})
                 .map(([userId, data]) => ({ userId, ...data }))
@@ -2093,14 +2725,17 @@ body {
             });
             list.innerHTML = html;
         }
-        
+
         function updateTotalDisplay() {
             const greenTotal = document.getElementById('green-total');
             const blueTotal = document.getElementById('blue-total');
             if (greenTotal) greenTotal.textContent = gameState.totalGreenBets;
             if (blueTotal) blueTotal.textContent = gameState.totalBlueBets;
         }
-        
+
+        // ========================================
+        // SECTION 46: GAME LOOP
+        // ========================================
         function startGameLoop() {
             if (gameTimerInterval) clearInterval(gameTimerInterval);
             let timeLeft = BETTING_TIME;
@@ -2122,7 +2757,7 @@ body {
             }
             gameTimerInterval = setInterval(updateTimer, 10);
         }
-        
+
         function endGameRound() {
             if (gameTimerInterval) clearInterval(gameTimerInterval);
             const resultBox = document.getElementById('result-box');
@@ -2137,7 +2772,6 @@ body {
             
             resultBox.classList.add(resultColor + '-result');
             
-            // Process wins
             if (resultColor !== 'gray' && currentBet[resultColor] > 0) {
                 currentUserData.balance += currentBet[resultColor] * 2;
             } else if (resultColor === 'gray') {
@@ -2147,7 +2781,6 @@ body {
             updateProfileDisplay();
             updateHistoryDisplay(resultColor);
             
-            // Reset for next round
             setTimeout(() => {
                 currentBet = { green: 0, blue: 0 };
                 gameState = { totalGreenBets: 0, totalBlueBets: 0, allBets: [], currentTime: 0 };
@@ -2162,7 +2795,7 @@ body {
                 startGameLoop();
             }, 3000);
         }
-        
+
         function updateHistoryDisplay(resultColor) {
             const hist = document.getElementById('result-history'); 
             if (!hist) return;
@@ -2175,25 +2808,410 @@ body {
             newItem.innerHTML = `<i class="fas ${icon}"></i>`;
             
             hist.insertBefore(newItem, hist.firstChild);
-            if (hist.children.length > 20) hist.removeChild(hist.lastChild);
+            if (hist.children.length > 15) hist.removeChild(hist.lastChild);
+            
+            setTimeout(() => {
+                const section = document.querySelector('.history-section');
+                if (section) section.scrollLeft = 0;
+            }, 50);
         }
-        
+
         // ========================================
-        // AUTHENTICATION
+        // SECTION 47: COPY USER ID
         // ========================================
-        updateProfileDisplay();
-        startGameLoop();
-        
-        auth.signInAnonymously().catch(error => {
-            console.error("Anonymous sign-in failed:", error);
-        });
-        
-        function logout() {
-            alert('Logged out');
+        function copyUserId() {
+            const userId = currentUserData.userId;
+            if (!userId) return;
+            
+            navigator.clipboard.writeText(userId).then(() => {
+                showCustomPopup('📋 Copied!', 'User ID copied to clipboard', 'success');
+            }).catch(() => {
+                showCustomPopup('❌ Error', 'Failed to copy', 'error');
+            });
         }
-        
+
         // ========================================
-        // INITIALIZATION
+        // SECTION 48: FULL SCREEN PAGE FUNCTIONS
+        // ========================================
+        function openFullWithdraw() {
+            document.getElementById('full-withdraw-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadPaymentMethods();
+            updateProfileDisplay();
+        }
+
+        function closeFullWithdraw() {
+            document.getElementById('full-withdraw-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openFullHistory() {
+            document.getElementById('full-history-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadGameHistoryData();
+        }
+
+        function closeFullHistory() {
+            document.getElementById('full-history-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openFullTransaction() {
+            document.getElementById('full-transaction-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadTransactionData();
+        }
+
+        function closeFullTransaction() {
+            document.getElementById('full-transaction-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function loadPaymentMethods() {
+            const list = document.getElementById('payment-methods-list');
+            if (!list) return;
+            
+            let html = '';
+            
+            if (currentUserData?.bank_accounts?.length > 0) {
+                currentUserData.bank_accounts.forEach((bank, index) => {
+                    html += `
+                        <div class="payment-method-card" onclick="selectPaymentMethod('bank', ${index})">
+                            <div class="payment-icon"><i class="fas fa-university"></i></div>
+                            <div class="payment-details">
+                                <h4>${bank.bankName}</h4>
+                                <p>****${bank.accountNumber.slice(-4)}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (currentUserData?.upis?.length > 0) {
+                currentUserData.upis.forEach((upi, index) => {
+                    html += `
+                        <div class="payment-method-card" onclick="selectPaymentMethod('upi', ${index})">
+                            <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
+                            <div class="payment-details">
+                                <h4>${upi.upiId}</h4>
+                                <p>${upi.holderName}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (!html) {
+                html = '<div class="fullscreen-empty">No payment methods added</div>';
+            }
+            
+            list.innerHTML = html;
+        }
+
+        function setWithdrawAmount(amount) {
+            const input = document.getElementById('withdraw-amount-full');
+            if (input) input.value = amount;
+        }
+
+        function processWithdraw() {
+            const amount = parseFloat(document.getElementById('withdraw-amount-full')?.value);
+            if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
+                showCustomPopup('❌ Invalid Amount', 'Please enter a valid amount (Min 100)', 'error');
+                return;
+            }
+            
+            subtractBalance(amount);
+            showCustomPopup('✅ Withdrawal Requested', `₹${amount} will be processed soon`, 'success');
+            closeFullWithdraw();
+        }
+
+        function loadGameHistoryData() {
+            const list = document.getElementById('history-list');
+            if (!list) return;
+            
+            document.getElementById('total-games').textContent = currentUserData.gamesPlayed || 0;
+            const winRate = currentUserData.gamesPlayed > 0 
+                ? Math.round((currentUserData.totalWins / currentUserData.gamesPlayed) * 100) 
+                : 0;
+            document.getElementById('win-rate').textContent = winRate + '%';
+            document.getElementById('total-won').textContent = '₹' + (currentUserData.totalWins * 100 || 0);
+            
+            const demoHistory = [
+                { date: '10:30 AM', color: 'green', amount: 100, result: 'Won' },
+                { date: '10:15 AM', color: 'blue', amount: 50, result: 'Lost' },
+                { date: '09:45 AM', color: 'green', amount: 200, result: 'Won' },
+                { date: '09:30 AM', color: 'blue', amount: 75, result: 'Pending' },
+            ];
+            
+            let html = '';
+            demoHistory.forEach(item => {
+                html += `
+                    <div class="history-item-compact">
+                        <div class="history-item-left">
+                            <div class="history-item-date">${item.date}</div>
+                            <div class="history-item-details">
+                                <span>${item.color === 'green' ? '🟢' : '🔵'} ${item.color}</span>
+                                <span class="history-item-badge ${item.result.toLowerCase()}">${item.result}</span>
+                            </div>
+                        </div>
+                        <div class="history-item-amount">₹${item.amount}</div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function loadTransactionData() {
+            const list = document.getElementById('transaction-list');
+            if (!list) return;
+            
+            document.getElementById('total-deposit').textContent = '₹1,000';
+            document.getElementById('total-withdraw').textContent = '₹500';
+            
+            const demoTransactions = [
+                { date: 'Today 10:00', type: 'deposit', amount: 500, status: 'Approved' },
+                { date: 'Yesterday 15:30', type: 'withdraw', amount: 200, status: 'Pending' },
+                { date: '25 Mar 2024', type: 'deposit', amount: 1000, status: 'Approved' },
+                { date: '24 Mar 2024', type: 'withdraw', amount: 300, status: 'Approved' },
+            ];
+            
+            let html = '';
+            demoTransactions.forEach(item => {
+                html += `
+                    <div class="transaction-item-compact ${item.type}">
+                        <div class="transaction-item-left">
+                            <div class="transaction-item-date">${item.date}</div>
+                            <div class="transaction-item-details">
+                                <span>${item.type === 'deposit' ? '📥 Deposit' : '📤 Withdraw'}</span>
+                                <span class="history-item-badge ${item.status.toLowerCase()}">${item.status}</span>
+                            </div>
+                        </div>
+                        <div class="transaction-item-amount ${item.type}">${item.type === 'deposit' ? '+' : '-'}₹${item.amount}</div>
+                    </div>
+                `;
+            });
+            
+            list.innerHTML = html;
+        }
+
+        function toggleHistoryFilter() {
+            const filters = document.getElementById('history-filters');
+            if (filters) filters.classList.toggle('show');
+        }
+
+        function toggleTransactionFilter() {
+            const filters = document.getElementById('transaction-filters');
+            if (filters) filters.classList.toggle('show');
+        }
+
+        function filterHistory(filter) {
+            document.querySelectorAll('#history-filters .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadGameHistoryData();
+        }
+
+        function filterTransaction(filter) {
+            document.querySelectorAll('#transaction-filters .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadTransactionData();
+        }
+
+        // ========================================
+        // SECTION 49: BALANCE FUNCTIONS
+        // ========================================
+        function updateBalance(newBalance) {
+            if (newBalance > MAX_BALANCE) newBalance = MAX_BALANCE;
+            if (newBalance < 0) newBalance = 0;
+            currentUserData.balance = newBalance;
+            updateProfileDisplay();
+            return newBalance;
+        }
+
+        function addBalance(amount) { 
+            return updateBalance(currentUserData.balance + amount); 
+        }
+
+        function subtractBalance(amount) { 
+            return updateBalance(currentUserData.balance - amount); 
+        }
+
+        // ========================================
+        // SECTION 50: BANK & UPI FUNCTIONS
+        // ========================================
+        function showAddBankPopup() {
+            document.getElementById('add-bank-popup')?.classList.remove('hidden');
+            hideManageAccount();
+        }
+
+        function closeAddBankPopup() {
+            document.getElementById('add-bank-popup')?.classList.add('hidden');
+            ['bank-name','account-holder','account-number','ifsc-code'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+        }
+
+        function addBankAccount() {
+            const bankName = document.getElementById('bank-name')?.value.trim();
+            const accountHolder = document.getElementById('account-holder')?.value.trim();
+            const accountNumber = document.getElementById('account-number')?.value.trim();
+            const ifscCode = document.getElementById('ifsc-code')?.value.trim().toUpperCase();
+            
+            if (!bankName || !accountHolder || !accountNumber || !ifscCode) {
+                showCustomPopup('❌ Error', 'All fields are required', 'error');
+                return;
+            }
+            
+            if (!currentUserData.bank_accounts) currentUserData.bank_accounts = [];
+            currentUserData.bank_accounts.push({ bankName, accountHolder, accountNumber, ifscCode });
+            
+            closeAddBankPopup();
+            showCustomPopup('✅ Success', 'Bank account added successfully', 'success');
+            showManageAccount();
+        }
+
+        function showAddUPIPopup() {
+            document.getElementById('add-upi-popup')?.classList.remove('hidden');
+            hideManageAccount();
+        }
+
+        function closeAddUPIPopup() {
+            document.getElementById('add-upi-popup')?.classList.add('hidden');
+            ['upi-id','upi-holder'].forEach(id => {
+                const el = document.getElementById(id); if (el) el.value = '';
+            });
+        }
+
+        function addUPI() {
+            const upiId = document.getElementById('upi-id')?.value.trim();
+            const holderName = document.getElementById('upi-holder')?.value.trim();
+            if (!upiId || !holderName) {
+                showCustomPopup('❌ Error', 'All fields are required', 'error');
+                return;
+            }
+            
+            if (!currentUserData.upis) currentUserData.upis = [];
+            currentUserData.upis.push({ upiId, holderName });
+            
+            closeAddUPIPopup();
+            showCustomPopup('✅ Success', 'UPI ID added successfully', 'success');
+            showManageAccount();
+        }
+
+        function showManageAccount() {
+            document.getElementById('manage-account-page')?.classList.remove('hidden');
+            loadBankAccountsManage();
+            loadUPIsManage();
+        }
+
+        function hideManageAccount() {
+            document.getElementById('manage-account-page')?.classList.add('hidden');
+        }
+
+        function loadBankAccountsManage() {
+            const bankList = document.getElementById('bank-accounts-list-manage');
+            if (!bankList || !currentUserData?.bank_accounts) return;
+            
+            if (!currentUserData.bank_accounts.length) {
+                bankList.innerHTML = '<div class="empty-bets">No bank accounts</div>';
+                return;
+            }
+            
+            let html = '';
+            currentUserData.bank_accounts.forEach((bank, i) => {
+                html += `<div class="bank-account-item">
+                    <div><strong>${bank.bankName}</strong></div>
+                    <div>${bank.accountHolder}</div>
+                    <div>****${bank.accountNumber.slice(-4)}</div>
+                </div>`;
+            });
+            bankList.innerHTML = html;
+        }
+
+        function loadUPIsManage() {
+            const upiList = document.getElementById('upi-list-manage');
+            if (!upiList || !currentUserData?.upis) return;
+            
+            if (!currentUserData.upis.length) {
+                upiList.innerHTML = '<div class="empty-bets">No UPI IDs</div>';
+                return;
+            }
+            
+            let html = '';
+            currentUserData.upis.forEach((upi, i) => {
+                html += `<div class="upi-item">
+                    <div><strong>${upi.upiId}</strong></div>
+                    <div>${upi.holderName}</div>
+                </div>`;
+            });
+            upiList.innerHTML = html;
+        }
+
+        // ========================================
+        // SECTION 51: ADD MONEY / WITHDRAW
+        // ========================================
+        function selectAmount(btn) {
+            document.querySelectorAll('#add-money-page .amount-option').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            const input = document.getElementById('add-amount'); 
+            if (input) input.value = btn.getAttribute('data-amount');
+        }
+
+        function selectWithdrawAmount(btn) {
+            document.querySelectorAll('#withdraw-page .amount-option').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            const input = document.getElementById('withdraw-amount'); 
+            if (input) input.value = btn.getAttribute('data-amount');
+        }
+
+        function submitAddMoneyRequest() {
+            const amount = parseFloat(document.getElementById('add-amount')?.value);
+            const txId = document.getElementById('transaction-id')?.value.trim();
+            
+            if (isNaN(amount) || amount < 10 || !txId) {
+                showCustomPopup('❌ Error', 'Valid amount (Min 10) and UTR ID required', 'error');
+                return;
+            }
+            
+            if (currentUserData.balance + amount > MAX_BALANCE) {
+                showCustomPopup('⚠️ Limit Exceeded', 'Cannot exceed maximum balance', 'error');
+                return;
+            }
+            
+            showCustomPopup('✅ Request Submitted', `₹${amount} request is pending`, 'success');
+            document.getElementById('add-amount').value = '';
+            document.getElementById('transaction-id').value = '';
+            
+            setTimeout(() => {
+                addBalance(amount);
+                showCustomPopup('💰 Balance Updated', `₹${amount} added to balance`, 'success');
+            }, 2000);
+        }
+
+        function submitWithdrawRequest() {
+            const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
+            
+            if (isNaN(amount) || amount < 100 || amount > (currentUserData.balance || 0)) {
+                showCustomPopup('❌ Error', `Valid amount required. Min 100`, 'error');
+                return;
+            }
+            
+            subtractBalance(amount);
+            showCustomPopup('✅ Withdrawal Requested', `₹${amount} will be processed soon`, 'success');
+            document.getElementById('withdraw-amount').value = '';
+            showPage('profile-page');
+        }
+
+        function closeImportantNotification() {
+            document.getElementById('important-notification-popup')?.classList.add('hidden');
+        }
+
+        // ========================================
+        // SECTION 52: INITIALIZATION
         // ========================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log("App Initialized");
@@ -2206,12 +3224,17 @@ body {
                     });
                 }
             });
+            
+            initTelegramData();
+            startGameLoop();
         });
-        
-        // EXPORT FUNCTIONS
+
+        // ========================================
+        // SECTION 53: EXPORT FUNCTIONS
+        // ========================================
         window.showPage = showPage;
-        window.logout = logout;
-        window.toggleNotificationPanel = toggleNotificationPanel;
+        window.showCustomPopup = showCustomPopup;
+        window.closeCustomPopup = closeCustomPopup;
         window.selectAmount = selectAmount;
         window.selectWithdrawAmount = selectWithdrawAmount;
         window.submitAddMoneyRequest = submitAddMoneyRequest;
@@ -2227,8 +3250,6 @@ body {
         window.setBetAmount = setBetAmount;
         window.adjustBetAmount = adjustBetAmount;
         window.copyUserId = copyUserId;
-        window.editAvatar = editAvatar;
-        window.editName = editName;
         window.showManageAccount = showManageAccount;
         window.hideManageAccount = hideManageAccount;
         window.openFullWithdraw = openFullWithdraw;
@@ -2237,10 +3258,17 @@ body {
         window.closeFullHistory = closeFullHistory;
         window.openFullTransaction = openFullTransaction;
         window.closeFullTransaction = closeFullTransaction;
-        window.filterFullHistory = filterFullHistory;
-        window.filterFullTransaction = filterFullTransaction;
-        window.loadPaymentMethods = loadPaymentMethods;
-        window.showAddPaymentOptions = showAddPaymentOptions;
+        window.filterHistory = filterHistory;
+        window.filterTransaction = filterTransaction;
+        window.toggleHistoryFilter = toggleHistoryFilter;
+        window.toggleTransactionFilter = toggleTransactionFilter;
+        window.setWithdrawAmount = setWithdrawAmount;
+        window.processWithdraw = processWithdraw;
+        window.showAccountSwitcher = showAccountSwitcher;
+        window.toggleAccountSwitcher = toggleAccountSwitcher;
+        window.switchToAccount = switchToAccount;
+        window.addNewAccount = addNewAccount;
+        window.closeBetConfirmation = closeBetConfirmation;
     </script>
 </body>
 </html>

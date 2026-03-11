@@ -3963,25 +3963,38 @@ function initTelegramAndWelcome() {
         }
 
 function loadUserData(uid) {
+    console.log("📥 Loading user data for UID:", uid);
+    
     usersCollection.doc(uid).onSnapshot(doc => {
         if (doc.exists) {
             const firebaseData = doc.data();
             
-            // 🔥 सिर्फ वही update करो जो Firebase से आया है
-            currentUserData.balance = firebaseData.balance || 1000;
-            currentUserData.name = firebaseData.name || currentUserData.name;
-            currentUserData.email = firebaseData.email || currentUserData.email;
-            currentUserData.userId = firebaseData.userId || currentUserData.userId;
-            currentUserData.totalWins = firebaseData.totalWins || 0;
-            currentUserData.gamesPlayed = firebaseData.gamesPlayed || 0;
+            // 🔥 HAR CHEEZ CONSOLE MEIN DEKHO
+            console.log("🔥 Firebase raw data:", firebaseData);
+            console.log("💰 Firebase balance:", firebaseData.balance);
+            console.log("📱 Current balance BEFORE update:", currentUserData.balance);
             
-            console.log("🔥 Firebase balance loaded:", firebaseData.balance);
-            console.log("💰 Current balance set to:", currentUserData.balance);
+            // सीधे balance set करो
+            currentUserData.balance = firebaseData.balance;
             
+            console.log("📱 Current balance AFTER update:", currentUserData.balance);
+            
+            // दूसरे fields update करो
+            if (firebaseData.name) currentUserData.name = firebaseData.name;
+            if (firebaseData.email) currentUserData.email = firebaseData.email;
+            if (firebaseData.userId) currentUserData.userId = firebaseData.userId;
+            if (firebaseData.totalWins !== undefined) currentUserData.totalWins = firebaseData.totalWins;
+            if (firebaseData.gamesPlayed !== undefined) currentUserData.gamesPlayed = firebaseData.gamesPlayed;
+            
+            // UI update
             updateProfileDisplay();
-            renderNotifications();
+            
+            // Check कि balance सही दिखा या नहीं
+            const balanceEl = document.getElementById('current-balance');
+            console.log("💰 UI Balance element text:", balanceEl?.textContent);
+            
         } else {
-            console.log("No user document found, creating...");
+            console.log("⚠️ No user document found, creating new...");
             usersCollection.doc(uid).set({
                 userId: currentUserData.userId,
                 name: currentUserData.name,
@@ -3990,10 +4003,12 @@ function loadUserData(uid) {
                 createdAt: new Date(),
                 totalWins: 0,
                 gamesPlayed: 0
+            }).then(() => {
+                console.log("✅ New user created with balance 1000");
             }).catch(console.error);
         }
     }, error => {
-        console.error("Error loading user data:", error);
+        console.error("❌ Error loading user data:", error);
     });
 }
         

@@ -3155,36 +3155,39 @@ body {
         const userBetsCollection = db.collection('user_bets');
         
         // ======================================== -->
-        // 35.GLOBAL VARIABLES
-        // ======================================== -->
-        let currentUserData = {
-            userId: '12345678',
-            name: 'Demo User',
-            email: 'demo@example.com',
-            phone: 'Not Set',
-            balance: 1000,
-            bank_accounts: [],
-            upis: [],
-            notifications: [],
-            totalWins: 0,
-            gamesPlayed: 0,
-            createdAt: new Date()
-        };
-        
-        const MAX_BALANCE = 99999;
-        
-        let selectedBankIndex = null;
-        let selectedUPIIndex = null;
-        let gameTimerInterval = null;
-        let currentBet = { green: 0, blue: 0 };
-        let userBetMap = { green: {}, blue: {} };
-        const BETTING_TIME = 15;
-        let gameState = {
-            totalGreenBets: 0,
-            totalBlueBets: 0,
-            allBets: [],
-            currentTime: 0
-        };
+// 35.GLOBAL VARIABLES
+// ======================================== -->
+let currentUserData = {
+    userId: '12345678', // temporary, Telegram se real ID aayegi
+    name: 'Demo User',
+    email: 'demo@example.com',
+    phone: 'Not Set',
+    balance: 1000,
+    bank_accounts: [],
+    upis: [],
+    notifications: [],
+    totalWins: 0,
+    gamesPlayed: 0,
+    createdAt: new Date(),
+    firebaseDocId: null, // ✅ IMPORTANT: Firebase document ID store karega
+    telegram_id: null, // ✅ Telegram ID store
+    telegram_username: null // ✅ Telegram username store
+};
+
+const MAX_BALANCE = 99999;
+
+let selectedBankIndex = null;
+let selectedUPIIndex = null;
+let gameTimerInterval = null;
+let currentBet = { green: 0, blue: 0 };
+let userBetMap = { green: {}, blue: {} };
+const BETTING_TIME = 15;
+let gameState = {
+    totalGreenBets: 0,
+    totalBlueBets: 0,
+    allBets: [],
+    currentTime: 0
+};
         
         // ======================================== -->
         // 36.UI HELPER FUNCTIONS
@@ -3355,78 +3358,87 @@ body {
         }
 
         // ======================================== -->
-// 38.TELEGRAM + WELCOME POPUP - ये function ढूंढो
+// 38.TELEGRAM + WELCOME POPUP - COMPLETE
 // ======================================== -->
 
 function initTelegramAndWelcome() {
-  let userName = 'User';
-  
-  // Telegram se name lo
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    const tgUser = tg.initDataUnsafe?.user;
+    let userName = 'User';
+    let telegramId = null;
     
-    if (tgUser) {
-      // --- यहाँ से नया code start ---
-      
-      // 1. REAL TELEGRAM USER ID लो
-      const realUserId = tgUser.id.toString(); // यह real ID है
-      console.log("Telegram User ID:", realUserId); // debug ke liye
-      
-      // 2. Profile page में ID दिखाओ
-      const userIdEl = document.getElementById('profile-user-id');
-      if (userIdEl) {
-        userIdEl.textContent = realUserId;
-      }
-      
-      // 3. CurrentUserData में ID store करो
-      if (currentUserData) {
-        currentUserData.userId = realUserId;
-      }
-      
-      // --- यहाँ तक new code end ---
-      
-      // Name handle karo (पहले से है)
-      const firstName = tgUser.first_name || '';
-      const lastName = tgUser.last_name || '';
-      userName = (firstName + ' ' + lastName).trim() || 'User';
-      
-      // Profile page mein name update karo
-      const profileName = document.getElementById('profile-name');
-      if (profileName) profileName.textContent = userName;
-      
-      // CurrentUserData mein bhi update
-      if (currentUserData) {
-        currentUserData.name = userName;
-      }
+    // Telegram se data fetch
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const tgUser = tg.initDataUnsafe?.user;
+        
+        if (tgUser) {
+            // REAL TELEGRAM DATA
+            telegramId = tgUser.id.toString();
+            const firstName = tgUser.first_name || '';
+            const lastName = tgUser.last_name || '';
+            userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+            const username = tgUser.username || '';
+            
+            console.log("✅ Telegram User Detected:");
+            console.log("   ID:", telegramId);
+            console.log("   Name:", userName);
+            console.log("   Username:", username);
+            
+            // ✅ UPDATE CURRENT USER DATA
+            if (currentUserData) {
+                currentUserData.userId = telegramId; // REAL Telegram ID
+                currentUserData.name = userName;
+                currentUserData.telegram_id = telegramId;
+                currentUserData.telegram_username = username;
+            }
+            
+            // Update UI
+            const profileName = document.getElementById('profile-name');
+            if (profileName) profileName.textContent = userName;
+            
+            const userIdEl = document.getElementById('profile-user-id');
+            if (userIdEl) userIdEl.textContent = telegramId;
+            
+            // Show telegram badge
+            const badge = document.getElementById('telegram-badge');
+            const usernameSpan = document.getElementById('telegram-username');
+            if (badge && usernameSpan) {
+                badge.classList.remove('hidden');
+                usernameSpan.textContent = username ? '@' + username : 'Connected via Telegram';
+            }
+        }
     }
-  }
-  
-  // Welcome popup dikhao
-  setTimeout(() => {
-    const popup = document.getElementById('welcome-popup');
-    const nameEl = document.getElementById('welcome-user-name');
-    if (popup && nameEl) {
-      nameEl.textContent = userName;
-      popup.classList.remove('hidden');
-      
-      setTimeout(() => {
-        popup.classList.add('hidden');
-      }, 3000);
+    
+    // Welcome popup (हमेशा दिखेगा, लेकिन localStorage check करेगा)
+    const welcomeShown = localStorage.getItem('welcomePopupShown');
+    if (!welcomeShown) {
+        setTimeout(() => {
+            const popup = document.getElementById('welcome-popup');
+            const nameEl = document.getElementById('welcome-user-name');
+            if (popup && nameEl) {
+                nameEl.textContent = userName;
+                popup.classList.remove('hidden');
+                
+                // 3 seconds ke baad hide
+                setTimeout(() => {
+                    popup.classList.add('hidden');
+                }, 3000);
+                
+                // Mark as shown
+                localStorage.setItem('welcomePopupShown', 'true');
+            }
+        }, 1000);
     }
-  }, 1000);
 }
 
-        function closeWelcomePopup() {
-            document.getElementById('welcome-popup').classList.add('hidden');
-        }
+function closeWelcomePopup() {
+    document.getElementById('welcome-popup').classList.add('hidden');
+}
 
-        // DOM Loaded pe chalao
-        document.addEventListener('DOMContentLoaded', function() {
-            // Thoda delay de kar chalao
-            setTimeout(initTelegramAndWelcome, 1500);
-        });
+// DOM Loaded pe chalao
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initTelegramAndWelcome, 1000);
+});
         
         // ======================================== -->
         // 39.FULL SCREEN FUNCTIONS
@@ -3897,71 +3909,124 @@ function initTelegramAndWelcome() {
         }
         
         // ======================================== -->
-// 43.AUTHENTICATION - COMPLETE FIXED SECTION
+// 43.AUTHENTICATION - COMPLETE AUTO DOCUMENT
 // ======================================== -->
 
-// Initial setup
 updateProfileDisplay();
 startGameLoop();
 showStatusMessage('Welcome to Fund Money!', 'success');
 
 auth.signInAnonymously().then(userCredential => {
-    console.log("Signed in anonymously:", userCredential.user.uid);
+    const authUid = userCredential.user.uid;
+    console.log("✅ Firebase Auth UID:", authUid);
+    console.log("👤 User ID (Telegram/Demo):", currentUserData.userId);
     
-    // ✅ FIX: userCredential.user.UID se document ढूंढो
-    const userUid = userCredential.user.uid;
+    // ✅ IMPORTANT: Document ID = Telegram ID (या currentUserData.userId)
+    const documentId = currentUserData.userId;
     
-    usersCollection.doc(userUid).get().then(doc => {
+    console.log("📄 Will use document ID:", documentId);
+    
+    // Check if document exists with this ID
+    usersCollection.doc(documentId).get().then(doc => {
         if (!doc.exists) {
-            console.log("Creating new user with UID:", userUid);
+            // 🆕 NEW USER - Automatically create document
+            console.log("🆕 Creating new user document with ID:", documentId);
             
-            // नया user बनाओ
-            usersCollection.doc(userUid).set({
-                userId: currentUserData.userId, // 12345678
+            const newUserData = {
+                userId: documentId,
                 name: currentUserData.name,
-                email: currentUserData.email,
+                email: currentUserData.email || 'user@apexday.com',
                 balance: 1000,
                 bank_accounts: [],
                 upis: [],
                 notifications: [{
                     type: 'welcome',
-                    message: 'Welcome to Fund Money! 1000 bonus credited.',
+                    message: '🎉 Welcome to Apex Day! ₹1000 bonus credited.',
                     timestamp: new Date()
                 }],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 totalWins: 0,
-                gamesPlayed: 0
-            }).then(() => {
-                console.log("✅ New user created with balance 1000");
-                loadUserData(userUid);
-            }).catch(error => {
-                console.error("❌ Error creating user:", error);
-            });
+                gamesPlayed: 0,
+                telegram_id: currentUserData.telegram_id || null,
+                telegram_username: currentUserData.telegram_username || null,
+                lastLogin: new Date()
+            };
+            
+            usersCollection.doc(documentId).set(newUserData)
+                .then(() => {
+                    console.log("✅ New user document created successfully!");
+                    console.log("💰 Initial balance: 1000");
+                    currentUserData.firebaseDocId = documentId;
+                    loadUserData(documentId);
+                })
+                .catch(error => {
+                    console.error("❌ Error creating user:", error);
+                    // Fallback to auth UID
+                    createUserWithAuthUid(authUid);
+                });
+            
         } else {
-            console.log("✅ User found with UID:", userUid);
-            loadUserData(userUid);
+            // 👋 EXISTING USER - Load data
+            console.log("👋 Existing user found with ID:", documentId);
+            currentUserData.firebaseDocId = documentId;
+            loadUserData(documentId);
         }
     }).catch(error => {
-        console.error("❌ Error checking user document:", error);
+        console.error("❌ Error checking document:", error);
+        // Fallback to auth UID
+        createUserWithAuthUid(authUid);
     });
     
 }).catch(error => {
-    console.error("Anonymous sign-in failed:", error);
+    console.error("❌ Anonymous sign-in failed:", error);
     showStatusMessage('Login failed! Using demo mode.', 'error');
 });
 
+// 🔁 Fallback function - Auth UID se document
+function createUserWithAuthUid(authUid) {
+    console.log("⚠️ Using fallback - creating with Auth UID:", authUid);
+    
+    const fallbackData = {
+        userId: currentUserData.userId,
+        name: currentUserData.name,
+        email: currentUserData.email || 'user@apexday.com',
+        balance: 1000,
+        bank_accounts: [],
+        upis: [],
+        notifications: [{
+            type: 'welcome',
+            message: '🎉 Welcome to Apex Day! ₹1000 bonus credited.',
+            timestamp: new Date()
+        }],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        totalWins: 0,
+        gamesPlayed: 0,
+        telegram_id: currentUserData.telegram_id || null,
+        telegram_username: currentUserData.telegram_username || null,
+        lastLogin: new Date()
+    };
+    
+    usersCollection.doc(authUid).set(fallbackData)
+        .then(() => {
+            console.log("✅ Fallback: User created with Auth UID");
+            currentUserData.firebaseDocId = authUid;
+            loadUserData(authUid);
+        })
+        .catch(console.error);
+}
+
 auth.onAuthStateChanged(user => {
     if (user) {
-        console.log("User signed in:", user.uid);
+        console.log("👤 Auth state: User signed in");
     } else {
-        console.log("User signed out");
+        console.log("👤 Auth state: User signed out");
     }
 });
 
 function logout() {
     auth.signOut().then(() => {
         currentUserData = {
-            userId: String(Math.floor(100000 + Math.random() * 900000)),
+            userId: '12345678', // Reset to demo
             name: 'Demo User',
             email: 'demo@example.com',
             balance: 1000,
@@ -3969,7 +4034,10 @@ function logout() {
             upis: [],
             notifications: [],
             totalWins: 0,
-            gamesPlayed: 0
+            gamesPlayed: 0,
+            firebaseDocId: null,
+            telegram_id: null,
+            telegram_username: null
         };
         updateProfileDisplay();
         if (gameTimerInterval) {
@@ -3978,65 +4046,44 @@ function logout() {
         }
         startGameLoop();
         showStatusMessage('Logged out - Demo mode active', 'success');
-    }).catch(error => {
-        console.error("Logout error:", error);
-    });
+    }).catch(console.error);
 }
 
-// ✅ FIXED loadUserData function
-function loadUserData(uid) {
-    console.log("📥 Loading user data for UID:", uid);
+// ✅ LOAD USER DATA FUNCTION
+function loadUserData(docId) {
+    console.log("📥 Loading user data for document:", docId);
     
-    // UID ko string mein convert करो
-    const userId = uid.toString().trim();
+    if (!docId) {
+        console.error("❌ No document ID provided");
+        return;
+    }
     
-    usersCollection.doc(userId).onSnapshot(doc => {
+    usersCollection.doc(docId).onSnapshot(doc => {
         if (doc.exists) {
             const firebaseData = doc.data();
             
-            console.log("🔥 Firebase raw data:", firebaseData);
-            console.log("💰 Firebase balance:", firebaseData.balance);
-            console.log("📱 Current balance BEFORE update:", currentUserData.balance);
+            console.log("🔥 Firebase data loaded:");
+            console.log("   Balance:", firebaseData.balance);
+            console.log("   Name:", firebaseData.name);
+            console.log("   UserId:", firebaseData.userId);
             
-            // ✅ सीधे balance set करो
+            // Update currentUserData
             currentUserData.balance = firebaseData.balance || 1000;
-            
-            console.log("📱 Current balance AFTER update:", currentUserData.balance);
-            
-            // दूसरे fields update करो
-            if (firebaseData.name) currentUserData.name = firebaseData.name;
-            if (firebaseData.email) currentUserData.email = firebaseData.email;
-            if (firebaseData.userId) currentUserData.userId = firebaseData.userId;
-            if (firebaseData.totalWins !== undefined) currentUserData.totalWins = firebaseData.totalWins;
-            if (firebaseData.gamesPlayed !== undefined) currentUserData.gamesPlayed = firebaseData.gamesPlayed;
+            currentUserData.name = firebaseData.name || currentUserData.name;
+            currentUserData.email = firebaseData.email || currentUserData.email;
+            currentUserData.userId = firebaseData.userId || currentUserData.userId;
+            currentUserData.totalWins = firebaseData.totalWins || 0;
+            currentUserData.gamesPlayed = firebaseData.gamesPlayed || 0;
+            currentUserData.telegram_id = firebaseData.telegram_id || currentUserData.telegram_id;
+            currentUserData.telegram_username = firebaseData.telegram_username || currentUserData.telegram_username;
             
             // UI update
             updateProfileDisplay();
             
-            // Check balance in UI
-            const balanceEl = document.getElementById('current-balance');
-            console.log("💰 UI Balance element text:", balanceEl?.textContent);
+            console.log("✅ Current balance set to:", currentUserData.balance);
             
         } else {
-            console.log("⚠️ No user document found for UID:", userId);
-            console.log("Creating new user document...");
-            
-            // ✅ नया document create करो
-            usersCollection.doc(userId).set({
-                userId: currentUserData.userId,
-                name: currentUserData.name,
-                email: currentUserData.email,
-                balance: 1000,
-                createdAt: new Date(),
-                totalWins: 0,
-                gamesPlayed: 0
-            }).then(() => {
-                console.log("✅ New user created with balance 1000");
-                currentUserData.balance = 1000;
-                updateProfileDisplay();
-            }).catch(error => {
-                console.error("❌ Error creating user:", error);
-            });
+            console.log("⚠️ Document not found:", docId);
         }
     }, error => {
         console.error("❌ Error loading user data:", error);
@@ -4295,10 +4342,13 @@ function processWinning(winningColor) {
             console.log("Gray result - Refund:", totalBet, "New balance:", newBalance);
             
             if (auth.currentUser) {
-                usersCollection.doc(auth.currentUser.uid).update({
-                    balance: newBalance,
-                    gamesPlayed: firebase.firestore.FieldValue.increment(1)
-                }).catch(console.error);
+                // ✅ Use firebaseDocId instead of auth.uid
+const docId = currentUserData.firebaseDocId || auth.currentUser.uid;
+
+usersCollection.doc(docId).update({
+    balance: firebase.firestore.FieldValue.increment(-betAmount)
+})
+.catch(console.error);
             }
             
             currentUserData.balance = newBalance;

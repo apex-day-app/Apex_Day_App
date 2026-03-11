@@ -1494,7 +1494,7 @@ body {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
 }
 
-/* User ID Button - सिर्फ 6 अंक और कॉपी आइकन */
+/* User ID Button - नया डिजाइन */
 .user-id-btn {
     background: rgba(255, 255, 255, 0.15);
     border: 2px solid #D4AF37;
@@ -1528,91 +1528,157 @@ body {
     font-size: 1.2rem;
 }
 
-/* छोटा सफेद कॉपी बटन */
-.copy-trigger-btn {
-    background: white;
-    border: 2px solid #D4AF37;
+/* ===== FIXED: User ID Box - आधी मोटाई, आधा अंक, आधा आइकन ===== */
+.user-id-box-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 6px;  /* gap आधी (पहले 12px थी) */
+    background: #2A2A2A;
+    padding: 2px 8px 2px 12px;  /* मोटाई आधी (पहले 8px 20px था) */
+    border-radius: 30px;  /* थोड़ा कम */
+    border: 1.5px solid #D4AF37;  /* border थोड़ा पतला */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    min-width: 110px;  /* चौड़ाई भी कम */
+    transition: none;  /* कोई hover transition नहीं */
+    pointer-events: auto;
+}
+
+/* अंक का टेक्स्ट - आधा साइज */
+.user-id-text {
+    color: #D4AF37 !important;  /* गोल्डन कलर - कभी न बदले */
+    font-weight: 700;
+    font-size: 0.9rem;  /* आधा साइज (पहले 1.3rem था) */
+    letter-spacing: 1px;  /* कम spacing */
+    font-family: 'Poppins', monospace;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* कॉपी आइकन - 3D लुक + कोई color change नहीं */
+.copy-fixed-icon {
+    color: #D4AF37 !important;  /* गोल्डन - कभी न बदले */
+    font-size: 0.9rem;  /* आधा साइज (पहले 1.2rem था) */
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    background: rgba(0,0,0,0.2);  /* हल्का background */
+    padding: 3px;  /* कम padding */
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: inline-flex;
+    width: 20px;  /* छोटा size */
+    height: 20px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    margin-left: 5px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    transition: all 0.2s ease;
-    position: relative;
+    
+    /* 3D Effect - सिर्फ आइकन में, color change नहीं */
+    text-shadow: 
+        -0.3px -0.3px 0 #B8860B,
+        0.5px 0.5px 0 #5D3A1A,
+        1px 1px 2px rgba(0,0,0,0.3);
+    
+    /* कोई hover effect नहीं */
+    transition: none;
 }
 
-.copy-trigger-btn i {
-    color: #D4AF37;
-    font-size: 1rem;
+/* होवर पर भी बिल्कुल वैसा ही - कोई change नहीं */
+.copy-fixed-icon:hover {
+    color: #D4AF37 !important;
+    background: rgba(0,0,0,0.2);  /* वैसा ही */
+    transform: none;  /* कोई scale नहीं */
+    text-shadow: 
+        -0.3px -0.3px 0 #B8860B,
+        0.5px 0.5px 0 #5D3A1A,
+        1px 1px 2px rgba(0,0,0,0.3);  /* वैसा ही 3D */
 }
 
-.copy-trigger-btn:hover {
-    transform: scale(1.1);
-    background: #f5f5f5;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.5);
+/* सिर्फ दबने पर थोड़ा सा नीचे - 3D effect के लिए */
+.copy-fixed-icon:active {
+    transform: translateY(1px) translateX(0.5px);
+    text-shadow: 
+        -0.2px -0.2px 0 #B8860B,
+        0.2px 0.2px 0 #5D3A1A,
+        0.5px 0.5px 1px rgba(0,0,0,0.3);
+    color: #D4AF37 !important;  /* रंग वही */
+    background: rgba(0,0,0,0.2);  /* वही */
 }
 
-/* Copied Toast - बटन के ऊपर से निकलेगा */
+/* पूरे box पर कहीं भी tap - कोई ring नहीं */
+.user-id-box-with-icon:active,
+.user-id-box-with-icon:focus,
+.user-id-box-with-icon *:active,
+.user-id-box-with-icon *:focus {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    border-color: #D4AF37;  /* border वही */
+    background: #2A2A2A;  /* background वही */
+}
+
+/* टोस्ट */
 .copied-toast {
     position: absolute;
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(0);
     background: rgba(0, 0, 0, 0.9);
     color: #D4AF37;
     font-weight: 600;
-    font-size: 0.8rem;
-    padding: 4px 12px;
+    font-size: 0.6rem;  /* छोटा टोस्ट */
+    padding: 3px 8px;
     border-radius: 20px;
     border: 1px solid #D4AF37;
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
     z-index: 1000;
 }
 
 .copied-toast.show {
-    animation: floatUpFromButton 0.3s ease-out forwards;
+    animation: floatUpFromBottom 0.3s ease-out forwards;
 }
 
-@keyframes floatUpFromButton {
+@keyframes floatUpFromBottom {
     0% {
         opacity: 0;
-        transform: translateX(-50%) translateY(0);
+        transform: translateX(-50%) translateY(20px);
     }
     20% {
         opacity: 1;
-        transform: translateX(-50%) translateY(-5px);
+        transform: translateX(-50%) translateY(5px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
     80% {
         opacity: 1;
-        transform: translateX(-50%) translateY(-25px);
+        transform: translateX(-50%) translateY(-5px);
     }
     100% {
         opacity: 0;
-        transform: translateX(-50%) translateY(-35px);
+        transform: translateX(-50%) translateY(-20px);
     }
 }
 
+/* बाकी edit icons वैसे ही */
 .edit-field-icon {
     color: #D4AF37;
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    font-size: 0.8rem;
     background: rgba(61, 42, 15, 0.8);
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     border: 1px solid #D4AF37;
+    margin-left: 5px;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 .edit-field-icon:hover {
@@ -1620,6 +1686,17 @@ body {
     background: #D4AF37;
     color: #3D2A0F;
     box-shadow: 0 0 10px #D4AF37;
+}
+
+/* टैप हाइलाइट पूरी तरह हटाना */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    outline: none !important;
+}
+
+#userIdContainer {
+    position: relative !important;
 }
 
 .action-buttons {
@@ -3081,7 +3158,7 @@ body {
         // 35.GLOBAL VARIABLES
         // ======================================== -->
         let currentUserData = {
-            userId: String(Math.floor(100000 + Math.random() * 900000)),
+            userId: '12345678',
             name: 'Demo User',
             email: 'demo@example.com',
             phone: 'Not Set',
@@ -3278,45 +3355,68 @@ body {
         }
 
         // ======================================== -->
-        // 38.TELEGRAM + WELCOME POPUP - SIRF YAHI
-        // ======================================== -->
-        function initTelegramAndWelcome() {
-            let userName = 'User';
-            
-            // Telegram se name lo
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.expand();
-                const tgUser = tg.initDataUnsafe?.user;
-                if (tgUser) {
-                    const firstName = tgUser.first_name || '';
-                    const lastName = tgUser.last_name || '';
-                    userName = (firstName + ' ' + lastName).trim() || 'User';
-                    
-                    // Profile page mein name update karo
-                    const profileName = document.getElementById('profile-name');
-                    if (profileName) profileName.textContent = userName;
-                    
-                    // CurrentUserData mein bhi update
-                    if (currentUserData) currentUserData.name = userName;
-                }
-            }
-            
-            // Welcome popup dikhao (ek baar)
-            setTimeout(() => {
-                const popup = document.getElementById('welcome-popup');
-                const nameEl = document.getElementById('welcome-user-name');
-                if (popup && nameEl) {
-                    nameEl.textContent = userName;
-                    popup.classList.remove('hidden');
-                    
-                    // 3 sec baad auto hide
-                    setTimeout(() => {
-                        popup.classList.add('hidden');
-                    }, 3000);
-                }
-            }, 1000);
-        }
+// 38.TELEGRAM + WELCOME POPUP - ये function ढूंढो
+// ======================================== -->
+
+function initTelegramAndWelcome() {
+  let userName = 'User';
+  
+  // Telegram se name lo
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    const tgUser = tg.initDataUnsafe?.user;
+    
+    if (tgUser) {
+      // --- यहाँ से नया code start ---
+      
+      // 1. REAL TELEGRAM USER ID लो
+      const realUserId = tgUser.id.toString(); // यह real ID है
+      console.log("Telegram User ID:", realUserId); // debug ke liye
+      
+      // 2. Profile page में ID दिखाओ
+      const userIdEl = document.getElementById('profile-user-id');
+      if (userIdEl) {
+        userIdEl.textContent = realUserId;
+      }
+      
+      // 3. CurrentUserData में ID store करो
+      if (currentUserData) {
+        currentUserData.userId = realUserId;
+      }
+      
+      // --- यहाँ तक new code end ---
+      
+      // Name handle karo (पहले से है)
+      const firstName = tgUser.first_name || '';
+      const lastName = tgUser.last_name || '';
+      userName = (firstName + ' ' + lastName).trim() || 'User';
+      
+      // Profile page mein name update karo
+      const profileName = document.getElementById('profile-name');
+      if (profileName) profileName.textContent = userName;
+      
+      // CurrentUserData mein bhi update
+      if (currentUserData) {
+        currentUserData.name = userName;
+      }
+    }
+  }
+  
+  // Welcome popup dikhao
+  setTimeout(() => {
+    const popup = document.getElementById('welcome-popup');
+    const nameEl = document.getElementById('welcome-user-name');
+    if (popup && nameEl) {
+      nameEl.textContent = userName;
+      popup.classList.remove('hidden');
+      
+      setTimeout(() => {
+        popup.classList.add('hidden');
+      }, 3000);
+    }
+  }, 1000);
+}
 
         function closeWelcomePopup() {
             document.getElementById('welcome-popup').classList.add('hidden');

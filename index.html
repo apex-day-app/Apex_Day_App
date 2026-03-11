@@ -4270,7 +4270,7 @@ function processWinning(winningColor) {
         
         // Firebase update
         if (auth.currentUser) {
-            usersCollection.doc(auth.currentUser.uid).update({
+            usersCollection.doc(currentUserData.userId).update({
                     balance: finalBalance,
                     totalWins: firebase.firestore.FieldValue.increment(1),
                     gamesPlayed: firebase.firestore.FieldValue.increment(1)

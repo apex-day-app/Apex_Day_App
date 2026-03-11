@@ -4203,179 +4203,230 @@ function loadUserData(uid) {
             if (hist.children.length > 20) hist.removeChild(hist.lastChild);
         }
         
-        function processWinning(winningColor) {
-            if (!currentUserData) return;
-            
-            const userBet = currentBet[winningColor] || 0;
-            
-            if (winningColor !== 'gray' && userBet > 0) {
-                const winAmount = userBet * 2;
-                const netWin = winAmount - currentBet.green - currentBet.blue;
-                
-                const newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
-                if (newBalance > MAX_BALANCE) {
-                    currentUserData.balance = MAX_BALANCE;
-                } else {
-                    currentUserData.balance = newBalance;
-                }
-                
-                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                
-                if (auth.currentUser) {
-                    usersCollection.doc(auth.currentUser.uid).update({
-                        balance: currentUserData.balance,
-                        totalWins: firebase.firestore.FieldValue.increment(1),
-                        gamesPlayed: firebase.firestore.FieldValue.increment(1)
-                    }).catch(console.error);
-                }
-            } else if (winningColor === 'gray') {
-                const totalBet = currentBet.green + currentBet.blue;
-                if (totalBet > 0) {
-                    currentUserData.balance += totalBet;
-                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                    
-                    if (auth.currentUser) {
-                        usersCollection.doc(auth.currentUser.uid).update({
-                            balance: firebase.firestore.FieldValue.increment(totalBet),
-                            gamesPlayed: firebase.firestore.FieldValue.increment(1)
-                        }).catch(console.error);
-                    }
-                }
-            } else {
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                if (auth.currentUser) {
-                    usersCollection.doc(auth.currentUser.uid).update({
-                        gamesPlayed: firebase.firestore.FieldValue.increment(1)
-                    }).catch(console.error);
-                }
-            }
-            updateProfileDisplay();
+function processWinning(winningColor) {
+    if (!currentUserData) return;
+    
+    console.log("Processing winning for color:", winningColor);
+    console.log("Current balance before win:", currentUserData.balance);
+    console.log("Current bets - Green:", currentBet.green, "Blue:", currentBet.blue);
+    
+    const userBet = currentBet[winningColor] || 0;
+    
+    if (winningColor !== 'gray' && userBet > 0) {
+        const winAmount = userBet * 2;
+        const netWin = winAmount - currentBet.green - currentBet.blue;
+        
+        const newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
+        const finalBalance = newBalance > MAX_BALANCE ? MAX_BALANCE : newBalance;
+        
+        console.log("Win amount:", winAmount, "Net win:", netWin, "New balance:", finalBalance);
+        
+        // Firebase update
+        if (auth.currentUser) {
+            usersCollection.doc(auth.currentUser.uid).update({
+                    balance: finalBalance,
+                    totalWins: firebase.firestore.FieldValue.increment(1),
+                    gamesPlayed: firebase.firestore.FieldValue.increment(1)
+                })
+                .then(() => {
+                    console.log("✅ Firebase updated with win");
+                })
+                .catch(error => {
+                    console.error("❌ Firebase update error:", error);
+                });
         }
         
-        function placeBet(color) {
-            console.log("Place bet called", color);
+        // Local update
+        currentUserData.balance = finalBalance;
+        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+    }
+    else if (winningColor === 'gray') {
+        const totalBet = currentBet.green + currentBet.blue;
+        if (totalBet > 0) {
+            const newBalance = currentUserData.balance + totalBet;
+            console.log("Gray result - Refund:", totalBet, "New balance:", newBalance);
             
-            if (!currentUserData) { 
-                showStatusMessage('Please login first!', 'error');
-                return; 
-            }
-            
-            const timerValue = document.querySelector('.timer-value');
-            if (!timerValue || timerValue.textContent === '0.00') { 
-                showStatusMessage('Betting closed for this round!', 'error');
-                return; 
-            }
-            
-            const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
-            if (isNaN(betAmount) || betAmount < 1) { 
-                showStatusMessage('Enter valid amount (Min 1)', 'error');
-                return; 
-            }
-            
-            if (betAmount > (currentUserData?.balance || 0)) { 
-                showStatusMessage('Insufficient balance!', 'error');
-                return; 
-            }
-            
-            const newBalanceAfterBet = currentUserData.balance - betAmount;
-            if (newBalanceAfterBet < 0) {
-                showStatusMessage('Cannot bet more than available balance!', 'error');
-                return;
-            }
-            
-            const maxPossibleWin = (currentBet[color] + betAmount) * 2;
-            if (maxPossibleWin > MAX_BALANCE) {
-                showStatusMessage(`Cannot place bet - potential win would exceed maximum balance of ${formatBalance(MAX_BALANCE)}`, 'error');
-                return;
-            }
-            
-            if (!auth.currentUser) {
-                currentUserData.balance -= betAmount;
-                
-                if (!userBetMap[color]) userBetMap[color] = {};
-                if (userBetMap[color]['demo']) {
-                    userBetMap[color]['demo'].amount += betAmount;
-                } else {
-                    userBetMap[color]['demo'] = { userName: currentUserData.name || 'Demo User', amount: betAmount };
-                }
-                
-                currentBet[color] += betAmount;
-                if (color === 'green') { 
-                    gameState.totalGreenBets += betAmount; 
-                } else { 
-                    gameState.totalBlueBets += betAmount; 
-                }
-                
-                updateBetListDisplay(color);
-                
-                const betBadge = document.getElementById(`bet-amount-${color}`);
-                if (betBadge) {
-                    betBadge.textContent = Math.floor(currentBet[color]);
-                    betBadge.style.display = 'flex';
-                }
-                
-                const totalSpan = document.getElementById(`${color}-total`);
-                if (totalSpan) {
-                    totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
-                }
-                
-                updateProfileDisplay();
-                return;
-            }
-            
-            usersCollection.doc(auth.currentUser.uid).update({ 
-                balance: firebase.firestore.FieldValue.increment(-betAmount) 
-            })
-            .then(() => {
-                const userId = auth.currentUser.uid;
-                const userName = currentUserData?.name || 'User';
-                
-                if (!userBetMap[color]) userBetMap[color] = {};
-                if (userBetMap[color][userId]) {
-                    userBetMap[color][userId].amount += betAmount;
-                } else {
-                    userBetMap[color][userId] = { userName, amount: betAmount };
-                }
-                
-                currentBet[color] += betAmount;
-                if (color === 'green') { 
-                    gameState.totalGreenBets += betAmount; 
-                } else { 
-                    gameState.totalBlueBets += betAmount; 
-                }
-                
-                updateBetListDisplay(color);
-                
-                userBetsCollection.add({ 
-                    userId, 
-                    userName, 
-                    amount: betAmount, 
-                    color, 
-                    timeLeft: gameState.currentTime || 0, 
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
-                    result: 'Pending' 
+            if (auth.currentUser) {
+                usersCollection.doc(auth.currentUser.uid).update({
+                    balance: newBalance,
+                    gamesPlayed: firebase.firestore.FieldValue.increment(1)
                 }).catch(console.error);
-                
-                const betBadge = document.getElementById(`bet-amount-${color}`);
-                if (betBadge) {
-                    betBadge.textContent = Math.floor(currentBet[color]);
-                    betBadge.style.display = 'flex';
-                }
-                
-                const totalSpan = document.getElementById(`${color}-total`);
-                if (totalSpan) {
-                    totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
-                }
-                
-                if (currentUserData) currentUserData.balance -= betAmount;
-                updateProfileDisplay();
-            })
-            .catch(error => { 
-                console.error("Bet placement error:", error); 
-                showStatusMessage('Bet failed! Please try again.', 'error');
-            });
+            }
+            
+            currentUserData.balance = newBalance;
+            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
         }
+    }
+    else {
+        // Loss - only gamesPlayed increment
+        console.log("Loss - no win");
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+        
+        if (auth.currentUser) {
+            usersCollection.doc(auth.currentUser.uid).update({
+                gamesPlayed: firebase.firestore.FieldValue.increment(1)
+            }).catch(console.error);
+        }
+    }
+    
+    updateProfileDisplay();
+    console.log("Final balance after processing:", currentUserData.balance);
+}
+        
+function placeBet(color) {
+    console.log("Place bet called", color);
+    
+    // Validation checks
+    if (!currentUserData) {
+        showStatusMessage('Please login first!', 'error');
+        return;
+    }
+    
+    const timerValue = document.querySelector('.timer-value');
+    if (!timerValue || timerValue.textContent === '0.00') {
+        showStatusMessage('Betting closed for this round!', 'error');
+        return;
+    }
+    
+    const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
+    if (isNaN(betAmount) || betAmount < 1) {
+        showStatusMessage('Enter valid amount (Min 1)', 'error');
+        return;
+    }
+    
+    if (betAmount > (currentUserData?.balance || 0)) {
+        showStatusMessage('Insufficient balance!', 'error');
+        return;
+    }
+    
+    const newBalanceAfterBet = currentUserData.balance - betAmount;
+    if (newBalanceAfterBet < 0) {
+        showStatusMessage('Cannot bet more than available balance!', 'error');
+        return;
+    }
+    
+    const maxPossibleWin = (currentBet[color] + betAmount) * 2;
+    if (maxPossibleWin > MAX_BALANCE) {
+        showStatusMessage(`Cannot place bet - potential win would exceed maximum balance of ${formatBalance(MAX_BALANCE)}`, 'error');
+        return;
+    }
+    
+    // Demo mode (without login)
+    if (!auth.currentUser) {
+        // Local balance update
+        currentUserData.balance -= betAmount;
+        
+        if (!userBetMap[color]) userBetMap[color] = {};
+        if (userBetMap[color]['demo']) {
+            userBetMap[color]['demo'].amount += betAmount;
+        } else {
+            userBetMap[color]['demo'] = { userName: currentUserData.name || 'Demo User', amount: betAmount };
+        }
+        
+        currentBet[color] += betAmount;
+        if (color === 'green') {
+            gameState.totalGreenBets += betAmount;
+        } else {
+            gameState.totalBlueBets += betAmount;
+        }
+        
+        updateBetListDisplay(color);
+        
+        const betBadge = document.getElementById(`bet-amount-${color}`);
+        if (betBadge) {
+            betBadge.textContent = Math.floor(currentBet[color]);
+            betBadge.style.display = 'flex';
+        }
+        
+        const totalSpan = document.getElementById(`${color}-total`);
+        if (totalSpan) {
+            totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
+        }
+        
+        updateProfileDisplay();
+        console.log("Demo mode - New balance:", currentUserData.balance);
+        return;
+    }
+    
+    // ===== LOGGED IN USER - FIREBASE UPDATE =====
+    console.log("Placing bet for user:", auth.currentUser.uid);
+    console.log("Current balance before bet:", currentUserData.balance);
+    console.log("Bet amount:", betAmount);
+    
+    // पहले Firebase में balance update करो
+    usersCollection.doc(auth.currentUser.uid).update({
+            balance: firebase.firestore.FieldValue.increment(-betAmount)
+        })
+        .then(() => {
+            console.log("✅ Firebase balance updated successfully");
+            
+            // ✅ IMPORTANT: Local balance भी update करो
+            currentUserData.balance -= betAmount;
+            console.log("Local balance after bet:", currentUserData.balance);
+            
+            // UI immediately update करो
+            updateProfileDisplay();
+            
+            const userId = auth.currentUser.uid;
+            const userName = currentUserData?.name || 'User';
+            
+            // Bet tracking
+            if (!userBetMap[color]) userBetMap[color] = {};
+            if (userBetMap[color][userId]) {
+                userBetMap[color][userId].amount += betAmount;
+            } else {
+                userBetMap[color][userId] = { userName, amount: betAmount };
+            }
+            
+            currentBet[color] += betAmount;
+            if (color === 'green') {
+                gameState.totalGreenBets += betAmount;
+            } else {
+                gameState.totalBlueBets += betAmount;
+            }
+            
+            updateBetListDisplay(color);
+            
+            // Save bet to history
+            userBetsCollection.add({
+                userId,
+                userName,
+                amount: betAmount,
+                color,
+                timeLeft: gameState.currentTime || 0,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                result: 'Pending'
+            }).catch(console.error);
+            
+            // Update badges
+            const betBadge = document.getElementById(`bet-amount-${color}`);
+            if (betBadge) {
+                betBadge.textContent = Math.floor(currentBet[color]);
+                betBadge.style.display = 'flex';
+            }
+            
+            const totalSpan = document.getElementById(`${color}-total`);
+            if (totalSpan) {
+                totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
+            }
+            
+            // Final UI update
+            updateProfileDisplay();
+            
+            // Show success message
+            showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
+        })
+        .catch(error => {
+            console.error("❌ Bet placement error:", error);
+            showStatusMessage('Bet failed! Please try again.', 'error');
+            
+            // Extra debugging
+            if (error.code === 'permission-denied') {
+                console.error("Firebase rules issue - check your rules!");
+            }
+        });
+}
         
         function updateBetListDisplay(color) {
             const list = document.getElementById(`${color}-bets-list`);

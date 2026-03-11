@@ -3897,85 +3897,109 @@ function initTelegramAndWelcome() {
         }
         
         // ======================================== -->
-        // 43.AUTHENTICATION
-          // ======================================== -->
-        
-        updateProfileDisplay();
-        startGameLoop();
-        showStatusMessage('Welcome to Fund Money!', 'success');
-        
-        auth.signInAnonymously().then(userCredential => {
-            console.log("Signed in anonymously:", userCredential.user.uid);
-            
-            usersCollection.doc(userCredential.user.uid).get().then(doc => {
-                if (!doc.exists) {
-                    usersCollection.doc(userCredential.user.uid).set({
-                        userId: currentUserData.userId,
-                        name: currentUserData.name,
-                        email: currentUserData.email,
-                        balance: 1000,
-                        bank_accounts: [],
-                        upis: [],
-                        notifications: [{ 
-                            type: 'welcome', 
-                            message: 'Welcome to Fund Money! 1000 bonus credited.', 
-                            timestamp: new Date() 
-                        }],
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        totalWins: 0,
-                        gamesPlayed: 0
-                    }).then(() => { 
-                            loadUserData(userCredential.user.uid); 
-                    }).catch(console.error);
-                } else {
-                    loadUserData(userCredential.user.uid);
-                }
-            }).catch(console.error);
-            
-        }).catch(error => {
-            console.error("Anonymous sign-in failed:", error);
-        });
-        
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log("User signed in:", user.uid);
-            }
-        });
-        
-        function logout() {
-            auth.signOut().then(() => {
-                currentUserData = {
-                    userId: String(Math.floor(100000 + Math.random() * 900000)),
-                    name: 'Demo User',
-                    email: 'demo@example.com',
-                    balance: 1000,
-                    bank_accounts: [],
-                    upis: [],
-                    notifications: [],
-                    totalWins: 0,
-                    gamesPlayed: 0
-                };
-                updateProfileDisplay();
-                if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-                startGameLoop();
-                showStatusMessage('Logged out - Demo mode active', 'success');
-            });
-        }
+// 43.AUTHENTICATION - COMPLETE FIXED SECTION
+// ======================================== -->
 
+// Initial setup
+updateProfileDisplay();
+startGameLoop();
+showStatusMessage('Welcome to Fund Money!', 'success');
+
+auth.signInAnonymously().then(userCredential => {
+    console.log("Signed in anonymously:", userCredential.user.uid);
+    
+    // ✅ FIX: userCredential.user.UID se document ढूंढो
+    const userUid = userCredential.user.uid;
+    
+    usersCollection.doc(userUid).get().then(doc => {
+        if (!doc.exists) {
+            console.log("Creating new user with UID:", userUid);
+            
+            // नया user बनाओ
+            usersCollection.doc(userUid).set({
+                userId: currentUserData.userId, // 12345678
+                name: currentUserData.name,
+                email: currentUserData.email,
+                balance: 1000,
+                bank_accounts: [],
+                upis: [],
+                notifications: [{
+                    type: 'welcome',
+                    message: 'Welcome to Fund Money! 1000 bonus credited.',
+                    timestamp: new Date()
+                }],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                totalWins: 0,
+                gamesPlayed: 0
+            }).then(() => {
+                console.log("✅ New user created with balance 1000");
+                loadUserData(userUid);
+            }).catch(error => {
+                console.error("❌ Error creating user:", error);
+            });
+        } else {
+            console.log("✅ User found with UID:", userUid);
+            loadUserData(userUid);
+        }
+    }).catch(error => {
+        console.error("❌ Error checking user document:", error);
+    });
+    
+}).catch(error => {
+    console.error("Anonymous sign-in failed:", error);
+    showStatusMessage('Login failed! Using demo mode.', 'error');
+});
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log("User signed in:", user.uid);
+    } else {
+        console.log("User signed out");
+    }
+});
+
+function logout() {
+    auth.signOut().then(() => {
+        currentUserData = {
+            userId: String(Math.floor(100000 + Math.random() * 900000)),
+            name: 'Demo User',
+            email: 'demo@example.com',
+            balance: 1000,
+            bank_accounts: [],
+            upis: [],
+            notifications: [],
+            totalWins: 0,
+            gamesPlayed: 0
+        };
+        updateProfileDisplay();
+        if (gameTimerInterval) {
+            clearInterval(gameTimerInterval);
+            gameTimerInterval = null;
+        }
+        startGameLoop();
+        showStatusMessage('Logged out - Demo mode active', 'success');
+    }).catch(error => {
+        console.error("Logout error:", error);
+    });
+}
+
+// ✅ FIXED loadUserData function
 function loadUserData(uid) {
     console.log("📥 Loading user data for UID:", uid);
     
-    usersCollection.doc(uid).onSnapshot(doc => {
+    // UID ko string mein convert करो
+    const userId = uid.toString().trim();
+    
+    usersCollection.doc(userId).onSnapshot(doc => {
         if (doc.exists) {
             const firebaseData = doc.data();
             
-            // 🔥 HAR CHEEZ CONSOLE MEIN DEKHO
             console.log("🔥 Firebase raw data:", firebaseData);
             console.log("💰 Firebase balance:", firebaseData.balance);
             console.log("📱 Current balance BEFORE update:", currentUserData.balance);
             
-            // सीधे balance set करो
-            currentUserData.balance = firebaseData.balance;
+            // ✅ सीधे balance set करो
+            currentUserData.balance = firebaseData.balance || 1000;
             
             console.log("📱 Current balance AFTER update:", currentUserData.balance);
             
@@ -3989,13 +4013,16 @@ function loadUserData(uid) {
             // UI update
             updateProfileDisplay();
             
-            // Check कि balance सही दिखा या नहीं
+            // Check balance in UI
             const balanceEl = document.getElementById('current-balance');
             console.log("💰 UI Balance element text:", balanceEl?.textContent);
             
         } else {
-            console.log("⚠️ No user document found, creating new...");
-            usersCollection.doc(uid).set({
+            console.log("⚠️ No user document found for UID:", userId);
+            console.log("Creating new user document...");
+            
+            // ✅ नया document create करो
+            usersCollection.doc(userId).set({
                 userId: currentUserData.userId,
                 name: currentUserData.name,
                 email: currentUserData.email,
@@ -4005,7 +4032,11 @@ function loadUserData(uid) {
                 gamesPlayed: 0
             }).then(() => {
                 console.log("✅ New user created with balance 1000");
-            }).catch(console.error);
+                currentUserData.balance = 1000;
+                updateProfileDisplay();
+            }).catch(error => {
+                console.error("❌ Error creating user:", error);
+            });
         }
     }, error => {
         console.error("❌ Error loading user data:", error);

@@ -3898,7 +3898,7 @@ function initTelegramAndWelcome() {
         
         // ======================================== -->
         // 43.AUTHENTICATION
-        // ======================================== -->
+          // ======================================== -->
         
         updateProfileDisplay();
         startGameLoop();
@@ -3961,29 +3961,40 @@ function initTelegramAndWelcome() {
                 showStatusMessage('Logged out - Demo mode active', 'success');
             });
         }
-        
-        function loadUserData(uid) {
-            usersCollection.doc(uid).onSnapshot(doc => {
-                if (doc.exists) {
-                    currentUserData = doc.data();
-                    
-                    if (currentUserData.userId) {
-                        let numericId = currentUserData.userId.toString().replace(/\D/g, '');
-                        if (numericId.length > 6) {
-                            numericId = numericId.slice(0, 6);
-                        } else if (numericId.length < 6) {
-                            numericId = numericId.padStart(6, '0');
-                        }
-                        currentUserData.userId = numericId;
-                    } else {
-                        currentUserData.userId = String(Math.floor(100000 + Math.random() * 900000));
-                    }
-                    
-                    updateProfileDisplay();
-                    renderNotifications();
+
+function loadUserData(uid) {
+    usersCollection.doc(uid).onSnapshot(doc => {
+        if (doc.exists) {
+            // पुराना balance लो
+            const firebaseData = doc.data();
+            
+            // ✅ Balance को वैसे ही रहने दो, बदलो मत
+            currentUserData = {
+                ...currentUserData,
+                ...firebaseData,
+                balance: firebaseData.balance // Firebase वाला balance ही रखो
+            };
+            
+            // सिर्फ userId को format करो (अगर जरूरी हो)
+            if (currentUserData.userId) {
+                // सिर्फ display के लिए format करो, असली ID मत बदलो
+                let displayId = currentUserData.userId.toString();
+                if (displayId.length > 10) {
+                    displayId = displayId.slice(0, 10);
                 }
-            }, error => { console.error("Error loading user data:", error); });
+                // असली ID तो वैसे ही रहने दो
+            }
+            
+            console.log("✅ Balance loaded from Firebase:", currentUserData.balance);
+            updateProfileDisplay();
+            renderNotifications();
+        } else {
+            console.log("No user document found");
         }
+    }, error => {
+        console.error("Error loading user data:", error);
+    });
+}
         
         // ======================================== -->
         // 44.GAME HISTORY FUNCTIONS

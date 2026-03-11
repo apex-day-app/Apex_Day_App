@@ -3925,7 +3925,7 @@ function initTelegramAndWelcome() {
                         totalWins: 0,
                         gamesPlayed: 0
                     }).then(() => { 
-                        loadUserData(userCredential.user.uid); 
+                            loadUserData(userCredential.user.uid); 
                     }).catch(console.error);
                 } else {
                     loadUserData(userCredential.user.uid);
@@ -3965,31 +3965,32 @@ function initTelegramAndWelcome() {
 function loadUserData(uid) {
     usersCollection.doc(uid).onSnapshot(doc => {
         if (doc.exists) {
-            // पुराना balance लो
             const firebaseData = doc.data();
             
-            // ✅ Balance को वैसे ही रहने दो, बदलो मत
-            currentUserData = {
-                ...currentUserData,
-                ...firebaseData,
-                balance: firebaseData.balance // Firebase वाला balance ही रखो
-            };
+            // 🔥 सिर्फ वही update करो जो Firebase से आया है
+            currentUserData.balance = firebaseData.balance || 1000;
+            currentUserData.name = firebaseData.name || currentUserData.name;
+            currentUserData.email = firebaseData.email || currentUserData.email;
+            currentUserData.userId = firebaseData.userId || currentUserData.userId;
+            currentUserData.totalWins = firebaseData.totalWins || 0;
+            currentUserData.gamesPlayed = firebaseData.gamesPlayed || 0;
             
-            // सिर्फ userId को format करो (अगर जरूरी हो)
-            if (currentUserData.userId) {
-                // सिर्फ display के लिए format करो, असली ID मत बदलो
-                let displayId = currentUserData.userId.toString();
-                if (displayId.length > 10) {
-                    displayId = displayId.slice(0, 10);
-                }
-                // असली ID तो वैसे ही रहने दो
-            }
+            console.log("🔥 Firebase balance loaded:", firebaseData.balance);
+            console.log("💰 Current balance set to:", currentUserData.balance);
             
-            console.log("✅ Balance loaded from Firebase:", currentUserData.balance);
             updateProfileDisplay();
             renderNotifications();
         } else {
-            console.log("No user document found");
+            console.log("No user document found, creating...");
+            usersCollection.doc(uid).set({
+                userId: currentUserData.userId,
+                name: currentUserData.name,
+                email: currentUserData.email,
+                balance: 1000,
+                createdAt: new Date(),
+                totalWins: 0,
+                gamesPlayed: 0
+            }).catch(console.error);
         }
     }, error => {
         console.error("Error loading user data:", error);

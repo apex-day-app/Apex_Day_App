@@ -2550,7 +2550,7 @@ body {
                     <div class="left-buttons">
                         <button class="balance-btn-black" id="balanceBtnBlack">
                             <span class="balance-number-bg">
-                                <span id="current-balance">1,000</span>
+                                <span id="current-balance"></span>
                             </span>
                         </button>
                         
@@ -2894,7 +2894,7 @@ body {
             <div id="add-money-page" class="page hidden">
                 <div class="auth-container">
                     <h2 class="auth-header"><i class="fas fa-plus-circle"></i> Add Money</h2>
-                    <p id="add-money-balance" class="balance-text"><i class="fas fa-wallet"></i> Current Balance: <span id="add-balance-display">1,000</span></p>
+                    <p id="add-money-balance" class="balance-text"><i class="fas fa-wallet"></i> Current Balance: <span id="add-balance-display"></span></p>
                     <div class="amount-options">
                         <button class="amount-option" data-amount="100" onclick="selectAmount(this)">100</button>
                         <button class="amount-option" data-amount="500" onclick="selectAmount(this)">500</button>
@@ -2919,7 +2919,7 @@ body {
             <div id="withdraw-page" class="page hidden">
                 <div class="auth-container">
                     <h2 class="auth-header"><i class="fas fa-arrow-up"></i> Withdraw Money</h2>
-                    <p id="withdraw-money-balance" class="balance-text"><i class="fas fa-wallet"></i> Available: <span id="withdraw-balance-display">1,000</span></p>
+                    <p id="withdraw-money-balance" class="balance-text"><i class="fas fa-wallet"></i> Available: <span id="withdraw-balance-display"></span></p>
                     <div class="amount-options">
                         <button class="amount-option" data-amount="100" onclick="selectWithdrawAmount(this)">100</button>
                         <button class="amount-option" data-amount="500" onclick="selectWithdrawAmount(this)">500</button>
@@ -3018,26 +3018,26 @@ body {
     <!-- ======================================== -->
     <script>
         // ======================================== -->
-        // 34. GLOBAL VARIABLES
-        // ======================================== -->
-        const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
-        const MAX_BALANCE = 100000; // 1,00,000
-        
-        let currentUserData = {
-            userId: '12345678',
-            name: 'Demo User',
-            email: 'demo@example.com',
-            phone: 'Not Set',
-            balance: 1000,
-            bank_accounts: [],
-            upis: [],
-            notifications: [],
-            totalWins: 0,
-            gamesPlayed: 0,
-            createdAt: new Date(),
-            telegram_id: null,
-            telegram_username: null
-        };
+// 34. GLOBAL VARIABLES
+// ======================================== -->
+const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
+const MAX_BALANCE = 100000;
+
+let currentUserData = {
+    userId: '12345678',
+    name: 'Demo User',
+    email: 'demo@example.com',
+    phone: 'Not Set',
+    balance: 0,
+    bank_accounts: [],
+    upis: [],
+    notifications: [],
+    totalWins: 0,
+    gamesPlayed: 0,
+    createdAt: new Date(),
+    telegram_id: null,
+    telegram_username: null
+};
 
         let selectedBankIndex = null;
         let selectedUPIIndex = null;
@@ -3059,42 +3059,42 @@ body {
         let fullTransactionFilter = 'all';
         
         // ======================================== -->
-        // 35. UI HELPER FUNCTIONS
-        // ======================================== -->
-        function formatBalance(amount) {
-            if (amount > MAX_BALANCE) amount = MAX_BALANCE;
-            let numStr = Math.floor(amount).toString();
-            if (numStr.length <= 3) return numStr;
-            let lastThree = numStr.substring(numStr.length - 3);
-            let otherNumbers = numStr.substring(0, numStr.length - 3);
-            if (otherNumbers !== '') lastThree = ',' + lastThree;
-            return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-        }
-        
-        function enforceMaxBalance(amount) {
-            return amount > MAX_BALANCE ? MAX_BALANCE : amount;
-        }
+// 35. UI HELPER FUNCTIONS
+// ======================================== -->
+function formatBalance(amount) {
+    if (amount > MAX_BALANCE) amount = MAX_BALANCE;
+    let numStr = Math.floor(amount).toString();
+    if (numStr.length <= 3) return numStr;
+    let lastThree = numStr.substring(numStr.length - 3);
+    let otherNumbers = numStr.substring(0, numStr.length - 3);
+    if (otherNumbers !== '') lastThree = ',' + lastThree;
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+}
 
-        function updateProfileDisplay() {
-            if (!currentUserData) return;
-            const balance = formatBalance(currentUserData.balance || 0);
-            
-            const elements = {
-                'current-balance': balance,
-                'profile-balance': balance,
-                'add-balance-display': balance,
-                'withdraw-balance-display': balance,
-                'profile-name': currentUserData.name || 'User',
-                'profile-email': currentUserData.email || 'demo@example.com',
-                'profile-user-id': currentUserData.userId || '123456',
-                'profile-phone': currentUserData.phone || 'Not Set'
-            };
-            
-            for (let [id, value] of Object.entries(elements)) {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value;
-            }
-        }
+function enforceMaxBalance(amount) {
+    return amount > MAX_BALANCE ? MAX_BALANCE : amount;
+}
+
+function updateProfileDisplay() {
+    if (!currentUserData) return;
+    const balance = currentUserData.balance === 0 ? '--' : formatBalance(currentUserData.balance || 0);
+    
+    const elements = {
+        'current-balance': balance,
+        'profile-balance': balance,
+        'add-balance-display': balance,
+        'withdraw-balance-display': balance,
+        'profile-name': currentUserData.name || 'User',
+        'profile-email': currentUserData.email || 'demo@example.com',
+        'profile-user-id': currentUserData.userId || '123456',
+        'profile-phone': currentUserData.phone || 'Not Set'
+    };
+    
+    for (let [id, value] of Object.entries(elements)) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+}
 
         function loadUserStats() {
             if (!currentUserData) return;
@@ -3220,7 +3220,7 @@ body {
         }
         
         // ======================================== -->
-// 37. TELEGRAM + WELCOME POPUP (FIXED)
+// 37. TELEGRAM + WELCOME POPUP
 // ======================================== -->
 function initTelegramAndWelcome() {
     let userName = 'User';
@@ -3238,7 +3238,6 @@ function initTelegramAndWelcome() {
             userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
             const username = tgUser.username || '';
             
-            // नया userData बनाओ - सिर्फ Telegram ID के साथ
             currentUserData = {
                 userId: telegramId,
                 name: userName,
@@ -3258,7 +3257,6 @@ function initTelegramAndWelcome() {
             localStorage.setItem('tg_id', telegramId);
             localStorage.setItem('tg_name', userName);
             
-            // Google Sheets से डेटा लोड करो
             setTimeout(() => {
                 initializeUser();
             }, 100);
@@ -3290,7 +3288,6 @@ function initTelegramAndWelcome() {
         }
     }
     
-    // Welcome popup
     const welcomeShown = localStorage.getItem('welcomePopupShown');
     if (!welcomeShown) {
         setTimeout(() => {
@@ -3313,16 +3310,14 @@ function initTelegramAndWelcome() {
         }
         
         // ======================================== -->
-// 38. GOOGLE SHEETS API FUNCTIONS (UPDATED)
+// 38. GOOGLE SHEETS API FUNCTIONS
 // ======================================== -->
 async function getUserFromSheet(userId) {
     try {
         const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
         const response = await fetch(url);
         const data = await response.json();
-        
-        console.log("Google Sheets response:", data); // Debug ke liye
-        
+        console.log("Google Sheets response:", data);
         return data;
     } catch (error) {
         console.error("Error fetching user:", error);
@@ -3355,7 +3350,7 @@ async function updateBalanceInSheet(userId, newBalance) {
 }
         
         // ======================================== -->
-// 39. INITIALIZE USER FROM SHEETS (FIXED)
+// 39. INITIALIZE USER FROM SHEETS
 // ======================================== -->
 async function initializeUser() {
     const userId = currentUserData.userId;
@@ -3370,7 +3365,6 @@ async function initializeUser() {
         const result = await getUserFromSheet(userId);
         
         if (result.success && result.user) {
-            // USER mil gaya - saara data load karo
             currentUserData = {
                 ...currentUserData,
                 balance: parseFloat(result.user.balance) || 0,
@@ -3385,10 +3379,8 @@ async function initializeUser() {
             
             updateProfileDisplay();
             loadUserStats();
-            showStatusMessage(`Welcome back, ${currentUserData.name}! Balance: ₹${formatBalance(currentUserData.balance)}`, 'success');
-            
+            showStatusMessage(`Welcome back! Balance: ₹${formatBalance(currentUserData.balance)}`, 'success');
         } else {
-            // Naya user - create karo
             const createResult = await createUserInSheet(userId, userName, userId);
             
             if (createResult.success) {
@@ -3398,7 +3390,7 @@ async function initializeUser() {
                 
                 updateProfileDisplay();
                 loadUserStats();
-                showStatusMessage(`Welcome, ${userName}! ₹1000 bonus credited.`, 'success');
+                showStatusMessage(`Welcome! ₹1000 bonus credited.`, 'success');
                 
                 await updateBalanceInSheet(userId, 1000);
             } else {
@@ -3409,6 +3401,8 @@ async function initializeUser() {
         console.error("Error in initializeUser:", error);
         updateProfileDisplay();
     }
+    
+    return Promise.resolve();
 }
         
         // ======================================== -->
@@ -4291,7 +4285,7 @@ async function initializeUser() {
         }
         
         // ======================================== -->
-// 48. INITIALIZATION (UPDATED)
+// 48. INITIALIZATION
 // ======================================== -->
 document.addEventListener('DOMContentLoaded', function() {
     ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
@@ -4303,14 +4297,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Pehle Telegram
+    // Sabse pehle Telegram initialize karo
     initTelegramAndWelcome();
     
-    // Phir game start
+    // Data load hone ke baad game start karo
     setTimeout(() => {
-        startGameLoop();
-        loadGameHistory();
-    }, 1500);
+        initializeUser().then(() => {
+            startGameLoop();
+            loadGameHistory();
+        });
+    }, 500);
     
     setTimeout(fixHistoryStripPosition, 100);
 });

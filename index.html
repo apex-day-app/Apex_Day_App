@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <!-- ============================================ -->
 <!-- 1.DOCUMENT HEAD & META TAGS                    -->
 <!-- ============================================ -->
@@ -1167,12 +1167,12 @@ body {
     justify-content: center;
     gap: 5px;
     box-shadow: 0 4px 0 rgba(0,0,0,0.3);
-    transition: transform 0.05s ease, box-shadow 0.05s ease; /* FAST transition */
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
     -webkit-tap-highlight-color: transparent;
     outline: none;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation; /* Prevent double-tap zoom */
+    touch-action: manipulation;
 }
 
 .green-btn { 
@@ -1185,21 +1185,18 @@ body {
     box-shadow: 0 4px 0 #0039CB;
 }
 
-/* FAST press effect - 0.1 second */
 .color-btn:active {
-    transform: translateY(4px); /* नीचे धंस जाए */
+    transform: translateY(4px);
     box-shadow: 0 0px 0 #006633;
     transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 
-/* Remove hover effects on mobile */
 @media (hover: hover) {
     .color-btn:hover {
         filter: brightness(1.1);
     }
 }
 
-/* Disabled state */
 .color-btn.disabled,
 .color-btn:disabled {
     opacity: 0.6;
@@ -1219,7 +1216,7 @@ body {
     font-size: 0.7rem;
     font-weight: 700;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    transition: none; /* No transition for badge */
+    transition: none;
 }
 
 .color-btn.active-press {
@@ -1228,7 +1225,6 @@ body {
     transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 
-/* Disable any other transitions */
 .color-btn * {
     transition: none;
 }
@@ -1283,10 +1279,8 @@ body {
 }
 
 /* ======================================== */
-/* 15.PROFILE PAGE STYLES - UPDATED             */
+/* 15.PROFILE PAGE STYLES                       */
 /* ======================================== */
-
-/* Profile Header */
 .profile-header {
     display: flex;
     justify-content: space-between;
@@ -1498,9 +1492,8 @@ body {
 }
 
 /* ======================================== */
-/* 16.NEW: User ID Button & Copied Toast        */
+/* 16.User ID Button & Copied Toast             */
 /* ======================================== */
-
 .profile-name-id {
     text-align: center;
     margin-bottom: 20px;
@@ -1520,7 +1513,6 @@ body {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
 }
 
-/* User ID Button - नया डिजाइन */
 .user-id-btn {
     background: rgba(255, 255, 255, 0.15);
     border: 2px solid #D4AF37;
@@ -1554,94 +1546,83 @@ body {
     font-size: 1.2rem;
 }
 
-/* ===== FIXED: User ID Box - आधी मोटाई, आधा अंक, आधा आइकन ===== */
 .user-id-box-with-icon {
     display: flex;
     align-items: center;
-    gap: 6px;  /* gap आधी (पहले 12px थी) */
+    gap: 6px;
     background: #2A2A2A;
-    padding: 2px 8px 2px 12px;  /* मोटाई आधी (पहले 8px 20px था) */
-    border-radius: 30px;  /* थोड़ा कम */
-    border: 1.5px solid #D4AF37;  /* border थोड़ा पतला */
+    padding: 2px 8px 2px 12px;
+    border-radius: 30px;
+    border: 1.5px solid #D4AF37;
     box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-    min-width: 110px;  /* चौड़ाई भी कम */
-    transition: none;  /* कोई hover transition नहीं */
+    min-width: 110px;
+    transition: none;
     pointer-events: auto;
 }
 
-/* अंक का टेक्स्ट - आधा साइज */
 .user-id-text {
-    color: #D4AF37 !important;  /* गोल्डन कलर - कभी न बदले */
+    color: #D4AF37 !important;
     font-weight: 700;
-    font-size: 0.9rem;  /* आधा साइज (पहले 1.3rem था) */
-    letter-spacing: 1px;  /* कम spacing */
+    font-size: 0.9rem;
+    letter-spacing: 1px;
     font-family: 'Poppins', monospace;
     line-height: 1.2;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-/* कॉपी आइकन - 3D लुक + कोई color change नहीं */
 .copy-fixed-icon {
-    color: #D4AF37 !important;  /* गोल्डन - कभी न बदले */
-    font-size: 0.9rem;  /* आधा साइज (पहले 1.2rem था) */
+    color: #D4AF37 !important;
+    font-size: 0.9rem;
     cursor: pointer;
     position: relative;
     display: inline-block;
     -webkit-tap-highlight-color: transparent;
     outline: none;
-    background: rgba(0,0,0,0.2);  /* हल्का background */
-    padding: 3px;  /* कम padding */
+    background: rgba(0,0,0,0.2);
+    padding: 3px;
     border-radius: 50%;
-    width: 20px;  /* छोटा size */
+    width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    
-    /* 3D Effect - सिर्फ आइकन में, color change नहीं */
     text-shadow: 
         -0.3px -0.3px 0 #B8860B,
         0.5px 0.5px 0 #5D3A1A,
         1px 1px 2px rgba(0,0,0,0.3);
-    
-    /* कोई hover effect नहीं */
     transition: none;
 }
 
-/* होवर पर भी बिल्कुल वैसा ही - कोई change नहीं */
 .copy-fixed-icon:hover {
     color: #D4AF37 !important;
-    background: rgba(0,0,0,0.2);  /* वैसा ही */
-    transform: none;  /* कोई scale नहीं */
+    background: rgba(0,0,0,0.2);
+    transform: none;
     text-shadow: 
         -0.3px -0.3px 0 #B8860B,
         0.5px 0.5px 0 #5D3A1A,
-        1px 1px 2px rgba(0,0,0,0.3);  /* वैसा ही 3D */
+        1px 1px 2px rgba(0,0,0,0.3);
 }
 
-/* सिर्फ दबने पर थोड़ा सा नीचे - 3D effect के लिए */
 .copy-fixed-icon:active {
     transform: translateY(1px) translateX(0.5px);
     text-shadow: 
         -0.2px -0.2px 0 #B8860B,
         0.2px 0.2px 0 #5D3A1A,
         0.5px 0.5px 1px rgba(0,0,0,0.3);
-    color: #D4AF37 !important;  /* रंग वही */
-    background: rgba(0,0,0,0.2);  /* वही */
+    color: #D4AF37 !important;
+    background: rgba(0,0,0,0.2);
 }
 
-/* पूरे box पर कहीं भी tap - कोई ring नहीं */
 .user-id-box-with-icon:active,
 .user-id-box-with-icon:focus,
 .user-id-box-with-icon *:active,
 .user-id-box-with-icon *:focus {
     outline: none;
     -webkit-tap-highlight-color: transparent;
-    border-color: #D4AF37;  /* border वही */
-    background: #2A2A2A;  /* background वही */
+    border-color: #D4AF37;
+    background: #2A2A2A;
 }
 
-/* टोस्ट */
 .copied-toast {
     position: absolute;
     bottom: 100%;
@@ -1650,7 +1631,7 @@ body {
     background: rgba(0, 0, 0, 0.9);
     color: #D4AF37;
     font-weight: 600;
-    font-size: 0.6rem;  /* छोटा टोस्ट */
+    font-size: 0.6rem;
     padding: 3px 8px;
     border-radius: 20px;
     border: 1px solid #D4AF37;
@@ -1688,7 +1669,6 @@ body {
     }
 }
 
-/* बाकी edit icons वैसे ही */
 .edit-field-icon {
     color: #D4AF37;
     cursor: pointer;
@@ -1714,7 +1694,6 @@ body {
     box-shadow: 0 0 10px #D4AF37;
 }
 
-/* टैप हाइलाइट पूरी तरह हटाना */
 * {
     -webkit-tap-highlight-color: transparent !important;
     -webkit-touch-callout: none !important;
@@ -1878,7 +1857,6 @@ body {
 /* ======================================== */
 /* 17.FULL SCREEN PAGES                        */
 /* ======================================== */
-
 #full-withdraw-page,
 #full-history-page,
 #full-transaction-page {
@@ -2471,7 +2449,7 @@ body {
 }
 
 /* ======================================== */
-/* 20.WELCOME POPUP - SIRF 1 BAR            */
+/* 20.WELCOME POPUP                           */
 /* ======================================== */
 .welcome-popup-overlay {
     position: fixed;
@@ -2526,23 +2504,23 @@ body {
     </style>
 </head>
 <body>
-    <div class="game-screen">
-        <!-- ==================================== -->
-        <!-- 20A. WELCOME POPUP - SIRF 1 BAR      -->
-        <!-- ==================================== -->
-        <div id="welcome-popup" class="welcome-popup-overlay hidden">
-            <div class="welcome-popup-content">
-                <i class="fas fa-hand-peace"></i>
-                <h2>Welcome to Apex Day!</h2>
-                <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
-                <p style="margin: 15px 0;">✨ ₹1000 Bonus Added</p>
-                <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
-            </div>
+    <!-- ======================================== -->
+    <!-- 21. WELCOME POPUP HTML                      -->
+    <!-- ======================================== -->
+    <div id="welcome-popup" class="welcome-popup-overlay hidden">
+        <div class="welcome-popup-content">
+            <i class="fas fa-hand-peace"></i>
+            <h2>Welcome to Apex Day!</h2>
+            <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
+            <p style="margin: 15px 0;">✨ ₹1000 Bonus Added</p>
+            <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
         </div>
-        
-        <!-- ==================================== -->
-        <!-- 21.BACKGROUND ELEMENTS                   -->
-        <!-- ==================================== -->
+    </div>
+    
+    <!-- ======================================== -->
+    <!-- 22. BACKGROUND ELEMENTS                      -->
+    <!-- ======================================== -->
+    <div class="game-screen">
         <div class="sunset-ocean"></div>
         <div class="light-rays"></div>
         <div class="sun"></div>
@@ -2559,12 +2537,13 @@ body {
         <div id="bubble-container" style="position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 20;"></div>
         <div id="sparkle-container" style="position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 15;"></div>
         
-        <!-- ==================================== -->
-        <!-- 22.APP CONTAINER - MAIN UI               -->
-        <!-- ==================================== -->
+        <!-- ======================================== -->
+        <!-- 23. APP CONTAINER - MAIN UI                  -->
+        <!-- ======================================== -->
         <div class="app-container" id="appContainer">
+            
             <!-- ================================ -->
-            <!-- 23.DASHBOARD PAGE                     -->
+            <!-- 24. DASHBOARD PAGE                     -->
             <!-- ================================ -->
             <div id="dashboard-page" class="page active">
                 <div class="top-bar">
@@ -2606,7 +2585,7 @@ body {
                     <div class="game-center">
                         <div class="timer-section">
                             <div id="timer" class="timer-display">
-                                <span class="timer-value">15.00</span>
+                                <span class="timer-value">15.0</span>
                                 <span class="timer-unit">s</span>
                             </div>
                         </div>
@@ -2617,7 +2596,7 @@ body {
                         </div>
                         
                         <div class="result-display">
-                            <div id="result-box" class="result-3d-btn">
+                            <div id="result-box" class="result-3d-btn loading">
                                 <i class="fas fa-hourglass-half"></i>
                             </div>
                         </div>
@@ -2669,15 +2648,15 @@ body {
                         </div>
                         
                         <div class="color-buttons">
-    <button class="color-btn green-btn" onclick="placeBet('green')" id="bet-btn-green">
-        <i class="fas fa-leaf"></i> Green 2x
-        <span class="bet-amount-badge" id="bet-amount-green">0</span>
-    </button>
-    <button class="color-btn blue-btn" onclick="placeBet('blue')" id="bet-btn-blue">
-        <i class="fas fa-water"></i> Blue 2x
-        <span class="bet-amount-badge" id="bet-amount-blue">0</span>
-    </button>
-</div>
+                            <button class="color-btn green-btn" onclick="placeBet('green')" id="bet-btn-green">
+                                <i class="fas fa-leaf"></i> Green 2x
+                                <span class="bet-amount-badge" id="bet-amount-green">0</span>
+                            </button>
+                            <button class="color-btn blue-btn" onclick="placeBet('blue')" id="bet-btn-blue">
+                                <i class="fas fa-water"></i> Blue 2x
+                                <span class="bet-amount-badge" id="bet-amount-blue">0</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -2696,7 +2675,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 24.NEW PROFILE PAGE                   -->
+            <!-- 25. PROFILE PAGE                       -->
             <!-- ================================ -->
             <div id="profile-page" class="page hidden">
                 <div class="profile-header">
@@ -2837,7 +2816,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 25.FULL SCREEN WITHDRAW PAGE          -->
+            <!-- 26. FULL SCREEN WITHDRAW PAGE          -->
             <!-- ================================ -->
             <div id="full-withdraw-page">
                 <div class="fullscreen-header">
@@ -2847,11 +2826,20 @@ body {
                     </button>
                 </div>
                 
-                <div class="payment-methods-container" id="payment-methods-container"></div>
+                <div class="payment-methods-container" id="payment-methods-container">
+                    <div class="fullscreen-empty">
+                        <i class="fas fa-credit-card"></i>
+                        No payment methods added
+                    </div>
+                </div>
+                
+                <button class="add-payment-btn" onclick="showManageAccount()">
+                    <i class="fas fa-plus-circle"></i> Add Bank Account / UPI
+                </button>
             </div>
 
             <!-- ================================ -->
-            <!-- 26.FULL SCREEN GAME HISTORY PAGE      -->
+            <!-- 27. FULL SCREEN GAME HISTORY PAGE      -->
             <!-- ================================ -->
             <div id="full-history-page">
                 <div class="fullscreen-header">
@@ -2876,7 +2864,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 27.FULL SCREEN TRANSACTION PAGE       -->
+            <!-- 28. FULL SCREEN TRANSACTION PAGE       -->
             <!-- ================================ -->
             <div id="full-transaction-page">
                 <div class="fullscreen-header">
@@ -2901,7 +2889,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 28.ADD MONEY PAGE                     -->
+            <!-- 29. ADD MONEY PAGE                     -->
             <!-- ================================ -->
             <div id="add-money-page" class="page hidden">
                 <div class="auth-container">
@@ -2926,7 +2914,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 29.WITHDRAW PAGE                      -->
+            <!-- 30. WITHDRAW PAGE                      -->
             <!-- ================================ -->
             <div id="withdraw-page" class="page hidden">
                 <div class="auth-container">
@@ -2946,7 +2934,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 30.MANAGE ACCOUNT PAGE                -->
+            <!-- 31. MANAGE ACCOUNT PAGE                -->
             <!-- ================================ -->
             <div id="manage-account-page" class="manage-account-page hidden">
                 <div class="manage-account-content">
@@ -2974,7 +2962,7 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 31.POPUPS (ADD BANK/UPI)              -->
+            <!-- 32. POPUPS (ADD BANK/UPI)              -->
             <!-- ================================ -->
             <div id="add-bank-popup" class="popup-overlay hidden">
                 <div class="popup-content">
@@ -3026,148 +3014,17 @@ body {
     </div> <!-- game-screen end -->
     
     <!-- ======================================== -->
-    <!-- 32.JAVASCRIPT - ALL FUNCTIONS                -->
+    <!-- 33. JAVASCRIPT - ALL FUNCTIONS                -->
     <!-- ======================================== -->
     <script>
         // ======================================== -->
-        // 33.BUBBLE & SPARKLE EFFECTS
+        // 34. GLOBAL VARIABLES
         // ======================================== -->
-        const bubbleContainer = document.getElementById('bubble-container');
-        const sparkleContainer = document.getElementById('sparkle-container');
-        
-        function createBubble() {
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            const size = Math.random() * 30 + 10;
-            const leftPos = Math.random() * 100;
-            const duration = Math.random() * 12 + 12;
-            
-            bubble.style.cssText = `
-                left: ${leftPos}%;
-                width: ${size}px;
-                height: ${size}px;
-                animation-duration: ${duration}s;
-            `;
-            
-            bubbleContainer.appendChild(bubble);
-            
-            setTimeout(() => {
-                if (bubble.parentNode) { bubble.remove(); }
-            }, duration * 1000);
-        }
-        
-        function createManyBubbles(count) {
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => { createBubble(); }, i * 100);
-            }
-        }
-        
-        function startBubbleMachine() {
-            createManyBubbles(60);
-            
-            setInterval(() => {
-                const count = Math.floor(Math.random() * 3) + 3;
-                createManyBubbles(count);
-            }, 1000);
-        }
-        
-        function createSparkle() {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            
-            const leftPos = Math.random() * 100;
-            const bottomPos = Math.random() * 60;
-            const duration = Math.random() * 6 + 4;
-            const delay = Math.random() * 2;
-            
-            sparkle.style.cssText = `
-                left: ${leftPos}%;
-                bottom: ${bottomPos}%;
-                animation: sparkleTwinkle ${duration}s ease-in-out ${delay}s infinite;
-            `;
-            
-            sparkleContainer.appendChild(sparkle);
-        }
-        
-        function createManySparkles(count) {
-            for (let i = 0; i < count; i++) {
-                setTimeout(() => { createSparkle(); }, i * 50);
-            }
-        }
-        
-        function startSparkleMachine() {
-            createManySparkles(50);
-            
-            setInterval(() => {
-                const count = Math.floor(Math.random() * 3) + 4;
-                createManySparkles(count);
-            }, 2000);
-        }
-        
-        function cleanup() {
-            const bubbles = document.querySelectorAll('.bubble');
-            const sparkles = document.querySelectorAll('.sparkle');
-            
-            if (bubbles.length > 80) {
-                for (let i = 0; i < 30; i++) {
-                    if (bubbles[i]) { bubbles[i].remove(); }
-                }
-            }
-            
-            if (sparkles.length > 100) {
-                for (let i = 0; i < 40; i++) {
-                    if (sparkles[i]) { sparkles[i].remove(); }
-                }
-            }
-        }
-        
-        document.querySelector('.game-screen').addEventListener('mousemove', function(e) {
-            const mouseX = e.clientX / this.offsetWidth;
-            const waves = document.querySelectorAll('.real-wave');
-            waves.forEach((wave, index) => {
-                const intensity = 20 + (index * 10);
-                const moveX = (mouseX - 0.5) * intensity;
-                wave.style.transform = `translateX(${moveX}px)`;
-            });
-        });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                startBubbleMachine();
-                startSparkleMachine();
-            }, 500);
-            
-            setInterval(cleanup, 5000);
-        });
-        
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                setTimeout(() => {
-                    createManyBubbles(20);
-                    createManySparkles(15);
-                }, 200);
-            }
-        });
-        
-        window.addMoreBubbles = function(count = 10) {
-            createManyBubbles(count);
-        };
-        
-        window.addMoreSparkles = function(count = 10) {
-            createManySparkles(count);
-        };
-        
-        // ======================================== -->
-        // 34.GOOGLE SHEETS CONFIGURATION (NO FIREBASE)
-        // ======================================== -->
-        // ⚠️ IMPORTANT: Tumhe apna Google Apps Script URL yahan dalna hoga
         const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
+        const MAX_BALANCE = 100000; // 1,00,000
         
-        // ======================================== -->
-        // 35.GLOBAL VARIABLES
-        // ======================================== -->
         let currentUserData = {
-            userId: '12345678', // temporary, Telegram se real ID aayegi
+            userId: '12345678',
             name: 'Demo User',
             email: 'demo@example.com',
             phone: 'Not Set',
@@ -3182,8 +3039,6 @@ body {
             telegram_username: null
         };
 
-        const MAX_BALANCE = 99999;
-
         let selectedBankIndex = null;
         let selectedUPIIndex = null;
         let gameTimerInterval = null;
@@ -3196,11 +3051,16 @@ body {
             allBets: [],
             currentTime: 0
         };
+        let isPlacingBet = false;
+        let timeLeft = 15;
+        let isBettingActive = true;
+        let currentRoundId = Date.now();
+        let fullHistoryFilter = 'all';
+        let fullTransactionFilter = 'all';
         
         // ======================================== -->
-        // 36.UI HELPER FUNCTIONS
+        // 35. UI HELPER FUNCTIONS
         // ======================================== -->
-
         function formatBalance(amount) {
             if (amount > MAX_BALANCE) amount = MAX_BALANCE;
             let numStr = Math.floor(amount).toString();
@@ -3209,6 +3069,10 @@ body {
             let otherNumbers = numStr.substring(0, numStr.length - 3);
             if (otherNumbers !== '') lastThree = ',' + lastThree;
             return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+        }
+        
+        function enforceMaxBalance(amount) {
+            return amount > MAX_BALANCE ? MAX_BALANCE : amount;
         }
 
         function updateProfileDisplay() {
@@ -3247,8 +3111,6 @@ body {
         }
 
         function showPage(pageId) {
-            console.log("showPage called:", pageId);
-            
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             
             const managePage = document.getElementById('manage-account-page');
@@ -3262,11 +3124,9 @@ body {
                 if (pageId === 'dashboard-page') {
                     document.body.style.overflow = 'hidden';
                     document.documentElement.style.overflow = 'hidden';
-                    document.body.style.touchAction = 'none';
                 } else {
                     document.body.style.overflow = 'auto';
                     document.documentElement.style.overflow = 'auto';
-                    document.body.style.touchAction = 'pan-y';
                 }
                 
                 if (pageId === 'profile-page' && currentUserData) {
@@ -3321,9 +3181,9 @@ body {
             const page = document.getElementById('manage-account-page');
             if (page) page.classList.add('hidden');
         }
-
+        
         // ======================================== -->
-        // 37.COPY USER ID FUNCTION
+        // 36. COPY USER ID FUNCTION
         // ======================================== -->
         function copyUserId(event) {
             event.stopPropagation();
@@ -3356,66 +3216,61 @@ body {
             
             setTimeout(() => {
                 toast.classList.remove('show');
-                
-                if (message === 'Try again') {
-                    setTimeout(() => {
-                        toast.innerText = 'Copied!';
-                    }, 300);
-                }
             }, 2000);
         }
-
+        
         // ======================================== -->
-        // 38.TELEGRAM + WELCOME POPUP
+        // 37. TELEGRAM + WELCOME POPUP (FIXED)
         // ======================================== -->
         function initTelegramAndWelcome() {
             let userName = 'User';
             let telegramId = null;
             
-            // Telegram se data fetch
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.expand();
                 const tgUser = tg.initDataUnsafe?.user;
                 
                 if (tgUser) {
-                    // REAL TELEGRAM DATA
                     telegramId = tgUser.id.toString();
                     const firstName = tgUser.first_name || '';
                     const lastName = tgUser.last_name || '';
                     userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
                     const username = tgUser.username || '';
                     
-                    console.log("✅ Telegram User Detected:");
-                    console.log("   ID:", telegramId);
-                    console.log("   Name:", userName);
-                    console.log("   Username:", username);
-                    
-                    // UPDATE CURRENT USER DATA
                     if (currentUserData) {
                         currentUserData.userId = telegramId;
                         currentUserData.name = userName;
                         currentUserData.telegram_id = telegramId;
                         currentUserData.telegram_username = username;
+                        
+                        localStorage.setItem('tg_id', telegramId);
+                        localStorage.setItem('tg_name', userName);
                     }
                     
-                    // Update UI
                     const profileName = document.getElementById('profile-name');
                     if (profileName) profileName.textContent = userName;
                     
                     const userIdEl = document.getElementById('profile-user-id');
                     if (userIdEl) userIdEl.textContent = telegramId;
+                }
+            } else {
+                const savedTgId = localStorage.getItem('tg_id');
+                const savedTgName = localStorage.getItem('tg_name');
+                
+                if (savedTgId && currentUserData) {
+                    currentUserData.userId = savedTgId;
+                    currentUserData.name = savedTgName || 'User';
                     
-                    // Show telegram badge
-                    const badge = document.getElementById('telegram-badge');
-                    if (badge) {
-                        badge.classList.remove('hidden');
-                        badge.innerHTML = `<i class="fab fa-telegram-plane"></i> ${username ? '@' + username : 'Connected via Telegram'}`;
-                    }
+                    const profileName = document.getElementById('profile-name');
+                    if (profileName) profileName.textContent = currentUserData.name;
+                    
+                    const userIdEl = document.getElementById('profile-user-id');
+                    if (userIdEl) userIdEl.textContent = savedTgId;
                 }
             }
             
-            // Welcome popup
+            // Welcome popup - कभी auto close नहीं
             const welcomeShown = localStorage.getItem('welcomePopupShown');
             if (!welcomeShown) {
                 setTimeout(() => {
@@ -3424,11 +3279,6 @@ body {
                     if (popup && nameEl) {
                         nameEl.textContent = userName;
                         popup.classList.remove('hidden');
-                        
-                        setTimeout(() => {
-                            popup.classList.add('hidden');
-                        }, 3000);
-                        
                         localStorage.setItem('welcomePopupShown', 'true');
                     }
                 }, 1000);
@@ -3436,13 +3286,15 @@ body {
         }
 
         function closeWelcomePopup() {
-            document.getElementById('welcome-popup').classList.add('hidden');
+            const popup = document.getElementById('welcome-popup');
+            if (popup) {
+                popup.classList.add('hidden');
+            }
         }
-
-        // ======================================== -->
-        // 39.GOOGLE SHEETS API FUNCTIONS
-        // ======================================== -->
         
+        // ======================================== -->
+        // 38. GOOGLE SHEETS API FUNCTIONS
+        // ======================================== -->
         async function getUserFromSheet(userId) {
             try {
                 const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
@@ -3450,7 +3302,7 @@ body {
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error("❌ Error fetching user:", error);
+                console.error("Error fetching user:", error);
                 return { success: false };
             }
         }
@@ -3462,7 +3314,7 @@ body {
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error("❌ Error creating user:", error);
+                console.error("Error creating user:", error);
                 return { success: false };
             }
         }
@@ -3474,85 +3326,60 @@ body {
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error("❌ Error updating balance:", error);
+                console.error("Error updating balance:", error);
                 return { success: false };
             }
         }
         
         // ======================================== -->
-        // 40.INITIALIZE USER FROM SHEETS
+        // 39. INITIALIZE USER FROM SHEETS
         // ======================================== -->
-        
         async function initializeUser() {
-            console.log("📥 Initializing user from Google Sheets...");
-            
-            // First check if we have Telegram ID
             const userId = currentUserData.userId;
             const userName = currentUserData.name;
             
             if (!userId) {
-                console.log("⚠️ No user ID found, using demo mode");
                 updateProfileDisplay();
                 return;
             }
             
-            // Try to get user from sheets
-            const result = await getUserFromSheet(userId);
-            
-            if (result.success && result.user) {
-                // User exists in sheets
-                console.log("✅ User found in Google Sheets:", result.user);
-                currentUserData.balance = parseFloat(result.user.balance) || 1000;
-                currentUserData.name = result.user.name || userName;
-                currentUserData.totalWins = parseInt(result.user.totalWins) || 0;
-                currentUserData.gamesPlayed = parseInt(result.user.gamesPlayed) || 0;
+            try {
+                const result = await getUserFromSheet(userId);
                 
-                // Update profile display
-                updateProfileDisplay();
-                
-                // Show welcome back message
-                showStatusMessage(`Welcome back, ${currentUserData.name}!`, 'success');
-                
-            } else {
-                // Create new user in sheets
-                console.log("🆕 Creating new user in Google Sheets...");
-                const createResult = await createUserInSheet(userId, userName, userId);
-                
-                if (createResult.success) {
-                    console.log("✅ New user created in Google Sheets");
-                    currentUserData.balance = 1000;
-                    updateProfileDisplay();
+                if (result.success && result.user) {
+                    currentUserData.balance = parseFloat(result.user.balance) || 1000;
+                    currentUserData.name = result.user.name || userName;
+                    currentUserData.totalWins = parseInt(result.user.totalWins) || 0;
+                    currentUserData.gamesPlayed = parseInt(result.user.gamesPlayed) || 0;
                     
-                    // Show welcome message
-                    showStatusMessage(`Welcome, ${userName}! ₹1000 bonus credited.`, 'success');
-                } else {
-                    console.log("⚠️ Could not create user, using demo mode");
                     updateProfileDisplay();
+                    showStatusMessage(`Welcome back, ${currentUserData.name}!`, 'success');
+                } else {
+                    const createResult = await createUserInSheet(userId, userName, userId);
+                    
+                    if (createResult.success) {
+                        currentUserData.balance = 1000;
+                        updateProfileDisplay();
+                        showStatusMessage(`Welcome, ${userName}! ₹1000 bonus credited.`, 'success');
+                    } else {
+                        updateProfileDisplay();
+                    }
                 }
+            } catch (error) {
+                console.error("Error in initializeUser:", error);
+                updateProfileDisplay();
             }
         }
         
         // ======================================== -->
-        // 41.GOOGLE SHEETS AUTH (No Firebase)
+        // 40. GAME HISTORY FUNCTIONS
         // ======================================== -->
-        
-        // Initialize without Firebase
-        updateProfileDisplay();
-        startGameLoop();
-        showStatusMessage('Welcome to Apex Day!', 'success');
-        
-        // ======================================== -->
-        // 42.GAME HISTORY FUNCTIONS
-        // ======================================== -->
-        
         function loadGameHistory() {
-            // Demo history
             const hist = document.getElementById('result-history');
             if (!hist) return;
             
             hist.innerHTML = '';
             
-            // Add some demo history items
             const demoResults = [
                 { result: 'green' },
                 { result: 'blue' },
@@ -3567,306 +3394,275 @@ body {
             });
         }
         
-            // ======================================== -->
-// 43.GAME LOOP & BETTING - COMPLETE FIXED
-// ======================================== -->
-
-// Flag to prevent multiple bets
-let isPlacingBet = false;
-
-function startGameLoop() {
-    if (gameTimerInterval) {
-        clearInterval(gameTimerInterval);
-        gameTimerInterval = null;
-    }
-    
-    let timeLeft = BETTING_TIME;
-    const timerValue = document.querySelector('.timer-value');
-    const resultBox = document.getElementById('result-box');
-    
-    if (!timerValue || !resultBox) {
-        console.error("Timer or result box not found");
-        return;
-    }
-    
-    resultBox.classList.add('loading');
-    resultBox.innerHTML = '';
-    resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-    
-    currentBet = { green: 0, blue: 0 };
-    gameState = { totalGreenBets: 0, totalBlueBets: 0, allBets: [], currentTime: 0 };
-    userBetMap = { green: {}, blue: {} };
-    
-    const greenList = document.getElementById('green-bets-list');
-    const blueList = document.getElementById('blue-bets-list');
-    const greenTotal = document.getElementById('green-total');
-    const blueTotal = document.getElementById('blue-total');
-    const greenBadge = document.getElementById('bet-amount-green');
-    const blueBadge = document.getElementById('bet-amount-blue');
-    
-    if (greenList) {
-        greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
-    }
-    if (blueList) {
-        blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
-    }
-    if (greenTotal) greenTotal.textContent = '0';
-    if (blueTotal) blueTotal.textContent = '0';
-    if (greenBadge) {
-        greenBadge.textContent = '0';
-        greenBadge.style.display = 'none';
-    }
-    if (blueBadge) {
-        blueBadge.textContent = '0';
-        blueBadge.style.display = 'none';
-    }
-    
-    // Start new timer
-    gameTimerInterval = setInterval(function() {
-        timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
-        
-        if (timerValue) {
-            timerValue.textContent = timeLeft.toFixed(1);
-        }
-        
-        if (timeLeft <= 0) {
-            clearInterval(gameTimerInterval);
-            gameTimerInterval = null;
-            if (timerValue) {
-                timerValue.textContent = '0.0';
+        // ======================================== -->
+        // 41. GAME LOOP & BETTING (FIXED)
+        // ======================================== -->
+        function startGameLoop() {
+            if (gameTimerInterval) {
+                clearInterval(gameTimerInterval);
+                gameTimerInterval = null;
             }
-            endGameRound();
-        }
-    }, 100);
-}
-
-function endGameRound() {
-    if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-    const resultBox = document.getElementById('result-box'); 
-    if (!resultBox) return;
-    
-    resultBox.classList.remove('loading');
-    resultBox.innerHTML = '';
-    resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-    
-    const totalGreen = gameState.totalGreenBets;
-    const totalBlue = gameState.totalBlueBets;
-    let resultColor = 'gray';
-    
-    if (totalGreen > 0 || totalBlue > 0) {
-        if (totalGreen < totalBlue) resultColor = 'green';
-        else if (totalBlue < totalGreen) resultColor = 'blue';
-    }
-    
-    setTimeout(() => {
-        resultBox.classList.add(resultColor + '-result');
-        resultBox.innerHTML = '';
-        
-        processWinning(resultColor);
-        
-        updateHistoryDisplay(resultColor);
-        setTimeout(() => { startGameLoop(); }, 3000);
-    }, 2000);
-}
-
-function updateHistoryDisplay(resultColor) {
-    const hist = document.getElementById('result-history'); 
-    if (!hist) return;
-    
-    const icon = resultColor === 'green' ? 'fa-leaf' : resultColor === 'blue' ? 'fa-water' : 'fa-circle';
-    const cls = resultColor === 'green' ? 'green' : resultColor === 'blue' ? 'blue' : 'gray';
-    const newItem = document.createElement('div');
-    newItem.className = `history-item ${cls}`;
-    newItem.innerHTML = `<i class="fas ${icon}"></i>`;
-    hist.insertBefore(newItem, hist.firstChild);
-    if (hist.children.length > 20) hist.removeChild(hist.lastChild);
-}
-
-async function processWinning(winningColor) {
-    if (!currentUserData) return;
-    
-    console.log("Processing winning for color:", winningColor);
-    console.log("Current balance before win:", currentUserData.balance);
-    
-    const userBet = currentBet[winningColor] || 0;
-    
-    if (winningColor !== 'gray' && userBet > 0) {
-        const winAmount = userBet * 2;
-        const netWin = winAmount - currentBet.green - currentBet.blue;
-        
-        const newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
-        const finalBalance = newBalance > MAX_BALANCE ? MAX_BALANCE : newBalance;
-        
-        console.log("Win amount:", winAmount, "Net win:", netWin, "New balance:", finalBalance);
-        
-        fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
-            .catch(error => console.error("Background API error:", error));
-        
-        currentUserData.balance = finalBalance;
-        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-        
-    } else if (winningColor === 'gray') {
-        const totalBet = currentBet.green + currentBet.blue;
-        if (totalBet > 0) {
-            const newBalance = currentUserData.balance + totalBet;
-            console.log("Gray result - Refund:", totalBet, "New balance:", newBalance);
             
-            fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${newBalance}&actionType=gray&amount=${totalBet}`)
-                .catch(error => console.error("Background API error:", error));
+            timeLeft = 15;
+            isBettingActive = true;
+            currentRoundId = Date.now();
             
-            currentUserData.balance = newBalance;
-            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-        }
-    } else {
-        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-    }
-    
-    updateProfileDisplay();
-    console.log("Final balance after processing:", currentUserData.balance);
-}
-
-async function placeBet(color) {
-    console.log("Place bet called", color);
-    
-    if (isPlacingBet) {
-        console.log("Already placing a bet, please wait...");
-        return;
-    }
-    
-    if (!currentUserData) {
-        showStatusMessage('Please login first!', 'error');
-        return;
-    }
-    
-    const timerValue = document.querySelector('.timer-value');
-    if (!timerValue || timerValue.textContent === '0.00') {
-        showStatusMessage('Betting closed for this round!', 'error');
-        return;
-    }
-    
-    const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
-    if (isNaN(betAmount) || betAmount < 1) {
-        showStatusMessage('Enter valid amount (Min 1)', 'error');
-        return;
-    }
-    
-    if (betAmount > (currentUserData?.balance || 0)) {
-        showStatusMessage('Insufficient balance!', 'error');
-        return;
-    }
-    
-    const newBalanceAfterBet = currentUserData.balance - betAmount;
-    if (newBalanceAfterBet < 0) {
-        showStatusMessage('Cannot bet more than available balance!', 'error');
-        return;
-    }
-    
-    const maxPossibleWin = (currentBet[color] + betAmount) * 2;
-    if (maxPossibleWin > MAX_BALANCE) {
-        showStatusMessage(`Cannot place bet - potential win would exceed maximum balance of ${formatBalance(MAX_BALANCE)}`, 'error');
-        return;
-    }
-    
-    isPlacingBet = true;
-    
-    const btn = document.getElementById(`bet-btn-${color}`);
-    if (btn) {
-        btn.classList.add('active-press');
-    }
-    
-    const oldBalance = currentUserData.balance;
-    const newBalance = oldBalance - betAmount;
-    
-    currentUserData.balance = newBalance;
-    
-    if (!userBetMap[color]) userBetMap[color] = {};
-    const userKey = currentUserData.userId || 'demo';
-    
-    if (userBetMap[color][userKey]) {
-        userBetMap[color][userKey].amount += betAmount;
-    } else {
-        userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
-    }
-    
-    currentBet[color] += betAmount;
-    if (color === 'green') {
-        gameState.totalGreenBets += betAmount;
-    } else {
-        gameState.totalBlueBets += betAmount;
-    }
-    
-    updateBetListDisplay(color);
-    
-    const betBadge = document.getElementById(`bet-amount-${color}`);
-    if (betBadge) {
-        betBadge.textContent = Math.floor(currentBet[color]);
-        betBadge.style.display = 'flex';
-    }
-    
-    const totalSpan = document.getElementById(`${color}-total`);
-    if (totalSpan) {
-        totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
-    }
-    
-    updateProfileDisplay();
-    showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
-    
-    try {
-        const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${newBalance}&actionType=bet&amount=${betAmount}`;
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    console.error("API failed, but UI already updated");
+            const timerValue = document.querySelector('.timer-value');
+            const resultBox = document.getElementById('result-box');
+            
+            if (!timerValue || !resultBox) return;
+            
+            timerValue.textContent = '15.0';
+            resultBox.classList.add('loading');
+            resultBox.innerHTML = '';
+            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+            
+            currentBet = { green: 0, blue: 0 };
+            gameState = { 
+                totalGreenBets: 0, 
+                totalBlueBets: 0, 
+                allBets: [], 
+                currentTime: 0,
+                roundId: currentRoundId
+            };
+            userBetMap = { green: {}, blue: {} };
+            
+            const greenList = document.getElementById('green-bets-list');
+            const blueList = document.getElementById('blue-bets-list');
+            const greenTotal = document.getElementById('green-total');
+            const blueTotal = document.getElementById('blue-total');
+            const greenBadge = document.getElementById('bet-amount-green');
+            const blueBadge = document.getElementById('bet-amount-blue');
+            
+            if (greenList) {
+                greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
+            }
+            if (blueList) {
+                blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
+            }
+            if (greenTotal) greenTotal.textContent = '0';
+            if (blueTotal) blueTotal.textContent = '0';
+            if (greenBadge) {
+                greenBadge.textContent = '0';
+                greenBadge.style.display = 'none';
+            }
+            if (blueBadge) {
+                blueBadge.textContent = '0';
+                blueBadge.style.display = 'none';
+            }
+            
+            gameTimerInterval = setInterval(function() {
+                timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
+                
+                if (timerValue) {
+                    timerValue.textContent = timeLeft.toFixed(1);
                 }
-            })
-            .catch(error => {
-                console.error("Background API error:", error);
-            });
-        
-    } catch (error) {
-        console.error("Bet error:", error);
-    }
-    
-    setTimeout(() => {
-        isPlacingBet = false;
-        if (btn) {
-            btn.classList.remove('active-press');
+                
+                if (timeLeft <= 0) {
+                    clearInterval(gameTimerInterval);
+                    gameTimerInterval = null;
+                    isBettingActive = false;
+                    if (timerValue) {
+                        timerValue.textContent = '0.0';
+                    }
+                    endGameRound();
+                }
+            }, 100);
         }
-    }, 300);
-}
 
-function updateBetListDisplay(color) {
-    const list = document.getElementById(`${color}-bets-list`);
-    if (!list) return;
-    
-    const users = Object.entries(userBetMap[color] || {})
-        .map(([userId, data]) => ({ userId, ...data }))
-        .sort((a, b) => b.amount - a.amount);
-    
-    if (users.length === 0) {
-        list.innerHTML = `<div class="empty-bets"><i class="fas fa-${color === 'green' ? 'leaf' : 'water'}"></i> No bets</div>`;
-        return;
-    }
-    
-    let html = '';
-    users.forEach((user, index) => {
-        html += `<div class="bet-item" id="${color}-bet-${user.userId}">
-            <div class="bet-item-left">
-                <span class="bet-user-name">${user.userName}</span>
-            </div>
-            <span class="bet-amount">${Math.floor(user.amount)}</span>
-        </div>`;
-    });
-    list.innerHTML = html;
-}
+        function endGameRound() {
+            if (gameTimerInterval) { 
+                clearInterval(gameTimerInterval); 
+                gameTimerInterval = null; 
+            }
+            const resultBox = document.getElementById('result-box'); 
+            if (!resultBox) return;
+            
+            resultBox.classList.remove('loading');
+            resultBox.innerHTML = '';
+            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+            
+            const totalGreen = gameState.totalGreenBets;
+            const totalBlue = gameState.totalBlueBets;
+            let resultColor = 'gray';
+            
+            if (totalGreen > 0 || totalBlue > 0) {
+                if (totalGreen < totalBlue) resultColor = 'green';
+                else if (totalBlue < totalGreen) resultColor = 'blue';
+            }
+            
+            setTimeout(() => {
+                resultBox.classList.add(resultColor + '-result');
+                resultBox.innerHTML = '';
+                
+                processWinning(resultColor);
+                
+                updateHistoryDisplay(resultColor);
+                setTimeout(() => { startGameLoop(); }, 3000);
+            }, 2000);
+        }
+
+        function updateHistoryDisplay(resultColor) {
+            const hist = document.getElementById('result-history'); 
+            if (!hist) return;
+            
+            const icon = resultColor === 'green' ? 'fa-leaf' : resultColor === 'blue' ? 'fa-water' : 'fa-circle';
+            const cls = resultColor === 'green' ? 'green' : resultColor === 'blue' ? 'blue' : 'gray';
+            const newItem = document.createElement('div');
+            newItem.className = `history-item ${cls}`;
+            newItem.innerHTML = `<i class="fas ${icon}"></i>`;
+            hist.insertBefore(newItem, hist.firstChild);
+            if (hist.children.length > 20) hist.removeChild(hist.lastChild);
+        }
+
+        async function placeBet(color) {
+            if (!isBettingActive) {
+                showStatusMessage('Betting closed for this round!', 'error');
+                return;
+            }
+            
+            if (isPlacingBet) return;
+            
+            if (!currentUserData) {
+                showStatusMessage('Please login first!', 'error');
+                return;
+            }
+            
+            const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
+            if (isNaN(betAmount) || betAmount < 1) {
+                showStatusMessage('Enter valid amount (Min 1)', 'error');
+                return;
+            }
+            
+            if (betAmount > currentUserData.balance) {
+                showStatusMessage('Insufficient balance!', 'error');
+                return;
+            }
+            
+            const currentBetAmount = currentBet[color] || 0;
+            const potentialWin = (currentBetAmount + betAmount) * 2;
+            const totalOtherBets = color === 'green' ? currentBet.blue : currentBet.green;
+            const projectedBalance = currentUserData.balance - betAmount + potentialWin;
+            
+            if (projectedBalance > MAX_BALANCE) {
+                showStatusMessage(`Cannot place bet - would exceed ₹${formatBalance(MAX_BALANCE)}`, 'error');
+                return;
+            }
+            
+            isPlacingBet = true;
+            
+            currentUserData.balance -= betAmount;
+            
+            if (!userBetMap[color]) userBetMap[color] = {};
+            const userKey = currentUserData.userId || 'demo';
+            
+            if (userBetMap[color][userKey]) {
+                userBetMap[color][userKey].amount += betAmount;
+            } else {
+                userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
+            }
+            
+            currentBet[color] += betAmount;
+            if (color === 'green') {
+                gameState.totalGreenBets += betAmount;
+            } else {
+                gameState.totalBlueBets += betAmount;
+            }
+            
+            updateBetListDisplay(color);
+            
+            const betBadge = document.getElementById(`bet-amount-${color}`);
+            if (betBadge) {
+                betBadge.textContent = Math.floor(currentBet[color]);
+                betBadge.style.display = 'flex';
+            }
+            
+            const totalSpan = document.getElementById(`${color}-total`);
+            if (totalSpan) {
+                totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
+            }
+            
+            updateProfileDisplay();
+            showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
+            
+            try {
+                const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${currentUserData.balance}&actionType=bet&amount=${betAmount}`;
+                fetch(url).catch(error => console.error("API error:", error));
+            } catch (error) {
+                console.error("Bet error:", error);
+            }
+            
+            setTimeout(() => {
+                isPlacingBet = false;
+            }, 300);
+        }
+
+        function updateBetListDisplay(color) {
+            const list = document.getElementById(`${color}-bets-list`);
+            if (!list) return;
+            
+            const users = Object.entries(userBetMap[color] || {})
+                .map(([userId, data]) => ({ userId, ...data }))
+                .sort((a, b) => b.amount - a.amount);
+            
+            if (users.length === 0) {
+                list.innerHTML = `<div class="empty-bets"><i class="fas fa-${color === 'green' ? 'leaf' : 'water'}"></i> No bets</div>`;
+                return;
+            }
+            
+            let html = '';
+            users.forEach((user) => {
+                html += `<div class="bet-item">
+                    <div class="bet-item-left">
+                        <span class="bet-user-name">${user.userName}</span>
+                    </div>
+                    <span class="bet-amount">${Math.floor(user.amount)}</span>
+                </div>`;
+            });
+            list.innerHTML = html;
+        }
+
+        async function processWinning(winningColor) {
+            if (!currentUserData) return;
+            
+            const userBet = currentBet[winningColor] || 0;
+            
+            if (winningColor !== 'gray' && userBet > 0) {
+                const winAmount = userBet * 2;
+                const netWin = winAmount - currentBet.green - currentBet.blue;
+                
+                let newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
+                const finalBalance = enforceMaxBalance(newBalance);
+                
+                fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
+                    .catch(error => console.error("API error:", error));
+                
+                currentUserData.balance = finalBalance;
+                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                
+            } else if (winningColor === 'gray') {
+                const totalBet = currentBet.green + currentBet.blue;
+                if (totalBet > 0) {
+                    let newBalance = currentUserData.balance + totalBet;
+                    const finalBalance = enforceMaxBalance(newBalance);
+                    
+                    fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
+                        .catch(error => console.error("API error:", error));
+                    
+                    currentUserData.balance = finalBalance;
+                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                }
+            } else {
+                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+            }
+            
+            updateProfileDisplay();
+        }
         
         // ======================================== -->
-        // 44.BET AMOUNT UTILITIES
+        // 42. BET AMOUNT UTILITIES
         // ======================================== -->
-        
         function setBetAmount(amount) { 
             const input = document.getElementById('bet-amount'); 
             if (input) input.value = amount; 
@@ -3926,9 +3722,8 @@ function updateBetListDisplay(color) {
         }
         
         // ======================================== -->
-        // 45.ADD MONEY / WITHDRAW
+        // 43. ADD MONEY / WITHDRAW (FIXED)
         // ======================================== -->
-        
         async function submitAddMoneyRequest() {
             if (!currentUserData) return showMessage('add-money-message', 'Please login.');
             
@@ -3941,59 +3736,44 @@ function updateBetListDisplay(color) {
             
             if (currentUserData.balance + amount > MAX_BALANCE) {
                 const maxAdd = MAX_BALANCE - currentUserData.balance;
-                return showMessage('add-money-message', `Cannot exceed maximum balance of ${formatBalance(MAX_BALANCE)}. You can add max ${formatBalance(maxAdd)} more.`, 'error');
+                return showMessage('add-money-message', `Cannot exceed maximum balance of ₹${formatBalance(MAX_BALANCE)}. You can add max ₹${formatBalance(maxAdd)} more.`, 'error');
             }
             
             const newBalance = currentUserData.balance + amount;
             
-            // Update in Google Sheets
             await updateBalanceInSheet(currentUserData.userId, newBalance);
             
-            // Update local
             currentUserData.balance = newBalance;
             
-            showMessage('add-money-message', `${formatBalance(amount)} added to balance!`, 'success');
+            showMessage('add-money-message', `₹${formatBalance(amount)} added to balance!`, 'success');
             document.getElementById('add-amount').value = '';
             document.getElementById('transaction-id').value = '';
             updateProfileDisplay();
         }
-        
-        function showWithdrawPage() {
-            if (!currentUserData?.bank_accounts?.length && !currentUserData?.upis?.length) {
-                document.getElementById('important-notification-title') && (document.getElementById('important-notification-title').innerHTML = '<i class="fas fa-credit-card"></i> Account Required');
-                document.getElementById('important-notification-message') && (document.getElementById('important-notification-message').textContent = 'Please add a bank account or UPI ID in Manage Account before withdrawing.');
-                document.getElementById('important-notification-popup')?.classList.remove('hidden');
-                return;
-            }
-            showPage('withdraw-page');
-        }
-        
+
         async function submitWithdrawRequest() {
             if (!currentUserData) return showMessage('withdraw-message', 'Please login.');
             
             const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
             
-            if (isNaN(amount) || amount < 100 || amount > (currentUserData.balance || 0)) {
-                return showMessage('withdraw-message', `Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance || 0)}.`);
+            if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
+                return showMessage('withdraw-message', `Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}.`);
             }
             
             const newBalance = currentUserData.balance - amount;
             
-            // Update in Google Sheets
             await updateBalanceInSheet(currentUserData.userId, newBalance);
             
-            // Update local
             currentUserData.balance = newBalance;
             
-            showMessage('withdraw-message', `${formatBalance(amount)} withdrawal requested.`, 'success');
+            showMessage('withdraw-message', `₹${formatBalance(amount)} withdrawal requested.`, 'success');
             document.getElementById('withdraw-amount').value = '';
             updateProfileDisplay();
         }
         
         // ======================================== -->
-        // 46.BANK ACCOUNT FUNCTIONS (Demo)
+        // 44. BANK ACCOUNT FUNCTIONS (FIXED)
         // ======================================== -->
-        
         function showAddBankPopup() {
             document.getElementById('add-bank-popup')?.classList.remove('hidden');
             document.getElementById('bank-message')?.classList.add('hidden');
@@ -4009,22 +3789,89 @@ function updateBetListDisplay(color) {
         }
         
         function loadBankAccountsManage() {
-            // Demo function
-        }
-        
-        function addBankAccount() {
-            closeAddBankPopup();
-            showMessage('bank-message', 'Bank account added successfully!', 'success');
+            const container = document.getElementById('bank-accounts-list-manage');
+            if (!container) return;
+            
+            const accounts = currentUserData?.bank_accounts || [];
+            
+            if (accounts.length === 0) {
+                container.innerHTML = '<div class="empty-bets"><i class="fas fa-university"></i> No bank accounts</div>';
+                return;
+            }
+            
+            let html = '';
+            accounts.forEach((acc, index) => {
+                html += `
+                    <div class="bank-account-item" data-index="${index}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong><i class="fas fa-university"></i> ${acc.bankName || 'Bank'}</strong><br>
+                                <small>${acc.accountHolder}</small><br>
+                                <small>****${acc.accountNumber?.slice(-4) || '****'}</small><br>
+                                <small>IFSC: ${acc.ifsc || 'N/A'}</small>
+                            </div>
+                            <button onclick="deleteBankAccount(${index})" class="delete-btn" style="background: none; border: none; color: #FF4444; font-size: 1.2rem; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
         
         function deleteBankAccount(index) {
-            // Demo function
+            if (!currentUserData?.bank_accounts) return;
+            
+            if (!confirm('Are you sure you want to delete this bank account?')) return;
+            
+            currentUserData.bank_accounts.splice(index, 1);
+            loadBankAccountsManage();
+            showStatusMessage('Bank account deleted', 'success');
+        }
+        
+        function addBankAccount() {
+            const bankName = document.getElementById('bank-name')?.value.trim();
+            const accountHolder = document.getElementById('account-holder')?.value.trim();
+            const accountNumber = document.getElementById('account-number')?.value.trim();
+            const ifscCode = document.getElementById('ifsc-code')?.value.trim();
+            
+            if (!bankName || !accountHolder || !accountNumber || !ifscCode) {
+                showMessage('bank-message', 'All fields are required', 'error');
+                return;
+            }
+            
+            if (!/^\d{9,18}$/.test(accountNumber)) {
+                showMessage('bank-message', 'Valid account number required (9-18 digits)', 'error');
+                return;
+            }
+            
+            if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode.toUpperCase())) {
+                showMessage('bank-message', 'Valid IFSC code required (e.g., SBIN0123456)', 'error');
+                return;
+            }
+            
+            const newAccount = {
+                bankName: bankName,
+                accountHolder: accountHolder,
+                accountNumber: accountNumber,
+                ifsc: ifscCode.toUpperCase(),
+                addedAt: new Date().toISOString()
+            };
+            
+            if (!currentUserData.bank_accounts) {
+                currentUserData.bank_accounts = [];
+            }
+            currentUserData.bank_accounts.push(newAccount);
+            
+            closeAddBankPopup();
+            showStatusMessage('Bank account added successfully!', 'success');
         }
         
         // ======================================== -->
-        // 47.UPI FUNCTIONS (Demo)
+        // 45. UPI FUNCTIONS (FIXED)
         // ======================================== -->
-        
         function showAddUPIPopup() {
             document.getElementById('add-upi-popup')?.classList.remove('hidden');
             document.getElementById('upi-message')?.classList.add('hidden');
@@ -4039,84 +3886,365 @@ function updateBetListDisplay(color) {
             showManageAccount();
         }
         
+        function loadUPIsManage() {
+            const container = document.getElementById('upi-list-manage');
+            if (!container) return;
+            
+            const upis = currentUserData?.upis || [];
+            
+            if (upis.length === 0) {
+                container.innerHTML = '<div class="empty-bets"><i class="fas fa-mobile-alt"></i> No UPI IDs</div>';
+                return;
+            }
+            
+            let html = '';
+            upis.forEach((upi, index) => {
+                html += `
+                    <div class="upi-item" data-index="${index}">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong><i class="fas fa-mobile-alt"></i> ${upi.upiId || 'UPI'}</strong><br>
+                                <small>${upi.holderName || 'User'}</small>
+                            </div>
+                            <button onclick="deleteUPI(${index})" class="delete-btn" style="background: none; border: none; color: #FF4444; font-size: 1.2rem; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function deleteUPI(index) {
+            if (!currentUserData?.upis) return;
+            
+            if (!confirm('Are you sure you want to delete this UPI ID?')) return;
+            
+            currentUserData.upis.splice(index, 1);
+            loadUPIsManage();
+            showStatusMessage('UPI ID deleted', 'success');
+        }
+        
         function addUPI() {
+            const upiId = document.getElementById('upi-id')?.value.trim().toLowerCase();
+            const holderName = document.getElementById('upi-holder')?.value.trim();
+            
+            if (!upiId || !holderName) {
+                showMessage('upi-message', 'All fields are required', 'error');
+                return;
+            }
+            
+            if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/.test(upiId)) {
+                showMessage('upi-message', 'Valid UPI ID required (e.g., name@okaxis)', 'error');
+                return;
+            }
+            
+            const newUPI = {
+                upiId: upiId,
+                holderName: holderName,
+                addedAt: new Date().toISOString()
+            };
+            
+            if (!currentUserData.upis) {
+                currentUserData.upis = [];
+            }
+            currentUserData.upis.push(newUPI);
+            
             closeAddUPIPopup();
-            showMessage('upi-message', 'UPI ID added successfully!', 'success');
+            showStatusMessage('UPI ID added successfully!', 'success');
         }
         
         // ======================================== -->
-        // 48.LOGOUT FUNCTION
+        // 46. FULL SCREEN FUNCTIONS (FIXED)
         // ======================================== -->
+        function filterFullHistory(filter) {
+            fullHistoryFilter = filter;
+            
+            document.querySelectorAll('#full-history-page .fullscreen-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(filter)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            loadFullHistory(filter);
+        }
+
+        function filterFullTransaction(filter) {
+            fullTransactionFilter = filter;
+            
+            document.querySelectorAll('#full-transaction-page .fullscreen-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(filter)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            loadFullTransactions(filter);
+        }
+
+        function loadFullHistory(filter = 'all') {
+            const container = document.getElementById('full-history-content');
+            if (!container) return;
+            
+            const demoHistory = [
+                { date: '2024-01-15 14:30', color: 'green', amount: 100, result: 'won' },
+                { date: '2024-01-15 14:15', color: 'blue', amount: 50, result: 'lost' },
+                { date: '2024-01-15 14:00', color: 'gray', amount: 75, result: 'refund' },
+                { date: '2024-01-15 13:45', color: 'green', amount: 200, result: 'won' }
+            ];
+            
+            let filtered = demoHistory;
+            if (filter === 'won') {
+                filtered = demoHistory.filter(h => h.result === 'won');
+            } else if (filter === 'lost') {
+                filtered = demoHistory.filter(h => h.result === 'lost');
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="fullscreen-empty">
+                        <i class="fas fa-history"></i>
+                        No ${filter !== 'all' ? filter : ''} game history found
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(item => {
+                const badgeClass = item.result === 'won' ? 'badge-won' : (item.result === 'lost' ? 'badge-lost' : 'badge-pending');
+                const icon = item.color === 'green' ? 'fa-leaf' : (item.color === 'blue' ? 'fa-water' : 'fa-circle');
+                
+                html += `
+                    <div class="fullscreen-item">
+                        <div class="fullscreen-item-left">
+                            <div class="fullscreen-item-date">${item.date}</div>
+                            <div class="fullscreen-item-details">
+                                <i class="fas ${icon}" style="color: ${item.color === 'green' ? '#00C853' : (item.color === 'blue' ? '#2962FF' : '#9e9e9e')};"></i>
+                                <span>${item.color.charAt(0).toUpperCase() + item.color.slice(1)}</span>
+                                <span class="fullscreen-item-badge ${badgeClass}">${item.result}</span>
+                            </div>
+                        </div>
+                        <div class="fullscreen-item-amount">₹${item.amount}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function loadFullTransactions(filter = 'all') {
+            const container = document.getElementById('full-transaction-content');
+            if (!container) return;
+            
+            const demoTx = [
+                { date: '2024-01-15 10:30', type: 'deposit', amount: 500, status: 'completed' },
+                { date: '2024-01-14 16:20', type: 'withdraw', amount: 200, status: 'pending' },
+                { date: '2024-01-14 09:15', type: 'deposit', amount: 1000, status: 'completed' },
+                { date: '2024-01-13 18:45', type: 'withdraw', amount: 300, status: 'completed' }
+            ];
+            
+            let filtered = demoTx;
+            if (filter === 'deposit') {
+                filtered = demoTx.filter(t => t.type === 'deposit');
+            } else if (filter === 'withdraw') {
+                filtered = demoTx.filter(t => t.type === 'withdraw');
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="fullscreen-empty">
+                        <i class="fas fa-exchange-alt"></i>
+                        No ${filter !== 'all' ? filter : ''} transactions found
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(tx => {
+                const amountClass = tx.type === 'deposit' ? 'deposit' : 'withdraw';
+                const statusClass = tx.status === 'completed' ? 'badge-won' : 'badge-pending';
+                
+                html += `
+                    <div class="fullscreen-item">
+                        <div class="fullscreen-item-left">
+                            <div class="fullscreen-item-date">${tx.date}</div>
+                            <div class="fullscreen-item-details">
+                                <i class="fas ${tx.type === 'deposit' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                                <span>${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</span>
+                                <span class="fullscreen-item-badge ${statusClass}">${tx.status}</span>
+                            </div>
+                        </div>
+                        <div class="fullscreen-item-amount ${amountClass}">${tx.type === 'deposit' ? '+' : '-'} ₹${tx.amount}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function openFullHistory() {
+            document.getElementById('full-history-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadFullHistory(fullHistoryFilter);
+        }
+
+        function closeFullHistory() {
+            document.getElementById('full-history-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openFullTransaction() {
+            document.getElementById('full-transaction-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadFullTransactions(fullTransactionFilter);
+        }
+
+        function closeFullTransaction() {
+            document.getElementById('full-transaction-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openFullWithdraw() {
+            document.getElementById('full-withdraw-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadPaymentMethods();
+        }
+
+        function closeFullWithdraw() {
+            document.getElementById('full-withdraw-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function loadPaymentMethods() {
+            const container = document.getElementById('payment-methods-container');
+            if (!container) return;
+            
+            let html = '';
+            
+            if (currentUserData?.bank_accounts?.length > 0) {
+                html += '<div class="payment-section-title"><i class="fas fa-university"></i> Bank Accounts</div>';
+                currentUserData.bank_accounts.forEach(acc => {
+                    html += `
+                        <div class="payment-method-item" onclick="selectPaymentMethod('bank', '${acc.accountNumber}')">
+                            <div class="payment-icon"><i class="fas fa-university"></i></div>
+                            <div class="payment-details">
+                                <h4>${acc.bankName}</h4>
+                                <p>${acc.accountHolder} •••• ${acc.accountNumber.slice(-4)}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (currentUserData?.upis?.length > 0) {
+                html += '<div class="payment-section-title"><i class="fas fa-mobile-alt"></i> UPI IDs</div>';
+                currentUserData.upis.forEach(upi => {
+                    html += `
+                        <div class="payment-method-item" onclick="selectPaymentMethod('upi', '${upi.upiId}')">
+                            <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
+                            <div class="payment-details">
+                                <h4>${upi.upiId}</h4>
+                                <p>${upi.holderName}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (!html) {
+                html = '<div class="fullscreen-empty"><i class="fas fa-credit-card"></i> No payment methods added</div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function selectPaymentMethod(type, id) {
+            showWithdrawForm(type, id);
+        }
+
+        function showWithdrawForm(type, id) {
+            const container = document.getElementById('payment-methods-container');
+            const formHtml = `
+                <div class="withdraw-form">
+                    <h3 style="color: #D4AF37; margin-bottom: 15px;">Withdraw to ${type === 'bank' ? 'Bank' : 'UPI'}</h3>
+                    <input type="number" id="withdraw-amount-full" placeholder="Enter amount" min="100" class="auth-input">
+                    <button class="auth-btn" onclick="submitFullWithdraw('${type}', '${id}')">
+                        <i class="fas fa-check-circle"></i> Confirm Withdrawal
+                    </button>
+                    <button class="back-btn" style="margin-top: 10px;" onclick="loadPaymentMethods()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            `;
+            container.innerHTML = formHtml;
+        }
+
+        async function submitFullWithdraw(type, id) {
+            const amount = parseFloat(document.getElementById('withdraw-amount-full')?.value);
+            
+            if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
+                showStatusMessage(`Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}`, 'error');
+                return;
+            }
+            
+            const newBalance = currentUserData.balance - amount;
+            
+            await updateBalanceInSheet(currentUserData.userId, newBalance);
+            
+            currentUserData.balance = newBalance;
+            updateProfileDisplay();
+            
+            showStatusMessage(`Withdrawal of ₹${formatBalance(amount)} requested to ${type === 'bank' ? 'Bank' : 'UPI'}`, 'success');
+            
+            setTimeout(() => {
+                closeFullWithdraw();
+            }, 2000);
+        }
         
+        // ======================================== -->
+        // 47. LOGOUT FUNCTION (FIXED)
+        // ======================================== -->
         function logout() {
+            const tgId = currentUserData?.telegram_id || localStorage.getItem('tg_id');
+            const tgName = currentUserData?.telegram_username || localStorage.getItem('tg_name');
+            
             currentUserData = {
-                userId: String(Math.floor(100000 + Math.random() * 900000)),
+                userId: '12345678',
                 name: 'Demo User',
                 email: 'demo@example.com',
+                phone: 'Not Set',
                 balance: 1000,
                 bank_accounts: [],
                 upis: [],
                 notifications: [],
                 totalWins: 0,
                 gamesPlayed: 0,
-                telegram_id: null,
-                telegram_username: null
+                createdAt: new Date(),
+                telegram_id: tgId || null,
+                telegram_username: tgName || null
             };
+            
             updateProfileDisplay();
-            if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+            
+            if (gameTimerInterval) { 
+                clearInterval(gameTimerInterval); 
+                gameTimerInterval = null; 
+            }
+            
             startGameLoop();
             showStatusMessage('Logged out - Demo mode active', 'success');
+            showPage('dashboard-page');
         }
         
         // ======================================== -->
-        // 49.FULL SCREEN FUNCTIONS
+        // 48. INITIALIZATION
         // ======================================== -->
-        
-        function openFullHistory() {
-            document.getElementById('full-history-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeFullHistory() {
-            document.getElementById('full-history-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function openFullTransaction() {
-            document.getElementById('full-transaction-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeFullTransaction() {
-            document.getElementById('full-transaction-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function openFullWithdraw() {
-            document.getElementById('full-withdraw-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeFullWithdraw() {
-            document.getElementById('full-withdraw-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function filterFullHistory(filter) {
-            console.log("Filter history:", filter);
-        }
-        
-        function filterFullTransaction(filter) {
-            console.log("Filter transaction:", filter);
-        }
-        
-        // ======================================== -->
-        // 50.DOM CONTENT LOADED
-        // ======================================== -->
-        
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("App Initialized");
-            
             ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
@@ -4126,94 +4254,30 @@ function updateBetListDisplay(color) {
                 }
             });
             
-            checkPageScroll();
-            
-            const profileContent = document.querySelector('#profile-page .profile-content');
-            if (profileContent) {
-                profileContent.style.webkitOverflowScrolling = 'touch';
-            }
-            
-            setTimeout(fixHistoryStripPosition, 100);
-            
-            // Initialize Telegram and load user data
             initTelegramAndWelcome();
             
-            // Load user from Google Sheets after Telegram init
             setTimeout(() => {
                 initializeUser();
+                startGameLoop();
+                loadGameHistory();
             }, 1500);
+            
+            // Fix history strip position
+            setTimeout(fixHistoryStripPosition, 100);
         });
-        
-        function checkPageScroll() {
-            const activePage = document.querySelector('.page:not(.hidden)');
-            
-            if (activePage && activePage.id === 'dashboard-page') {
-                document.body.style.overflow = 'hidden';
-                document.documentElement.style.overflow = 'hidden';
-                document.body.style.touchAction = 'none';
-            } else {
-                document.body.style.overflow = 'auto';
-                document.documentElement.style.overflow = 'auto';
-                document.body.style.touchAction = 'pan-y';
-                document.body.style.webkitOverflowScrolling = 'touch';
-                document.documentElement.style.webkitOverflowScrolling = 'touch';
-            }
-        }
-        
-        // ======================================== -->
-        // 51.HISTORY STRIP POSITION FIX
-        // ======================================== -->
-        
+
         function fixHistoryStripPosition() {
-            const topBar = document.querySelector('.top-bar');
             const historyContainer = document.querySelector('.history-container');
-            
-            if (topBar && historyContainer) {
+            if (historyContainer) {
                 historyContainer.style.marginTop = '';
                 historyContainer.style.marginBottom = '2px';
-                historyContainer.style.paddingTop = '0px';
-                historyContainer.style.paddingBottom = '0px';
-                historyContainer.style.position = 'relative';
-                historyContainer.style.top = '0px';
                 historyContainer.style.height = '38px';
-            }
-            
-            const dashboardHistory = document.querySelector('#dashboard-page .history-container');
-            if (dashboardHistory) {
-                dashboardHistory.style.marginTop = '';
-                dashboardHistory.style.paddingTop = '0px';
-                dashboardHistory.style.top = '0px';
-                dashboardHistory.style.height = '38px';
-            }
-            
-            const dashboardPage = document.getElementById('dashboard-page');
-            if (dashboardPage) {
-                const firstChild = dashboardPage.firstElementChild;
-                if (firstChild && firstChild.classList.contains('top-bar')) {
-                    const nextElement = firstChild.nextElementSibling;
-                    if (nextElement && nextElement.classList.contains('history-container')) {
-                        nextElement.style.marginTop = '';
-                        nextElement.style.top = '0px';
-                        nextElement.style.height = '38px';
-                    }
-                }
             }
         }
         
-        window.addEventListener('resize', function() {
-            setTimeout(fixHistoryStripPosition, 10);
-        });
-        
-        document.addEventListener('click', function() {
-            setTimeout(fixHistoryStripPosition, 10);
-        });
-        
-        setInterval(fixHistoryStripPosition, 1000);
-        
         // ======================================== -->
-        // 52.DISABLE COPY & RIGHT CLICK
+        // 49. DISABLE COPY & RIGHT CLICK
         // ======================================== -->
-        
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
@@ -4231,91 +4295,12 @@ function updateBetListDisplay(color) {
         });
         
         // ======================================== -->
-        // 53.PROFILE BUTTON FIX
+        // 50. EXPORT FUNCTIONS TO GLOBAL SCOPE
         // ======================================== -->
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                const profileBtn = document.querySelector('.profile-btn');
-                if (profileBtn) {
-                    profileBtn.onclick = null;
-                    
-                    profileBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-                        
-                        const profilePage = document.getElementById('profile-page');
-                        if (profilePage) {
-                            profilePage.classList.remove('hidden');
-                            window.scrollTo(0, 0);
-                            
-                            if (typeof updateProfileDisplay === 'function') {
-                                updateProfileDisplay();
-                            }
-                            if (typeof loadUserStats === 'function') {
-                                loadUserStats();
-                            }
-                        }
-                        
-                        const managePage = document.getElementById('manage-account-page');
-                        if (managePage) managePage.classList.add('hidden');
-                        
-                        return false;
-                    });
-                }
-            }, 500);
-        });
-        
-        window.showProfileNow = function() {
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            const profilePage = document.getElementById('profile-page');
-            if (profilePage) {
-                profilePage.classList.remove('hidden');
-                window.scrollTo(0, 0);
-                if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-                if (typeof loadUserStats === 'function') loadUserStats();
-                return true;
-            }
-            return false;
-        };
-        
-        document.addEventListener('click', function(e) {
-            const profileBtn = e.target.closest('.profile-btn');
-            if (profileBtn) {
-                e.preventDefault();
-                e.stopPropagation();
-                window.showProfileNow();
-                return false;
-            }
-            
-            const backBtn = e.target.closest('.back-btn-text');
-            if (backBtn) {
-                e.preventDefault();
-                if (typeof showPage === 'function') {
-                    showPage('dashboard-page');
-                }
-                return false;
-            }
-            
-            const plusBtn = e.target.closest('.plus-btn-maroon');
-            if (plusBtn) {
-                if (typeof showPage === 'function') {
-                    showPage('add-money-page');
-                }
-            }
-        }, true);
-        
-        // ======================================== -->
-        // 54.EXPORT FUNCTIONS TO GLOBAL SCOPE
-        // ======================================== -->
-        
         window.toggleNotificationPanel = toggleNotificationPanel;
         window.selectAmount = selectAmount;
         window.selectWithdrawAmount = selectWithdrawAmount;
         window.submitAddMoneyRequest = submitAddMoneyRequest;
-        window.showWithdrawPage = showWithdrawPage;
         window.submitWithdrawRequest = submitWithdrawRequest;
         window.closeImportantNotification = closeImportantNotification;
         window.showAddBankPopup = showAddBankPopup;
@@ -4330,7 +4315,6 @@ function updateBetListDisplay(color) {
         window.copyUserId = copyUserId;
         window.showManageAccount = showManageAccount;
         window.hideManageAccount = hideManageAccount;
-        window.fixHistoryStripPosition = fixHistoryStripPosition;
         window.openFullWithdraw = openFullWithdraw;
         window.closeFullWithdraw = closeFullWithdraw;
         window.openFullHistory = openFullHistory;
@@ -4342,9 +4326,10 @@ function updateBetListDisplay(color) {
         window.showPage = showPage;
         window.logout = logout;
         window.closeWelcomePopup = closeWelcomePopup;
-        
-        // Load game history on startup
-        setTimeout(loadGameHistory, 1000);
+        window.loadBankAccountsManage = loadBankAccountsManage;
+        window.deleteBankAccount = deleteBankAccount;
+        window.loadUPIsManage = loadUPIsManage;
+        window.deleteUPI = deleteUPI;
     </script>
 </body>
 </html>

@@ -2512,7 +2512,7 @@ body {
             <i class="fas fa-hand-peace"></i>
             <h2>Welcome to Apex Day!</h2>
             <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
-            <p style="margin: 15px 0;">✨ ₹1000 Bonus Added</p>
+            <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
             <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
         </div>
     </div>
@@ -3384,16 +3384,17 @@ async function initializeUser() {
             const createResult = await createUserInSheet(userId, userName, userId);
             
             if (createResult.success) {
-                currentUserData.balance = 1000;
-                currentUserData.totalWins = 0;
-                currentUserData.gamesPlayed = 0;
-                
-                updateProfileDisplay();
-                loadUserStats();
-                showStatusMessage(`Welcome! ₹1000 bonus credited.`, 'success');
-                
-                await updateBalanceInSheet(userId, 1000);
-            } else {
+    currentUserData.balance = 11; // नया: 11 रुपये
+    currentUserData.totalWins = 0;
+    currentUserData.gamesPlayed = 0;
+    
+    updateProfileDisplay();
+    loadUserStats();
+    showStatusMessage(`Welcome! ₹11 bonus credited.`, 'success');
+    
+    await updateBalanceInSheet(userId, 11); // Google Sheets में 11 save करो
+}
+             else {
                 updateProfileDisplay();
             }
         }

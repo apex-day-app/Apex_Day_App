@@ -1166,30 +1166,46 @@ body {
     align-items: center;
     justify-content: center;
     gap: 5px;
-    box-shadow: 
-        0 4px 0 rgba(0,0,0,0.3),
-        0 2px 8px rgba(0,0,0,0.4);
-    transition: all 0.2s ease;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+    transition: transform 0.05s ease, box-shadow 0.05s ease; /* FAST transition */
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation; /* Prevent double-tap zoom */
 }
 
 .green-btn { 
-    background: linear-gradient(135deg, #00C853, #009624); 
-    box-shadow: 0 4px 0 #006633, 0 2px 8px rgba(0,0,0,0.4);
+    background: #00C853; 
+    box-shadow: 0 4px 0 #006633;
 }
 
 .blue-btn { 
-    background: linear-gradient(135deg, #2962FF, #0039CB);
-    box-shadow: 0 4px 0 #0039CB, 0 2px 8px rgba(0,0,0,0.4);
+    background: #2962FF; 
+    box-shadow: 0 4px 0 #0039CB;
 }
 
-.color-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 0 rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.5);
-}
-
+/* FAST press effect - 0.1 second */
 .color-btn:active {
+    transform: translateY(4px); /* नीचे धंस जाए */
+    box-shadow: 0 0px 0 #006633;
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+/* Remove hover effects on mobile */
+@media (hover: hover) {
+    .color-btn:hover {
+        filter: brightness(1.1);
+    }
+}
+
+/* Disabled state */
+.color-btn.disabled,
+.color-btn:disabled {
+    opacity: 0.6;
+    pointer-events: none;
     transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.4);
+    box-shadow: 0 2px 0 #006633;
 }
 
 .bet-amount-badge {
@@ -1203,6 +1219,18 @@ body {
     font-size: 0.7rem;
     font-weight: 700;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transition: none; /* No transition for badge */
+}
+
+.color-btn.active-press {
+    transform: translateY(4px);
+    box-shadow: 0 0px 0 #006633;
+    transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+
+/* Disable any other transitions */
+.color-btn * {
+    transition: none;
 }
 
 /* ======================================== */
@@ -2641,15 +2669,15 @@ body {
                         </div>
                         
                         <div class="color-buttons">
-                            <button class="color-btn green-btn" onclick="placeBet('green')" id="bet-btn-green">
-                                <i class="fas fa-leaf"></i> Green 2x
-                                <span class="bet-amount-badge" id="bet-amount-green">0</span>
-                            </button>
-                            <button class="color-btn blue-btn" onclick="placeBet('blue')" id="bet-btn-blue">
-                                <i class="fas fa-water"></i> Blue 2x
-                                <span class="bet-amount-badge" id="bet-amount-blue">0</span>
-                            </button>
-                        </div>
+    <button class="color-btn green-btn" onclick="placeBet('green')" id="bet-btn-green">
+        <i class="fas fa-leaf"></i> Green 2x
+        <span class="bet-amount-badge" id="bet-amount-green">0</span>
+    </button>
+    <button class="color-btn blue-btn" onclick="placeBet('blue')" id="bet-btn-blue">
+        <i class="fas fa-water"></i> Blue 2x
+        <span class="bet-amount-badge" id="bet-amount-blue">0</span>
+    </button>
+</div>
                     </div>
                 </div>
                 
@@ -3539,251 +3567,301 @@ body {
             });
         }
         
-        // ======================================== -->
-        // 43.GAME LOOP & BETTING
-        // ======================================== -->
+            // ======================================== -->
+// 43.GAME LOOP & BETTING - COMPLETE FIXED
+// ======================================== -->
+
+// Flag to prevent multiple bets
+let isPlacingBet = false;
+
+function startGameLoop() {
+    if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+    }
+    
+    let timeLeft = BETTING_TIME;
+    const timerValue = document.querySelector('.timer-value');
+    const resultBox = document.getElementById('result-box');
+    
+    if (!timerValue || !resultBox) {
+        console.error("Timer or result box not found");
+        return;
+    }
+    
+    resultBox.classList.add('loading');
+    resultBox.innerHTML = '';
+    resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+    
+    currentBet = { green: 0, blue: 0 };
+    gameState = { totalGreenBets: 0, totalBlueBets: 0, allBets: [], currentTime: 0 };
+    userBetMap = { green: {}, blue: {} };
+    
+    const greenList = document.getElementById('green-bets-list');
+    const blueList = document.getElementById('blue-bets-list');
+    const greenTotal = document.getElementById('green-total');
+    const blueTotal = document.getElementById('blue-total');
+    const greenBadge = document.getElementById('bet-amount-green');
+    const blueBadge = document.getElementById('bet-amount-blue');
+    
+    if (greenList) {
+        greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
+    }
+    if (blueList) {
+        blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
+    }
+    if (greenTotal) greenTotal.textContent = '0';
+    if (blueTotal) blueTotal.textContent = '0';
+    if (greenBadge) {
+        greenBadge.textContent = '0';
+        greenBadge.style.display = 'none';
+    }
+    if (blueBadge) {
+        blueBadge.textContent = '0';
+        blueBadge.style.display = 'none';
+    }
+    
+    // Start new timer
+    gameTimerInterval = setInterval(function() {
+        timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
         
-        function startGameLoop() {
-            if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-            let timeLeft = BETTING_TIME;
-            const timerValue = document.querySelector('.timer-value');
-            const resultBox = document.getElementById('result-box');
-            
-            if (!timerValue || !resultBox) { console.error("Timer or result box not found"); return; }
-            
-            resultBox.classList.add('loading');
-            resultBox.innerHTML = '';
-            
-            currentBet = { green: 0, blue: 0 };
-            gameState = { totalGreenBets: 0, totalBlueBets: 0, allBets: [], currentTime: 0 };
-            userBetMap = { green: {}, blue: {} };
-            
-            const greenList = document.getElementById('green-bets-list');
-            const blueList = document.getElementById('blue-bets-list');
-            const greenTotal = document.getElementById('green-total');
-            const blueTotal = document.getElementById('blue-total');
-            const greenBadge = document.getElementById('bet-amount-green');
-            const blueBadge = document.getElementById('bet-amount-blue');
-            
-            if (greenList) {
-                greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
-            }
-            if (blueList) {
-                blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
-            }
-            if (greenTotal) greenTotal.textContent = '0';
-            if (blueTotal) blueTotal.textContent = '0';
-            if (greenBadge) {
-                greenBadge.textContent = '0';
-                greenBadge.style.display = 'none';
-            }
-            if (blueBadge) {
-                blueBadge.textContent = '0';
-                blueBadge.style.display = 'none';
-            }
-            
-            function updateTimer() {
-                if (timeLeft <= 0) {
-                    timerValue.textContent = '0.00';
-                    endGameRound();
-                    return;
-                }
-                timeLeft -= 0.01;
-                gameState.currentTime = timeLeft;
-                timerValue.textContent = timeLeft.toFixed(2);
-            }
-            gameTimerInterval = setInterval(updateTimer, 10);
+        if (timerValue) {
+            timerValue.textContent = timeLeft.toFixed(1);
         }
         
-        function endGameRound() {
-            if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-            const resultBox = document.getElementById('result-box'); 
-            if (!resultBox) return;
-            
-            resultBox.classList.remove('loading');
-            resultBox.innerHTML = '';
-            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-            
-            const totalGreen = gameState.totalGreenBets;
-            const totalBlue = gameState.totalBlueBets;
-            let resultColor = 'gray';
-            
-            if (totalGreen > 0 || totalBlue > 0) {
-                if (totalGreen < totalBlue) resultColor = 'green';
-                else if (totalBlue < totalGreen) resultColor = 'blue';
+        if (timeLeft <= 0) {
+            clearInterval(gameTimerInterval);
+            gameTimerInterval = null;
+            if (timerValue) {
+                timerValue.textContent = '0.0';
             }
-            
-            setTimeout(() => {
-                resultBox.classList.add(resultColor + '-result');
-                resultBox.innerHTML = '';
-                
-                processWinning(resultColor);
-                
-                updateHistoryDisplay(resultColor);
-                setTimeout(() => { startGameLoop(); }, 3000);
-            }, 2000);
+            endGameRound();
         }
+    }, 100);
+}
+
+function endGameRound() {
+    if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+    const resultBox = document.getElementById('result-box'); 
+    if (!resultBox) return;
+    
+    resultBox.classList.remove('loading');
+    resultBox.innerHTML = '';
+    resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+    
+    const totalGreen = gameState.totalGreenBets;
+    const totalBlue = gameState.totalBlueBets;
+    let resultColor = 'gray';
+    
+    if (totalGreen > 0 || totalBlue > 0) {
+        if (totalGreen < totalBlue) resultColor = 'green';
+        else if (totalBlue < totalGreen) resultColor = 'blue';
+    }
+    
+    setTimeout(() => {
+        resultBox.classList.add(resultColor + '-result');
+        resultBox.innerHTML = '';
         
-        function updateHistoryDisplay(resultColor) {
-            const hist = document.getElementById('result-history'); 
-            if (!hist) return;
-            
-            const icon = resultColor === 'green' ? 'fa-leaf' : resultColor === 'blue' ? 'fa-water' : 'fa-circle';
-            const cls = resultColor === 'green' ? 'green' : resultColor === 'blue' ? 'blue' : 'gray';
-            const newItem = document.createElement('div');
-            newItem.className = `history-item ${cls}`;
-            newItem.innerHTML = `<i class="fas ${icon}"></i>`;
-            hist.insertBefore(newItem, hist.firstChild);
-            if (hist.children.length > 20) hist.removeChild(hist.lastChild);
-        }
+        processWinning(resultColor);
         
-        async function processWinning(winningColor) {
-            if (!currentUserData) return;
-            
-            console.log("Processing winning for color:", winningColor);
-            console.log("Current balance before win:", currentUserData.balance);
-            
-            const userBet = currentBet[winningColor] || 0;
-            
-            if (winningColor !== 'gray' && userBet > 0) {
-                const winAmount = userBet * 2;
-                const netWin = winAmount - currentBet.green - currentBet.blue;
-                
-                const newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
-                const finalBalance = newBalance > MAX_BALANCE ? MAX_BALANCE : newBalance;
-                
-                console.log("Win amount:", winAmount, "Net win:", netWin, "New balance:", finalBalance);
-                
-                // Update in Google Sheets
-                await updateBalanceInSheet(currentUserData.userId, finalBalance);
-                
-                // Local update
-                currentUserData.balance = finalBalance;
-                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                
-            } else if (winningColor === 'gray') {
-                const totalBet = currentBet.green + currentBet.blue;
-                if (totalBet > 0) {
-                    const newBalance = currentUserData.balance + totalBet;
-                    console.log("Gray result - Refund:", totalBet, "New balance:", newBalance);
-                    
-                    // Update in Google Sheets
-                    await updateBalanceInSheet(currentUserData.userId, newBalance);
-                    
-                    currentUserData.balance = newBalance;
-                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                }
-            } else {
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-            }
-            
-            updateProfileDisplay();
-            console.log("Final balance after processing:", currentUserData.balance);
-        }
+        updateHistoryDisplay(resultColor);
+        setTimeout(() => { startGameLoop(); }, 3000);
+    }, 2000);
+}
+
+function updateHistoryDisplay(resultColor) {
+    const hist = document.getElementById('result-history'); 
+    if (!hist) return;
+    
+    const icon = resultColor === 'green' ? 'fa-leaf' : resultColor === 'blue' ? 'fa-water' : 'fa-circle';
+    const cls = resultColor === 'green' ? 'green' : resultColor === 'blue' ? 'blue' : 'gray';
+    const newItem = document.createElement('div');
+    newItem.className = `history-item ${cls}`;
+    newItem.innerHTML = `<i class="fas ${icon}"></i>`;
+    hist.insertBefore(newItem, hist.firstChild);
+    if (hist.children.length > 20) hist.removeChild(hist.lastChild);
+}
+
+async function processWinning(winningColor) {
+    if (!currentUserData) return;
+    
+    console.log("Processing winning for color:", winningColor);
+    console.log("Current balance before win:", currentUserData.balance);
+    
+    const userBet = currentBet[winningColor] || 0;
+    
+    if (winningColor !== 'gray' && userBet > 0) {
+        const winAmount = userBet * 2;
+        const netWin = winAmount - currentBet.green - currentBet.blue;
         
-        async function placeBet(color) {
-            console.log("Place bet called", color);
+        const newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
+        const finalBalance = newBalance > MAX_BALANCE ? MAX_BALANCE : newBalance;
+        
+        console.log("Win amount:", winAmount, "Net win:", netWin, "New balance:", finalBalance);
+        
+        fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
+            .catch(error => console.error("Background API error:", error));
+        
+        currentUserData.balance = finalBalance;
+        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+        
+    } else if (winningColor === 'gray') {
+        const totalBet = currentBet.green + currentBet.blue;
+        if (totalBet > 0) {
+            const newBalance = currentUserData.balance + totalBet;
+            console.log("Gray result - Refund:", totalBet, "New balance:", newBalance);
             
-            if (!currentUserData) { 
-                showStatusMessage('Please login first!', 'error');
-                return; 
-            }
+            fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${newBalance}&actionType=gray&amount=${totalBet}`)
+                .catch(error => console.error("Background API error:", error));
             
-            const timerValue = document.querySelector('.timer-value');
-            if (!timerValue || timerValue.textContent === '0.00') { 
-                showStatusMessage('Betting closed for this round!', 'error');
-                return; 
-            }
-            
-            const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
-            if (isNaN(betAmount) || betAmount < 1) { 
-                showStatusMessage('Enter valid amount (Min 1)', 'error');
-                return; 
-            }
-            
-            if (betAmount > (currentUserData?.balance || 0)) { 
-                showStatusMessage('Insufficient balance!', 'error');
-                return; 
-            }
-            
-            const newBalanceAfterBet = currentUserData.balance - betAmount;
-            if (newBalanceAfterBet < 0) {
-                showStatusMessage('Cannot bet more than available balance!', 'error');
-                return;
-            }
-            
-            const maxPossibleWin = (currentBet[color] + betAmount) * 2;
-            if (maxPossibleWin > MAX_BALANCE) {
-                showStatusMessage(`Cannot place bet - potential win would exceed maximum balance of ${formatBalance(MAX_BALANCE)}`, 'error');
-                return;
-            }
-            
-            // Update balance in Google Sheets
-            const newBalance = currentUserData.balance - betAmount;
-            await updateBalanceInSheet(currentUserData.userId, newBalance);
-            
-            // Update local balance
             currentUserData.balance = newBalance;
-            
-            if (!userBetMap[color]) userBetMap[color] = {};
-            const userKey = currentUserData.userId || 'demo';
-            
-            if (userBetMap[color][userKey]) {
-                userBetMap[color][userKey].amount += betAmount;
-            } else {
-                userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
-            }
-            
-            currentBet[color] += betAmount;
-            if (color === 'green') { 
-                gameState.totalGreenBets += betAmount; 
-            } else { 
-                gameState.totalBlueBets += betAmount; 
-            }
-            
-            updateBetListDisplay(color);
-            
-            const betBadge = document.getElementById(`bet-amount-${color}`);
-            if (betBadge) {
-                betBadge.textContent = Math.floor(currentBet[color]);
-                betBadge.style.display = 'flex';
-            }
-            
-            const totalSpan = document.getElementById(`${color}-total`);
-            if (totalSpan) {
-                totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
-            }
-            
-            updateProfileDisplay();
-            
-            showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
+            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
         }
+    } else {
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+    }
+    
+    updateProfileDisplay();
+    console.log("Final balance after processing:", currentUserData.balance);
+}
+
+async function placeBet(color) {
+    console.log("Place bet called", color);
+    
+    if (isPlacingBet) {
+        console.log("Already placing a bet, please wait...");
+        return;
+    }
+    
+    if (!currentUserData) {
+        showStatusMessage('Please login first!', 'error');
+        return;
+    }
+    
+    const timerValue = document.querySelector('.timer-value');
+    if (!timerValue || timerValue.textContent === '0.00') {
+        showStatusMessage('Betting closed for this round!', 'error');
+        return;
+    }
+    
+    const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
+    if (isNaN(betAmount) || betAmount < 1) {
+        showStatusMessage('Enter valid amount (Min 1)', 'error');
+        return;
+    }
+    
+    if (betAmount > (currentUserData?.balance || 0)) {
+        showStatusMessage('Insufficient balance!', 'error');
+        return;
+    }
+    
+    const newBalanceAfterBet = currentUserData.balance - betAmount;
+    if (newBalanceAfterBet < 0) {
+        showStatusMessage('Cannot bet more than available balance!', 'error');
+        return;
+    }
+    
+    const maxPossibleWin = (currentBet[color] + betAmount) * 2;
+    if (maxPossibleWin > MAX_BALANCE) {
+        showStatusMessage(`Cannot place bet - potential win would exceed maximum balance of ${formatBalance(MAX_BALANCE)}`, 'error');
+        return;
+    }
+    
+    isPlacingBet = true;
+    
+    const btn = document.getElementById(`bet-btn-${color}`);
+    if (btn) {
+        btn.classList.add('active-press');
+    }
+    
+    const oldBalance = currentUserData.balance;
+    const newBalance = oldBalance - betAmount;
+    
+    currentUserData.balance = newBalance;
+    
+    if (!userBetMap[color]) userBetMap[color] = {};
+    const userKey = currentUserData.userId || 'demo';
+    
+    if (userBetMap[color][userKey]) {
+        userBetMap[color][userKey].amount += betAmount;
+    } else {
+        userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
+    }
+    
+    currentBet[color] += betAmount;
+    if (color === 'green') {
+        gameState.totalGreenBets += betAmount;
+    } else {
+        gameState.totalBlueBets += betAmount;
+    }
+    
+    updateBetListDisplay(color);
+    
+    const betBadge = document.getElementById(`bet-amount-${color}`);
+    if (betBadge) {
+        betBadge.textContent = Math.floor(currentBet[color]);
+        betBadge.style.display = 'flex';
+    }
+    
+    const totalSpan = document.getElementById(`${color}-total`);
+    if (totalSpan) {
+        totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
+    }
+    
+    updateProfileDisplay();
+    showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
+    
+    try {
+        const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${newBalance}&actionType=bet&amount=${betAmount}`;
         
-        function updateBetListDisplay(color) {
-            const list = document.getElementById(`${color}-bets-list`);
-            if (!list) return;
-            
-            const users = Object.entries(userBetMap[color] || {})
-                .map(([userId, data]) => ({ userId, ...data }))
-                .sort((a, b) => b.amount - a.amount);
-            
-            if (users.length === 0) {
-                list.innerHTML = `<div class="empty-bets"><i class="fas fa-${color === 'green' ? 'leaf' : 'water'}"></i> No bets</div>`;
-                return;
-            }
-            
-            let html = '';
-            users.forEach((user, index) => {
-                html += `<div class="bet-item" id="${color}-bet-${user.userId}">
-                    <div class="bet-item-left">
-                        <span class="bet-user-name">${user.userName}</span>
-                    </div>
-                    <span class="bet-amount">${Math.floor(user.amount)}</span>
-                </div>`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error("API failed, but UI already updated");
+                }
+            })
+            .catch(error => {
+                console.error("Background API error:", error);
             });
-            list.innerHTML = html;
+        
+    } catch (error) {
+        console.error("Bet error:", error);
+    }
+    
+    setTimeout(() => {
+        isPlacingBet = false;
+        if (btn) {
+            btn.classList.remove('active-press');
         }
+    }, 300);
+}
+
+function updateBetListDisplay(color) {
+    const list = document.getElementById(`${color}-bets-list`);
+    if (!list) return;
+    
+    const users = Object.entries(userBetMap[color] || {})
+        .map(([userId, data]) => ({ userId, ...data }))
+        .sort((a, b) => b.amount - a.amount);
+    
+    if (users.length === 0) {
+        list.innerHTML = `<div class="empty-bets"><i class="fas fa-${color === 'green' ? 'leaf' : 'water'}"></i> No bets</div>`;
+        return;
+    }
+    
+    let html = '';
+    users.forEach((user, index) => {
+        html += `<div class="bet-item" id="${color}-bet-${user.userId}">
+            <div class="bet-item-left">
+                <span class="bet-user-name">${user.userName}</span>
+            </div>
+            <span class="bet-amount">${Math.floor(user.amount)}</span>
+        </div>`;
+    });
+    list.innerHTML = html;
+}
         
         // ======================================== -->
         // 44.BET AMOUNT UTILITIES

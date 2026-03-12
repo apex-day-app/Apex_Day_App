@@ -30,8 +30,10 @@
     
     <style>
 /* ============================================ */
-/* 5.GLOBAL RESET                                 */
+/* 5.GLOBAL RESET & LOADING SCREEN STYLES         */
 /* ============================================ */
+
+/* Global Reset */
 * {
     margin: 0;
     padding: 0;
@@ -48,6 +50,312 @@ input, textarea, button, [contenteditable="true"] {
     -moz-user-select: text;
     -ms-user-select: text;
 }
+
+/* ======================================== */
+/* LOADING SCREEN STYLES                      */
+/* ======================================== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 30%, #6B4A2A, #2A1A0A);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.loading-content {
+    text-align: center;
+    color: #fff;
+    max-width: 400px;
+    width: 90%;
+    padding: 30px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    border: 2px solid rgba(212, 175, 55, 0.5);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Logo Styles */
+.loading-logo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+.loading-logo {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #D4AF37, #8B5A2B);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #fff;
+    border: 4px solid #FFD700;
+    animation: logoPulse 2s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.loading-logo-glow {
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: -15px;
+    bottom: -15px;
+    background: radial-gradient(circle, rgba(212,175,55,0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glowPulse 2s ease-in-out infinite;
+    z-index: 1;
+}
+
+@keyframes logoPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* Title Styles */
+.loading-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    animation: slideDown 0.5s ease-out;
+}
+
+.loading-title span {
+    color: #D4AF37;
+    font-weight: 800;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Connection Status Styles */
+.connection-status {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    animation: slideIn 0.5s ease-out forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.status-item:last-child {
+    border-bottom: none;
+}
+
+.status-item:nth-child(1) { animation-delay: 0.2s; }
+.status-item:nth-child(2) { animation-delay: 0.4s; }
+.status-item:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.status-item i:first-child {
+    color: #D4AF37;
+    font-size: 1.3rem;
+    filter: drop-shadow(0 2px 4px rgba(212,175,55,0.3));
+}
+
+.status-item span {
+    flex: 1;
+    text-align: left;
+    font-size: 1rem;
+    color: #FFE4B5;
+    font-weight: 500;
+}
+
+.status-item i:last-child {
+    color: #D4AF37;
+    font-size: 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Progress Bar Styles */
+.loading-progress-container {
+    margin-bottom: 25px;
+    animation: fadeInUp 0.5s ease-out 0.8s both;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.loading-progress-bar-bg {
+    width: 100%;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid #D4AF37;
+    margin-bottom: 8px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.loading-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #D4AF37, #FFD700, #D4AF37);
+    background-size: 200% 100%;
+    animation: gradientMove 1s linear infinite;
+    border-radius: 30px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 15px #FFD700;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.loading-percent {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #D4AF37;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Moving Icons Styles */
+.moving-icons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    animation: fadeIn 0.5s ease-out 1s both;
+}
+
+.floating-icon {
+    color: #D4AF37;
+    font-size: 1.3rem;
+    animation: float 3s ease-in-out infinite;
+    opacity: 0.7;
+    filter: drop-shadow(0 5px 10px rgba(212,175,55,0.3));
+}
+
+.floating-icon:nth-child(1) { animation-delay: 0s; }
+.floating-icon:nth-child(2) { animation-delay: 0.5s; }
+.floating-icon:nth-child(3) { animation-delay: 1s; }
+.floating-icon:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+/* Pulse Dots Styles */
+.pulse-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    animation: fadeIn 0.5s ease-out 1.2s both;
+}
+
+.pulse-dots span {
+    width: 10px;
+    height: 10px;
+    background: #D4AF37;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 10px #D4AF37;
+}
+
+.pulse-dots span:nth-child(1) { animation-delay: 0s; }
+.pulse-dots span:nth-child(2) { animation-delay: 0.5s; }
+.pulse-dots span:nth-child(3) { animation-delay: 1s; }
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 0.5;
+        box-shadow: 0 0 10px #D4AF37;
+    }
+    50% { 
+        transform: scale(1.5); 
+        opacity: 1;
+        box-shadow: 0 0 20px #FFD700;
+    }
+}
+
+/* Hidden State */
+.loading-overlay.hidden {
+    display: none;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+    .loading-content {
+        padding: 25px 15px;
+    }
+    
+    .loading-logo-container {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .loading-logo {
+        width: 80px;
+        height: 80px;
+        font-size: 2.5rem;
+    }
+    
+    .loading-title {
+        font-size: 2rem;
+    }
+    
+    .status-item span {
+        font-size: 0.9rem;
+    }
+    
+    .loading-percent {
+        font-size: 1.2rem;
+    }
+    
+    .floating-icon {
+        font-size: 1.1rem;
+    }
+}   
 
 /* ======================================== */
 /* 6.BODY & MAIN CONTAINER STYLES             */
@@ -2505,17 +2813,77 @@ body {
 </head>
 <body>
     <!-- ======================================== -->
-    <!-- 21. WELCOME POPUP HTML                      -->
-    <!-- ======================================== -->
-    <div id="welcome-popup" class="welcome-popup-overlay hidden">
-        <div class="welcome-popup-content">
-            <i class="fas fa-hand-peace"></i>
-            <h2>Welcome to Apex Day!</h2>
-            <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
-            <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
-            <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
+<!-- 21. WELCOME POPUP & LOADING SCREEN HTML     -->
+<!-- ======================================== -->
+
+<!-- WELCOME POPUP -->
+<div id="welcome-popup" class="welcome-popup-overlay hidden">
+    <div class="welcome-popup-content">
+        <i class="fas fa-hand-peace"></i>
+        <h2>Welcome to Apex Day!</h2>
+        <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
+        <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
+        <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
+    </div>
+</div>
+
+<!-- PREMIUM LOADING SCREEN -->
+<div id="loading-screen" class="loading-overlay">
+    <div class="loading-content">
+        <!-- Animated Logo -->
+        <div class="loading-logo-container">
+            <div class="loading-logo">
+                <i class="fas fa-dice-d6"></i>
+            </div>
+            <div class="loading-logo-glow"></div>
+        </div>
+        
+        <!-- Game Title -->
+        <h2 class="loading-title">Apex<span>Day</span></h2>
+        
+        <!-- Connection Status -->
+        <div class="connection-status">
+            <div class="status-item">
+                <i class="fas fa-telegram-plane"></i>
+                <span>Connecting to Telegram</span>
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-cloud"></i>
+                <span>Secure Server</span>
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div class="status-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Data Encrypted</span>
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="loading-progress-container">
+            <div class="loading-progress-bar-bg">
+                <div class="loading-progress-bar" id="loading-bar"></div>
+            </div>
+            <div class="loading-percent" id="loading-percent">0%</div>
+        </div>
+        
+        <!-- Moving Icons -->
+        <div class="moving-icons">
+            <i class="fas fa-robot floating-icon"></i>
+            <i class="fas fa-database floating-icon"></i>
+            <i class="fas fa-lock floating-icon"></i>
+            <i class="fas fa-cloud-upload-alt floating-icon"></i>
+        </div>
+        
+        <!-- Pulse Dots -->
+        <div class="pulse-dots">
+            <span></span>
+            <span></span>
+            <span></span>
         </div>
     </div>
+</div>
     
     <!-- ======================================== -->
     <!-- 22. BACKGROUND ELEMENTS                      -->
@@ -4286,9 +4654,63 @@ async function initializeUser() {
         }
         
         // ======================================== -->
-// 48. INITIALIZATION
+// 48. SMART INITIALIZATION WITH LOADING SCREEN
 // ======================================== -->
 document.addEventListener('DOMContentLoaded', function() {
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingPercent = document.getElementById('loading-percent');
+    
+    // Status items ke icons
+    const statusIcons = [
+        document.querySelectorAll('.status-item i:last-child')[0], // Telegram
+        document.querySelectorAll('.status-item i:last-child')[1], // Server
+        document.querySelectorAll('.status-item i:last-child')[2] // Encrypted
+    ];
+    
+    // Tick lag gaya flag
+    const tickDone = [false, false, false];
+    
+    // Loading screen दिखाओ
+    if (loadingScreen) {
+        loadingScreen.classList.remove('hidden');
+    }
+    
+    // Loading bar - 4 seconds में complete
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 1;
+        if (progress <= 100) {
+            if (loadingBar) loadingBar.style.width = progress + '%';
+            if (loadingPercent) loadingPercent.textContent = progress + '%';
+        }
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+        }
+    }, 40); // 40ms × 100 = 4 seconds
+    
+    // पहला tick - 1.5 सेकंड
+    setTimeout(() => {
+        if (!tickDone[0]) {
+            statusIcons[0].className = 'fas fa-check-circle';
+            statusIcons[0].style.color = '#00C853';
+            statusIcons[0].style.animation = 'none';
+            tickDone[0] = true;
+        }
+    }, 1500);
+    
+    // दूसरा tick - 2.5 सेकंड
+    setTimeout(() => {
+        if (!tickDone[1]) {
+            statusIcons[1].className = 'fas fa-check-circle';
+            statusIcons[1].style.color = '#00C853';
+            statusIcons[1].style.animation = 'none';
+            tickDone[1] = true;
+        }
+    }, 2500);
+    
+    // Input validation
     ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
         const element = document.getElementById(id);
         if (element) {
@@ -4298,84 +4720,118 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Sabse pehle Telegram initialize karo
+    // Initialize
     initTelegramAndWelcome();
     
-    // Data load hone ke baad game start karo
-    setTimeout(() => {
-        initializeUser().then(() => {
-            startGameLoop();
-            loadGameHistory();
-        });
-    }, 500);
-    
-    setTimeout(fixHistoryStripPosition, 100);
-});
-
-        function fixHistoryStripPosition() {
-            const historyContainer = document.querySelector('.history-container');
-            if (historyContainer) {
-                historyContainer.style.marginTop = '';
-                historyContainer.style.marginBottom = '2px';
-                historyContainer.style.height = '38px';
-            }
+    // Data load होने पर
+    initializeUser().then(() => {
+        startGameLoop();
+        loadGameHistory();
+        fixHistoryStripPosition();
+        updateProfileDisplay();
+        
+        // तीसरा tick - जैसे ही data load हो
+        if (!tickDone[2]) {
+            statusIcons[2].className = 'fas fa-check-circle';
+            statusIcons[2].style.color = '#00C853';
+            statusIcons[2].style.animation = 'none';
+            tickDone[2] = true;
         }
         
-        // ======================================== -->
-        // 49. DISABLE COPY & RIGHT CLICK
-        // ======================================== -->
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
+        // Progress bar 100% करो (अगर नहीं हुआ तो)
+        clearInterval(interval);
+        if (loadingBar) loadingBar.style.width = '100%';
+        if (loadingPercent) loadingPercent.textContent = '100%';
         
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
-                e.preventDefault();
-                return false;
+        // Loading screen हटाओ
+        setTimeout(() => {
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
             }
-            if (e.key === 'F12') {
-                e.preventDefault();
-                return false;
-            }
-        });
+        }, 500);
         
-        // ======================================== -->
-        // 50. EXPORT FUNCTIONS TO GLOBAL SCOPE
-        // ======================================== -->
-        window.toggleNotificationPanel = toggleNotificationPanel;
-        window.selectAmount = selectAmount;
-        window.selectWithdrawAmount = selectWithdrawAmount;
-        window.submitAddMoneyRequest = submitAddMoneyRequest;
-        window.submitWithdrawRequest = submitWithdrawRequest;
-        window.closeImportantNotification = closeImportantNotification;
-        window.showAddBankPopup = showAddBankPopup;
-        window.closeAddBankPopup = closeAddBankPopup;
-        window.addBankAccount = addBankAccount;
-        window.showAddUPIPopup = showAddUPIPopup;
-        window.closeAddUPIPopup = closeAddUPIPopup;
-        window.addUPI = addUPI;
-        window.placeBet = placeBet;
-        window.setBetAmount = setBetAmount;
-        window.adjustBetAmount = adjustBetAmount;
-        window.copyUserId = copyUserId;
-        window.showManageAccount = showManageAccount;
-        window.hideManageAccount = hideManageAccount;
-        window.openFullWithdraw = openFullWithdraw;
-        window.closeFullWithdraw = closeFullWithdraw;
-        window.openFullHistory = openFullHistory;
-        window.closeFullHistory = closeFullHistory;
-        window.openFullTransaction = openFullTransaction;
-        window.closeFullTransaction = closeFullTransaction;
-        window.filterFullHistory = filterFullHistory;
-        window.filterFullTransaction = filterFullTransaction;
-        window.showPage = showPage;
-        window.logout = logout;
-        window.closeWelcomePopup = closeWelcomePopup;
-        window.loadBankAccountsManage = loadBankAccountsManage;
-        window.deleteBankAccount = deleteBankAccount;
-        window.loadUPIsManage = loadUPIsManage;
-        window.deleteUPI = deleteUPI;
-    </script>
-</body>
-</html>
+        showStatusMessage('Ready to play!', 'success');
+    }).catch(error => {
+        console.error('Initialization error:', error);
+        clearInterval(interval);
+        if (loadingScreen) {
+            loadingScreen.classList.add('hidden');
+        }
+    });
+    
+    // तीसरा tick - कम से कम 3 सेकंड बाद ही आए
+    // ये सेफ्टी के लिए है अगर data जल्दी load हो गया तो
+    setTimeout(() => {
+        if (!tickDone[2]) {
+            statusIcons[2].className = 'fas fa-check-circle';
+            statusIcons[2].style.color = '#00C853';
+            statusIcons[2].style.animation = 'none';
+            tickDone[2] = true;
+        }
+    }, 5500); // 5.5 सेकंड (3 सेकंड बाद)
+});
+
+function fixHistoryStripPosition() {
+    const historyContainer = document.querySelector('.history-container');
+    if (historyContainer) {
+        historyContainer.style.marginTop = '';
+        historyContainer.style.marginBottom = '2px';
+        historyContainer.style.height = '38px';
+    }
+}
+
+// ======================================== -->
+// 49. DISABLE COPY & RIGHT CLICK
+// ======================================== -->
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
+        e.preventDefault();
+        return false;
+    }
+    if (e.key === 'F12') {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// ======================================== -->
+// 50. EXPORT FUNCTIONS TO GLOBAL SCOPE
+// ======================================== -->
+window.toggleNotificationPanel = toggleNotificationPanel;
+window.selectAmount = selectAmount;
+window.selectWithdrawAmount = selectWithdrawAmount;
+window.submitAddMoneyRequest = submitAddMoneyRequest;
+window.submitWithdrawRequest = submitWithdrawRequest;
+window.closeImportantNotification = closeImportantNotification;
+window.showAddBankPopup = showAddBankPopup;
+window.closeAddBankPopup = closeAddBankPopup;
+window.addBankAccount = addBankAccount;
+window.showAddUPIPopup = showAddUPIPopup;
+window.closeAddUPIPopup = closeAddUPIPopup;
+window.addUPI = addUPI;
+window.placeBet = placeBet;
+window.setBetAmount = setBetAmount;
+window.adjustBetAmount = adjustBetAmount;
+window.copyUserId = copyUserId;
+window.showManageAccount = showManageAccount;
+window.hideManageAccount = hideManageAccount;
+window.openFullWithdraw = openFullWithdraw;
+window.closeFullWithdraw = closeFullWithdraw;
+window.openFullHistory = openFullHistory;
+window.closeFullHistory = closeFullHistory;
+window.openFullTransaction = openFullTransaction;
+window.closeFullTransaction = closeFullTransaction;
+window.filterFullHistory = filterFullHistory;
+window.filterFullTransaction = filterFullTransaction;
+window.showPage = showPage;
+window.logout = logout;
+window.closeWelcomePopup = closeWelcomePopup;
+window.loadBankAccountsManage = loadBankAccountsManage;
+window.deleteBankAccount = deleteBankAccount;
+window.loadUPIsManage = loadUPIsManage;
+window.deleteUPI = deleteUPI;

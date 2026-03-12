@@ -4369,291 +4369,6 @@ async function initializeUser() {
         }
         
         // ======================================== -->
-        // 46. FULL SCREEN FUNCTIONS (FIXED)
-        // ======================================== -->
-        function filterFullHistory(filter) {
-            fullHistoryFilter = filter;
-            
-            document.querySelectorAll('#full-history-page .fullscreen-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase().includes(filter)) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            loadFullHistory(filter);
-        }
-
-        function filterFullTransaction(filter) {
-            fullTransactionFilter = filter;
-            
-            document.querySelectorAll('#full-transaction-page .fullscreen-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.textContent.toLowerCase().includes(filter)) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            loadFullTransactions(filter);
-        }
-
-        function loadFullHistory(filter = 'all') {
-            const container = document.getElementById('full-history-content');
-            if (!container) return;
-            
-            const demoHistory = [
-                { date: '2024-01-15 14:30', color: 'green', amount: 100, result: 'won' },
-                { date: '2024-01-15 14:15', color: 'blue', amount: 50, result: 'lost' },
-                { date: '2024-01-15 14:00', color: 'gray', amount: 75, result: 'refund' },
-                { date: '2024-01-15 13:45', color: 'green', amount: 200, result: 'won' }
-            ];
-            
-            let filtered = demoHistory;
-            if (filter === 'won') {
-                filtered = demoHistory.filter(h => h.result === 'won');
-            } else if (filter === 'lost') {
-                filtered = demoHistory.filter(h => h.result === 'lost');
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="fullscreen-empty">
-                        <i class="fas fa-history"></i>
-                        No ${filter !== 'all' ? filter : ''} game history found
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            filtered.forEach(item => {
-                const badgeClass = item.result === 'won' ? 'badge-won' : (item.result === 'lost' ? 'badge-lost' : 'badge-pending');
-                const icon = item.color === 'green' ? 'fa-leaf' : (item.color === 'blue' ? 'fa-water' : 'fa-circle');
-                
-                html += `
-                    <div class="fullscreen-item">
-                        <div class="fullscreen-item-left">
-                            <div class="fullscreen-item-date">${item.date}</div>
-                            <div class="fullscreen-item-details">
-                                <i class="fas ${icon}" style="color: ${item.color === 'green' ? '#00C853' : (item.color === 'blue' ? '#2962FF' : '#9e9e9e')};"></i>
-                                <span>${item.color.charAt(0).toUpperCase() + item.color.slice(1)}</span>
-                                <span class="fullscreen-item-badge ${badgeClass}">${item.result}</span>
-                            </div>
-                        </div>
-                        <div class="fullscreen-item-amount">₹${item.amount}</div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        function loadFullTransactions(filter = 'all') {
-            const container = document.getElementById('full-transaction-content');
-            if (!container) return;
-            
-            const demoTx = [
-                { date: '2024-01-15 10:30', type: 'deposit', amount: 500, status: 'completed' },
-                { date: '2024-01-14 16:20', type: 'withdraw', amount: 200, status: 'pending' },
-                { date: '2024-01-14 09:15', type: 'deposit', amount: 1000, status: 'completed' },
-                { date: '2024-01-13 18:45', type: 'withdraw', amount: 300, status: 'completed' }
-            ];
-            
-            let filtered = demoTx;
-            if (filter === 'deposit') {
-                filtered = demoTx.filter(t => t.type === 'deposit');
-            } else if (filter === 'withdraw') {
-                filtered = demoTx.filter(t => t.type === 'withdraw');
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="fullscreen-empty">
-                        <i class="fas fa-exchange-alt"></i>
-                        No ${filter !== 'all' ? filter : ''} transactions found
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            filtered.forEach(tx => {
-                const amountClass = tx.type === 'deposit' ? 'deposit' : 'withdraw';
-                const statusClass = tx.status === 'completed' ? 'badge-won' : 'badge-pending';
-                
-                html += `
-                    <div class="fullscreen-item">
-                        <div class="fullscreen-item-left">
-                            <div class="fullscreen-item-date">${tx.date}</div>
-                            <div class="fullscreen-item-details">
-                                <i class="fas ${tx.type === 'deposit' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
-                                <span>${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</span>
-                                <span class="fullscreen-item-badge ${statusClass}">${tx.status}</span>
-                            </div>
-                        </div>
-                        <div class="fullscreen-item-amount ${amountClass}">${tx.type === 'deposit' ? '+' : '-'} ₹${tx.amount}</div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-
-        function openFullHistory() {
-            document.getElementById('full-history-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadFullHistory(fullHistoryFilter);
-        }
-
-        function closeFullHistory() {
-            document.getElementById('full-history-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function openFullTransaction() {
-            document.getElementById('full-transaction-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadFullTransactions(fullTransactionFilter);
-        }
-
-        function closeFullTransaction() {
-            document.getElementById('full-transaction-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function openFullWithdraw() {
-            document.getElementById('full-withdraw-page').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            loadPaymentMethods();
-        }
-
-        function closeFullWithdraw() {
-            document.getElementById('full-withdraw-page').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function loadPaymentMethods() {
-            const container = document.getElementById('payment-methods-container');
-            if (!container) return;
-            
-            let html = '';
-            
-            if (currentUserData?.bank_accounts?.length > 0) {
-                html += '<div class="payment-section-title"><i class="fas fa-university"></i> Bank Accounts</div>';
-                currentUserData.bank_accounts.forEach(acc => {
-                    html += `
-                        <div class="payment-method-item" onclick="selectPaymentMethod('bank', '${acc.accountNumber}')">
-                            <div class="payment-icon"><i class="fas fa-university"></i></div>
-                            <div class="payment-details">
-                                <h4>${acc.bankName}</h4>
-                                <p>${acc.accountHolder} •••• ${acc.accountNumber.slice(-4)}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            
-            if (currentUserData?.upis?.length > 0) {
-                html += '<div class="payment-section-title"><i class="fas fa-mobile-alt"></i> UPI IDs</div>';
-                currentUserData.upis.forEach(upi => {
-                    html += `
-                        <div class="payment-method-item" onclick="selectPaymentMethod('upi', '${upi.upiId}')">
-                            <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
-                            <div class="payment-details">
-                                <h4>${upi.upiId}</h4>
-                                <p>${upi.holderName}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            
-            if (!html) {
-                html = '<div class="fullscreen-empty"><i class="fas fa-credit-card"></i> No payment methods added</div>';
-            }
-            
-            container.innerHTML = html;
-        }
-
-        function selectPaymentMethod(type, id) {
-            showWithdrawForm(type, id);
-        }
-
-        function showWithdrawForm(type, id) {
-            const container = document.getElementById('payment-methods-container');
-            const formHtml = `
-                <div class="withdraw-form">
-                    <h3 style="color: #D4AF37; margin-bottom: 15px;">Withdraw to ${type === 'bank' ? 'Bank' : 'UPI'}</h3>
-                    <input type="number" id="withdraw-amount-full" placeholder="Enter amount" min="100" class="auth-input">
-                    <button class="auth-btn" onclick="submitFullWithdraw('${type}', '${id}')">
-                        <i class="fas fa-check-circle"></i> Confirm Withdrawal
-                    </button>
-                    <button class="back-btn" style="margin-top: 10px;" onclick="loadPaymentMethods()">
-                        <i class="fas fa-arrow-left"></i> Back
-                    </button>
-                </div>
-            `;
-            container.innerHTML = formHtml;
-        }
-
-        async function submitFullWithdraw(type, id) {
-            const amount = parseFloat(document.getElementById('withdraw-amount-full')?.value);
-            
-            if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
-                showStatusMessage(`Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}`, 'error');
-                return;
-            }
-            
-            const newBalance = currentUserData.balance - amount;
-            
-            await updateBalanceInSheet(currentUserData.userId, newBalance);
-            
-            currentUserData.balance = newBalance;
-            updateProfileDisplay();
-            
-            showStatusMessage(`Withdrawal of ₹${formatBalance(amount)} requested to ${type === 'bank' ? 'Bank' : 'UPI'}`, 'success');
-            
-            setTimeout(() => {
-                closeFullWithdraw();
-            }, 2000);
-        }
-        
-        // ======================================== -->
-        // 47. LOGOUT FUNCTION (FIXED)
-        // ======================================== -->
-        function logout() {
-            const tgId = currentUserData?.telegram_id || localStorage.getItem('tg_id');
-            const tgName = currentUserData?.telegram_username || localStorage.getItem('tg_name');
-            
-            currentUserData = {
-                userId: '12345678',
-                name: 'Demo User',
-                email: 'demo@example.com',
-                phone: 'Not Set',
-                balance: 1000,
-                bank_accounts: [],
-                upis: [],
-                notifications: [],
-                totalWins: 0,
-                gamesPlayed: 0,
-                createdAt: new Date(),
-                telegram_id: tgId || null,
-                telegram_username: tgName || null
-            };
-            
-            updateProfileDisplay();
-            
-            if (gameTimerInterval) { 
-                clearInterval(gameTimerInterval); 
-                gameTimerInterval = null; 
-            }
-            
-            startGameLoop();
-            showStatusMessage('Logged out - Demo mode active', 'success');
-            showPage('dashboard-page');
-        }
-        
-        // ======================================== -->
 // 48. SMART INITIALIZATION WITH LOADING SCREEN
 // ======================================== -->
 document.addEventListener('DOMContentLoaded', function() {
@@ -4723,14 +4438,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize
     initTelegramAndWelcome();
     
-    // Data load होने पर
-    initializeUser().then(() => {
-        startGameLoop();
-        loadGameHistory();
+    // Data load hone ki koshish - अगर fail हो तो भी loading screen हटाओ
+    Promise.race([
+        initializeUser(),
+        new Promise(resolve => setTimeout(resolve, 3000)) // 3 seconds timeout
+    ]).then(() => {
+        // Game start करो चाहे data load हुआ या नहीं
+        try {
+            startGameLoop();
+            loadGameHistory();
+        } catch (e) {
+            console.log('Game start error:', e);
+        }
+        
         fixHistoryStripPosition();
         updateProfileDisplay();
         
-        // तीसरा tick - जैसे ही data load हो
+        // तीसरा tick - data load होते ही
         if (!tickDone[2]) {
             statusIcons[2].className = 'fas fa-check-circle';
             statusIcons[2].style.color = '#00C853';
@@ -4738,29 +4462,39 @@ document.addEventListener('DOMContentLoaded', function() {
             tickDone[2] = true;
         }
         
-        // Progress bar 100% करो (अगर नहीं हुआ तो)
+        // Progress bar 100% करो
         clearInterval(interval);
         if (loadingBar) loadingBar.style.width = '100%';
         if (loadingPercent) loadingPercent.textContent = '100%';
         
-        // Loading screen हटाओ
+        // Loading screen हटाओ - हर हाल में
         setTimeout(() => {
             if (loadingScreen) {
                 loadingScreen.classList.add('hidden');
             }
+            showStatusMessage('Ready to play!', 'success');
         }, 500);
         
-        showStatusMessage('Ready to play!', 'success');
     }).catch(error => {
         console.error('Initialization error:', error);
+        
+        // Error होने पर भी loading screen हटाओ
         clearInterval(interval);
-        if (loadingScreen) {
-            loadingScreen.classList.add('hidden');
-        }
+        if (loadingBar) loadingBar.style.width = '100%';
+        if (loadingPercent) loadingPercent.textContent = '100%';
+        
+        setTimeout(() => {
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+            }
+            startGameLoop();
+            loadGameHistory();
+            updateProfileDisplay();
+            showStatusMessage('Demo mode active', 'info');
+        }, 500);
     });
     
-    // तीसरा tick - कम से कम 3 सेकंड बाद ही आए
-    // ये सेफ्टी के लिए है अगर data जल्दी load हो गया तो
+    // तीसरा tick - 5.5 सेकंड पर (safe side)
     setTimeout(() => {
         if (!tickDone[2]) {
             statusIcons[2].className = 'fas fa-check-circle';
@@ -4768,7 +4502,17 @@ document.addEventListener('DOMContentLoaded', function() {
             statusIcons[2].style.animation = 'none';
             tickDone[2] = true;
         }
-    }, 5500); // 5.5 सेकंड (3 सेकंड बाद)
+    }, 5500);
+    
+    // आखिरी सुरक्षा - 6 सेकंड में loading screen हटाओ ही हटाओ
+    setTimeout(() => {
+        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+            loadingScreen.classList.add('hidden');
+            startGameLoop();
+            loadGameHistory();
+            updateProfileDisplay();
+        }
+    }, 6000);
 });
 
 function fixHistoryStripPosition() {

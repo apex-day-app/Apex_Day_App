@@ -3220,70 +3220,90 @@ body {
         }
         
         // ======================================== -->
-        // 37. TELEGRAM + WELCOME POPUP (FIXED)
-        // ======================================== -->
-        function initTelegramAndWelcome() {
-            let userName = 'User';
-            let telegramId = null;
+// 37. TELEGRAM + WELCOME POPUP (FIXED)
+// ======================================== -->
+function initTelegramAndWelcome() {
+    let userName = 'User';
+    let telegramId = null;
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const tgUser = tg.initDataUnsafe?.user;
+        
+        if (tgUser) {
+            telegramId = tgUser.id.toString();
+            const firstName = tgUser.first_name || '';
+            const lastName = tgUser.last_name || '';
+            userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+            const username = tgUser.username || '';
             
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.expand();
-                const tgUser = tg.initDataUnsafe?.user;
-                
-                if (tgUser) {
-                    telegramId = tgUser.id.toString();
-                    const firstName = tgUser.first_name || '';
-                    const lastName = tgUser.last_name || '';
-                    userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                    const username = tgUser.username || '';
-                    
-                    if (currentUserData) {
-                        currentUserData.userId = telegramId;
-                        currentUserData.name = userName;
-                        currentUserData.telegram_id = telegramId;
-                        currentUserData.telegram_username = username;
-                        
-                        localStorage.setItem('tg_id', telegramId);
-                        localStorage.setItem('tg_name', userName);
-                    }
-                    
-                    const profileName = document.getElementById('profile-name');
-                    if (profileName) profileName.textContent = userName;
-                    
-                    const userIdEl = document.getElementById('profile-user-id');
-                    if (userIdEl) userIdEl.textContent = telegramId;
-                }
-            } else {
-                const savedTgId = localStorage.getItem('tg_id');
-                const savedTgName = localStorage.getItem('tg_name');
-                
-                if (savedTgId && currentUserData) {
-                    currentUserData.userId = savedTgId;
-                    currentUserData.name = savedTgName || 'User';
-                    
-                    const profileName = document.getElementById('profile-name');
-                    if (profileName) profileName.textContent = currentUserData.name;
-                    
-                    const userIdEl = document.getElementById('profile-user-id');
-                    if (userIdEl) userIdEl.textContent = savedTgId;
-                }
-            }
+            // नया userData बनाओ - सिर्फ Telegram ID के साथ
+            currentUserData = {
+                userId: telegramId,
+                name: userName,
+                email: '',
+                phone: '',
+                balance: 0,
+                bank_accounts: [],
+                upis: [],
+                notifications: [],
+                totalWins: 0,
+                gamesPlayed: 0,
+                createdAt: new Date(),
+                telegram_id: telegramId,
+                telegram_username: username
+            };
             
-            // Welcome popup - कभी auto close नहीं
-            const welcomeShown = localStorage.getItem('welcomePopupShown');
-            if (!welcomeShown) {
-                setTimeout(() => {
-                    const popup = document.getElementById('welcome-popup');
-                    const nameEl = document.getElementById('welcome-user-name');
-                    if (popup && nameEl) {
-                        nameEl.textContent = userName;
-                        popup.classList.remove('hidden');
-                        localStorage.setItem('welcomePopupShown', 'true');
-                    }
-                }, 1000);
-            }
+            localStorage.setItem('tg_id', telegramId);
+            localStorage.setItem('tg_name', userName);
+            
+            // Google Sheets से डेटा लोड करो
+            setTimeout(() => {
+                initializeUser();
+            }, 100);
         }
+    } else {
+        const savedTgId = localStorage.getItem('tg_id');
+        const savedTgName = localStorage.getItem('tg_name');
+        
+        if (savedTgId) {
+            currentUserData = {
+                userId: savedTgId,
+                name: savedTgName || 'User',
+                email: '',
+                phone: '',
+                balance: 0,
+                bank_accounts: [],
+                upis: [],
+                notifications: [],
+                totalWins: 0,
+                gamesPlayed: 0,
+                createdAt: new Date(),
+                telegram_id: savedTgId,
+                telegram_username: savedTgName || null
+            };
+            
+            setTimeout(() => {
+                initializeUser();
+            }, 100);
+        }
+    }
+    
+    // Welcome popup
+    const welcomeShown = localStorage.getItem('welcomePopupShown');
+    if (!welcomeShown) {
+        setTimeout(() => {
+            const popup = document.getElementById('welcome-popup');
+            const nameEl = document.getElementById('welcome-user-name');
+            if (popup && nameEl) {
+                nameEl.textContent = userName;
+                popup.classList.remove('hidden');
+                localStorage.setItem('welcomePopupShown', 'true');
+            }
+        }, 1000);
+    }
+}
 
         function closeWelcomePopup() {
             const popup = document.getElementById('welcome-popup');
@@ -3293,83 +3313,103 @@ body {
         }
         
         // ======================================== -->
-        // 38. GOOGLE SHEETS API FUNCTIONS
-        // ======================================== -->
-        async function getUserFromSheet(userId) {
-            try {
-                const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error fetching user:", error);
-                return { success: false };
-            }
-        }
+// 38. GOOGLE SHEETS API FUNCTIONS (UPDATED)
+// ======================================== -->
+async function getUserFromSheet(userId) {
+    try {
+        const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
+        const response = await fetch(url);
+        const data = await response.json();
         
-        async function createUserInSheet(userId, name, telegramId) {
-            try {
-                const url = `${GS_API_URL}?action=createUser&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(name)}&telegram_id=${encodeURIComponent(telegramId)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error creating user:", error);
-                return { success: false };
-            }
-        }
+        console.log("Google Sheets response:", data); // Debug ke liye
         
-        async function updateBalanceInSheet(userId, newBalance) {
-            try {
-                const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(userId)}&balance=${encodeURIComponent(newBalance)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error updating balance:", error);
-                return { success: false };
-            }
-        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+async function createUserInSheet(userId, name, telegramId) {
+    try {
+        const url = `${GS_API_URL}?action=createUser&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(name)}&telegram_id=${encodeURIComponent(telegramId)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error creating user:", error);
+        return { success: false };
+    }
+}
+
+async function updateBalanceInSheet(userId, newBalance) {
+    try {
+        const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(userId)}&balance=${encodeURIComponent(newBalance)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error updating balance:", error);
+        return { success: false };
+    }
+}
         
         // ======================================== -->
-        // 39. INITIALIZE USER FROM SHEETS
-        // ======================================== -->
-        async function initializeUser() {
-            const userId = currentUserData.userId;
-            const userName = currentUserData.name;
+// 39. INITIALIZE USER FROM SHEETS (FIXED)
+// ======================================== -->
+async function initializeUser() {
+    const userId = currentUserData.userId;
+    const userName = currentUserData.name;
+    
+    if (!userId) {
+        updateProfileDisplay();
+        return;
+    }
+    
+    try {
+        const result = await getUserFromSheet(userId);
+        
+        if (result.success && result.user) {
+            // USER mil gaya - saara data load karo
+            currentUserData = {
+                ...currentUserData,
+                balance: parseFloat(result.user.balance) || 0,
+                name: result.user.name || userName,
+                email: result.user.email || '',
+                phone: result.user.phone || '',
+                totalWins: parseInt(result.user.totalWins) || 0,
+                gamesPlayed: parseInt(result.user.gamesPlayed) || 0,
+                bank_accounts: result.user.bank_accounts ? JSON.parse(result.user.bank_accounts) : [],
+                upis: result.user.upis ? JSON.parse(result.user.upis) : []
+            };
             
-            if (!userId) {
-                updateProfileDisplay();
-                return;
-            }
+            updateProfileDisplay();
+            loadUserStats();
+            showStatusMessage(`Welcome back, ${currentUserData.name}! Balance: ₹${formatBalance(currentUserData.balance)}`, 'success');
             
-            try {
-                const result = await getUserFromSheet(userId);
+        } else {
+            // Naya user - create karo
+            const createResult = await createUserInSheet(userId, userName, userId);
+            
+            if (createResult.success) {
+                currentUserData.balance = 1000;
+                currentUserData.totalWins = 0;
+                currentUserData.gamesPlayed = 0;
                 
-                if (result.success && result.user) {
-                    currentUserData.balance = parseFloat(result.user.balance) || 1000;
-                    currentUserData.name = result.user.name || userName;
-                    currentUserData.totalWins = parseInt(result.user.totalWins) || 0;
-                    currentUserData.gamesPlayed = parseInt(result.user.gamesPlayed) || 0;
-                    
-                    updateProfileDisplay();
-                    showStatusMessage(`Welcome back, ${currentUserData.name}!`, 'success');
-                } else {
-                    const createResult = await createUserInSheet(userId, userName, userId);
-                    
-                    if (createResult.success) {
-                        currentUserData.balance = 1000;
-                        updateProfileDisplay();
-                        showStatusMessage(`Welcome, ${userName}! ₹1000 bonus credited.`, 'success');
-                    } else {
-                        updateProfileDisplay();
-                    }
-                }
-            } catch (error) {
-                console.error("Error in initializeUser:", error);
+                updateProfileDisplay();
+                loadUserStats();
+                showStatusMessage(`Welcome, ${userName}! ₹1000 bonus credited.`, 'success');
+                
+                await updateBalanceInSheet(userId, 1000);
+            } else {
                 updateProfileDisplay();
             }
         }
+    } catch (error) {
+        console.error("Error in initializeUser:", error);
+        updateProfileDisplay();
+    }
+}
         
         // ======================================== -->
         // 40. GAME HISTORY FUNCTIONS
@@ -3623,42 +3663,51 @@ body {
         }
 
         async function processWinning(winningColor) {
-            if (!currentUserData) return;
+    if (!currentUserData) return;
+    
+    const userBet = currentBet[winningColor] || 0;
+    
+    if (winningColor !== 'gray' && userBet > 0) {
+        // सही तरीका - सिर्फ जीतने वाली राशि का double दें
+        const winAmount = userBet * 2; // जीतने पर मिलने वाली कुल राशि
+        const currentTotalBet = currentBet.green + currentBet.blue; // कुल लगाई गई बाजी
+        
+        // नया बैलेंस = पुराना बैलेंस + (जीतने वाली राशि)
+        // Note: बाजी लगाने का पैसा पहले ही कट चुका है
+        let newBalance = currentUserData.balance + winAmount;
+        
+        // या अगर समझना आसान हो तो:
+        // let newBalance = currentUserData.balance + (userBet * 2);
+        
+        const finalBalance = enforceMaxBalance(newBalance);
+        
+        fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
+            .catch(error => console.error("API error:", error));
+        
+        currentUserData.balance = finalBalance;
+        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+        
+    } else if (winningColor === 'gray') {
+        // Gray (draw) होने पर - सारा पैसा वापस
+        const totalBet = currentBet.green + currentBet.blue;
+        if (totalBet > 0) {
+            let newBalance = currentUserData.balance + totalBet;
+            const finalBalance = enforceMaxBalance(newBalance);
             
-            const userBet = currentBet[winningColor] || 0;
+            fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
+                .catch(error => console.error("API error:", error));
             
-            if (winningColor !== 'gray' && userBet > 0) {
-                const winAmount = userBet * 2;
-                const netWin = winAmount - currentBet.green - currentBet.blue;
-                
-                let newBalance = currentUserData.balance + netWin + currentBet.green + currentBet.blue;
-                const finalBalance = enforceMaxBalance(newBalance);
-                
-                fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
-                    .catch(error => console.error("API error:", error));
-                
-                currentUserData.balance = finalBalance;
-                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                
-            } else if (winningColor === 'gray') {
-                const totalBet = currentBet.green + currentBet.blue;
-                if (totalBet > 0) {
-                    let newBalance = currentUserData.balance + totalBet;
-                    const finalBalance = enforceMaxBalance(newBalance);
-                    
-                    fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
-                        .catch(error => console.error("API error:", error));
-                    
-                    currentUserData.balance = finalBalance;
-                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                }
-            } else {
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-            }
-            
-            updateProfileDisplay();
+            currentUserData.balance = finalBalance;
+            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
         }
+    } else {
+        // हारने पर - कुछ नहीं मिलता, बस gamesPlayed बढ़ाओ
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+    }
+    
+    updateProfileDisplay();
+}
         
         // ======================================== -->
         // 42. BET AMOUNT UTILITIES
@@ -4242,29 +4291,29 @@ body {
         }
         
         // ======================================== -->
-        // 48. INITIALIZATION
-        // ======================================== -->
-        document.addEventListener('DOMContentLoaded', function() {
-            ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', function(e) {
-                        this.value = this.value.replace(/[^0-9]/g, '');
-                    });
-                }
+// 48. INITIALIZATION (UPDATED)
+// ======================================== -->
+document.addEventListener('DOMContentLoaded', function() {
+    ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
             });
-            
-            initTelegramAndWelcome();
-            
-            setTimeout(() => {
-                initializeUser();
-                startGameLoop();
-                loadGameHistory();
-            }, 1500);
-            
-            // Fix history strip position
-            setTimeout(fixHistoryStripPosition, 100);
-        });
+        }
+    });
+    
+    // Pehle Telegram
+    initTelegramAndWelcome();
+    
+    // Phir game start
+    setTimeout(() => {
+        startGameLoop();
+        loadGameHistory();
+    }, 1500);
+    
+    setTimeout(fixHistoryStripPosition, 100);
+});
 
         function fixHistoryStripPosition() {
             const historyContainer = document.querySelector('.history-container');

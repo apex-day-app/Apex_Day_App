@@ -19,39 +19,33 @@
 <!-- Google Sheets API (Apps Script) -->
 <!-- Apps Script से connect करेंगे -->
 
-<!-- Telegram WebApp Script with HARD RELOAD - HAR BAAR CHALU HOGA -->
-<script>
-    (function() {
-        // ======================================== -->
-        // FORCE RELOAD ON EVERY OPEN - 100% HAR BAAR
-        // ======================================== -->
-        
-        // Unique parameter with timestamp - HAR BAAR change hoga
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(2);
-        
-        // Current URL se saare parameters hatao
-        const baseUrl = window.location.href.split('?')[0].split('#')[0];
-        
-        // Naya URL with fresh parameters - HAR BAAR unique
-        const newUrl = baseUrl + '?force=' + timestamp + '&r=' + random;
-        
-        console.log("🔄 Force reloading with new URL:", newUrl);
-        
-        // Hard reload - page completely refresh hoga
-        window.location.replace(newUrl);
-        
-        // Ye function yahin ruk jayega, agey kuch nahi chalega
-        return;
-    })();
-</script>
-
-<!-- Telegram WebApp Script - यह हमेशा लोड होगा -->
+<!-- Telegram WebApp Script - पहले लोड करो -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- Telegram WebView Optimization -->
+<!-- Cache Buster - Telegram WebApp के बाद -->
 <script>
     (function() {
+        // ======================================== -->
+        // SMART CACHE BUSTER - Telegram WebApp के साथ काम करेगा
+        // ======================================== -->
+        
+        // Current URL check
+        const currentUrl = window.location.href;
+        
+        // अगर URL में पहले से force parameter नहीं है तो ही reload करो
+        if (!currentUrl.includes('force=')) {
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(2);
+            const baseUrl = currentUrl.split('?')[0].split('#')[0];
+            const newUrl = baseUrl + '?force=' + timestamp + '&r=' + random;
+            
+            console.log("🔄 First time load - adding cache buster");
+            window.location.replace(newUrl);
+            return;
+        }
+        
+        console.log("✅ Cache buster already present - continuing normal load");
+        
         // ======================================== -->
         // TELEGRAM WEBAPP INITIALIZATION
         // ======================================== -->

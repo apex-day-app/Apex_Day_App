@@ -95,7 +95,7 @@
             if (e.key === 'F12') e.preventDefault();
         });
     })();
-</script>      
+</script>          
     
     <!-- ======================================== -->
     <!-- 3.FONT AWESOME 6                            -->
@@ -128,6 +128,27 @@ input, textarea, button, [contenteditable="true"] {
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
+}
+
+/* Loading icon animation for balance */
+@keyframes loadingPulse {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scale(1); 
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.1); 
+    }
+}
+
+/* Balance loading icon */
+#current-balance:contains('⟳'),
+#profile-balance:contains('⟳'),
+#add-balance-display:contains('⟳'),
+#withdraw-balance-display:contains('⟳') {
+    animation: loadingPulse 1s infinite;
+    display: inline-block;
 }
 
 /* ======================================== */
@@ -434,7 +455,556 @@ input, textarea, button, [contenteditable="true"] {
     .floating-icon {
         font-size: 1.1rem;
     }
-}   
+}
+
+.add-money-container {
+    background: linear-gradient(135deg, #1a2a3a, #0f1a24);
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Header */
+.add-money-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.add-money-back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid #D4AF37;
+    color: #D4AF37;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.add-money-back-btn:hover {
+    background: #D4AF37;
+    color: #000;
+    transform: scale(1.05);
+}
+
+.add-money-header h2 {
+    color: #D4AF37;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.add-money-header h2 i {
+    margin-right: 8px;
+}
+
+/* Balance Card */
+.add-money-balance-card {
+    background: linear-gradient(145deg, #2a3a4a, #1a2a3a);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 2px solid #D4AF37;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.balance-label {
+    font-size: 0.9rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.balance-amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #D4AF37;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Amount Section */
+.amount-section {
+    margin-bottom: 20px;
+}
+
+.amount-section h3 {
+    color: #D4AF37;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.amount-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.amount-card {
+    background: linear-gradient(145deg, #2a3a4a, #1a2a3a);
+    border: 2px solid #D4AF37;
+    border-radius: 12px;
+    padding: 15px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #fff;
+}
+
+.amount-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
+}
+
+.amount-card.selected {
+    background: #D4AF37;
+    color: #000;
+    border-color: #FFD700;
+}
+
+.amount-card.selected .amount-currency,
+.amount-card.selected .amount-value {
+    color: #000;
+}
+
+.amount-currency {
+    font-size: 0.9rem;
+    color: #D4AF37;
+}
+
+.amount-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.custom-amount-btn {
+    background: linear-gradient(145deg, #2a3a4a, #1a2a3a);
+    border: 2px dashed #D4AF37;
+}
+
+.custom-amount-btn i {
+    font-size: 1.2rem;
+    color: #D4AF37;
+    margin-bottom: 3px;
+}
+
+.custom-amount-btn span {
+    font-size: 0.8rem;
+}
+
+/* Custom Amount Input */
+.custom-amount-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+
+.custom-amount-input {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #D4AF37;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.custom-amount-input:focus {
+    outline: none;
+    border-color: #FFD700;
+}
+
+.apply-custom-btn {
+    padding: 0 20px;
+    background: #D4AF37;
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.apply-custom-btn:hover {
+    background: #FFD700;
+    transform: scale(1.02);
+}
+
+/* Selected Amount Display */
+.selected-amount-display {
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #D4AF37;
+}
+
+.selected-amount-display span:first-child {
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.selected-amount-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #D4AF37;
+}
+
+/* UTR Section */
+.utr-section {
+    background: rgba(0,0,0,0.2);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #D4AF37;
+}
+
+.utr-section h3 {
+    color: #D4AF37;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* UPI Info Card */
+.upi-info-card {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #D4AF37;
+}
+
+.upi-label {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+.upi-value-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.upi-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #D4AF37;
+    letter-spacing: 0.5px;
+}
+
+.copy-upi-btn {
+    background: rgba(212, 175, 55, 0.2);
+    border: 1px solid #D4AF37;
+    border-radius: 6px;
+    padding: 5px 10px;
+    color: #D4AF37;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copy-upi-btn:hover {
+    background: #D4AF37;
+    color: #000;
+}
+
+/* UTR Input Steps */
+.utr-input-section {
+    margin-bottom: 15px;
+}
+
+.utr-step {
+    margin-bottom: 15px;
+}
+
+.utr-step label {
+    display: block;
+    margin-bottom: 5px;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.utr-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #D4AF37;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.utr-input:focus {
+    outline: none;
+    border-color: #FFD700;
+}
+
+.utr-match-indicator {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    min-height: 20px;
+}
+
+.utr-match-indicator.match {
+    color: #00C853;
+}
+
+.utr-match-indicator.no-match {
+    color: #FF4444;
+}
+
+/* Buttons */
+.continue-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #D4AF37, #B8860B);
+    border: none;
+    border-radius: 8px;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 15px;
+}
+
+.continue-btn:hover {
+    background: linear-gradient(135deg, #FFD700, #D4AF37);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(212, 175, 55, 0.3);
+}
+
+.continue-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Final Submit Container */
+.final-submit-container {
+    margin-top: 15px;
+    animation: slideDown 0.3s ease;
+}
+
+.confirmation-details {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #D4AF37;
+}
+
+.confirmation-details p {
+    color: #D4AF37;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.confirm-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.confirm-item:last-child {
+    border-bottom: none;
+}
+
+.confirm-item span:first-child {
+    color: #aaa;
+}
+
+.confirm-amount,
+.confirm-utr {
+    color: #D4AF37;
+    font-weight: 600;
+}
+
+.submit-request-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #00C853, #009624);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.submit-request-btn:hover {
+    background: linear-gradient(135deg, #00E676, #00C853);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,200,83,0.3);
+}
+
+/* Messages */
+.add-money-message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.add-money-message.error {
+    background: rgba(255,68,68,0.2);
+    border: 1px solid #FF4444;
+    color: #FF4444;
+}
+
+.add-money-message.success {
+    background: rgba(0,200,83,0.2);
+    border: 1px solid #00C853;
+    color: #00C853;
+}
+
+/* Pending Info */
+.pending-info {
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 2px solid #D4AF37;
+    text-align: center;
+}
+
+.pending-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.pending-header i {
+    font-size: 1.5rem;
+    color: #D4AF37;
+}
+
+.pending-header h4 {
+    color: #D4AF37;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.pending-info p {
+    color: #fff;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.pending-time {
+    background: rgba(212, 175, 55, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+.pending-time i {
+    color: #D4AF37;
+    margin-right: 5px;
+}
+
+.pending-note {
+    color: #aaa !important;
+    font-size: 0.85rem !important;
+}
+
+/* Success Message */
+.success-message-container {
+    background: rgba(0,200,83,0.1);
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 20px;
+    border: 2px solid #00C853;
+    text-align: center;
+}
+
+.success-message-container i {
+    font-size: 3rem;
+    color: #00C853;
+    margin-bottom: 15px;
+}
+
+.success-message-container h4 {
+    color: #00C853;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.success-message-container p {
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+/* Hidden Class */
+.hidden {
+    display: none !important;
+}
+
+/* Animation */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 380px) {
+    .amount-options-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .add-money-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .balance-amount {
+        font-size: 2rem;
+    }
+}
 
 /* ======================================== */
 /* 6.BODY & MAIN CONTAINER STYLES             */
@@ -3336,29 +3906,144 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- 29. ADD MONEY PAGE                     -->
-            <!-- ================================ -->
-            <div id="add-money-page" class="page hidden">
-                <div class="auth-container">
-                    <h2 class="auth-header"><i class="fas fa-plus-circle"></i> Add Money</h2>
-                    <p id="add-money-balance" class="balance-text"><i class="fas fa-wallet"></i> Current Balance: <span id="add-balance-display"></span></p>
-                    <div class="amount-options">
-                        <button class="amount-option" data-amount="100" onclick="selectAmount(this)">100</button>
-                        <button class="amount-option" data-amount="500" onclick="selectAmount(this)">500</button>
-                        <button class="amount-option" data-amount="1000" onclick="selectAmount(this)">1,000</button>
-                        <button class="amount-option" data-amount="2000" onclick="selectAmount(this)">2,000</button>
-                    </div>
-                    <input type="number" id="add-amount" placeholder="Custom amount" class="auth-input" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                    <div class="payment-info">
-                        <p><i class="fas fa-qrcode"></i> <strong>UPI ID:</strong> <span id="upi-display">fundmoney@upi</span></p>
-                        <p class="info-text"><i class="fas fa-info-circle"></i> Pay via UPI and enter transaction ID</p>
-                    </div>
-                    <input type="text" id="transaction-id" placeholder="UTR/Transaction ID" class="auth-input">
-                    <button class="auth-btn" onclick="submitAddMoneyRequest()"><i class="fas fa-paper-plane"></i> Submit Request</button>
-                    <p id="add-money-message" class="error-message hidden"></p>
-                    <button class="back-btn" onclick="showPage('dashboard-page')"><i class="fas fa-arrow-left"></i> Back</button>
+<!-- 29. ADD MONEY PAGE (REDESIGNED)     -->
+<!-- ================================ -->
+<div id="add-money-page" class="page hidden">
+    <div class="add-money-container">
+        <!-- Header with Back Button -->
+        <div class="add-money-header">
+            <button class="add-money-back-btn" onclick="goBackToProfile()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2><i class="fas fa-plus-circle"></i> Add Money</h2>
+            <div style="width: 40px;"></div> <!-- Spacer for alignment -->
+        </div>
+        
+        <!-- Current Balance Display -->
+        <div class="add-money-balance-card">
+            <div class="balance-label">Current Balance</div>
+            <div class="balance-amount" id="add-balance-display">0</div>
+        </div>
+        
+        <!-- Amount Selection -->
+        <div class="amount-section">
+            <h3>Select Amount</h3>
+            <div class="amount-options-grid">
+                <button class="amount-card" data-amount="100" onclick="selectAddAmount(this, 100)">
+                    <span class="amount-currency">₹</span>
+                    <span class="amount-value">100</span>
+                </button>
+                <button class="amount-card" data-amount="500" onclick="selectAddAmount(this, 500)">
+                    <span class="amount-currency">₹</span>
+                    <span class="amount-value">500</span>
+                </button>
+                <button class="amount-card" data-amount="1000" onclick="selectAddAmount(this, 1000)">
+                    <span class="amount-currency">₹</span>
+                    <span class="amount-value">1,000</span>
+                </button>
+                <button class="amount-card" data-amount="2000" onclick="selectAddAmount(this, 2000)">
+                    <span class="amount-currency">₹</span>
+                    <span class="amount-value">2,000</span>
+                </button>
+                <button class="amount-card" data-amount="5000" onclick="selectAddAmount(this, 5000)">
+                    <span class="amount-currency">₹</span>
+                    <span class="amount-value">5,000</span>
+                </button>
+                <button class="amount-card custom-amount-btn" onclick="showCustomAmountInput()">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Custom</span>
+                </button>
+            </div>
+            
+            <!-- Custom Amount Input (hidden by default) -->
+            <div id="custom-amount-container" class="custom-amount-container hidden">
+                <input type="number" id="custom-amount" placeholder="Enter amount" class="custom-amount-input" min="10">
+                <button class="apply-custom-btn" onclick="applyCustomAmount()">Apply</button>
+            </div>
+        </div>
+        
+        <!-- Selected Amount Display -->
+        <div class="selected-amount-display" id="selected-amount-display">
+            <span>Selected Amount:</span>
+            <span class="selected-amount-value" id="selected-amount-value">₹0</span>
+        </div>
+        
+        <!-- UTR Confirmation Section (2-step) -->
+        <div class="utr-section">
+            <h3><i class="fas fa-qrcode"></i> UPI Payment</h3>
+            
+            <!-- UPI ID Display -->
+            <div class="upi-info-card">
+                <div class="upi-label">UPI ID</div>
+                <div class="upi-value-container">
+                    <span id="upi-display" class="upi-value">fundmoney@upi</span>
+                    <button class="copy-upi-btn" onclick="copyUPIId()">
+                        <i class="fas fa-copy"></i>
+                    </button>
                 </div>
             </div>
+            
+            <!-- UTR Input Section (2-step confirmation) -->
+            <div class="utr-input-section">
+                <div class="utr-step" id="utr-step-1">
+                    <label for="utr-first">Enter UTR/Transaction ID</label>
+                    <input type="text" id="utr-first" placeholder="e.g., UTR123456789" class="utr-input">
+                </div>
+                
+                <div class="utr-step hidden" id="utr-step-2">
+                    <label for="utr-second">Confirm UTR/Transaction ID</label>
+                    <input type="text" id="utr-second" placeholder="Enter again to confirm" class="utr-input">
+                    <div class="utr-match-indicator" id="utr-match-indicator"></div>
+                </div>
+            </div>
+            
+            <!-- Continue to Confirmation Button -->
+            <button class="continue-btn" id="continue-to-confirm" onclick="proceedToConfirmation()">
+                Continue to Confirm
+            </button>
+            
+            <!-- Final Submit Button (hidden initially) -->
+            <div id="final-submit-container" class="final-submit-container hidden">
+                <div class="confirmation-details">
+                    <p><i class="fas fa-info-circle"></i> Please verify your details:</p>
+                    <div class="confirm-item">
+                        <span>Amount:</span>
+                        <span class="confirm-amount" id="confirm-amount">₹0</span>
+                    </div>
+                    <div class="confirm-item">
+                        <span>UTR:</span>
+                        <span class="confirm-utr" id="confirm-utr">-</span>
+                    </div>
+                </div>
+                
+                <button class="submit-request-btn" onclick="submitAddMoneyRequest()">
+                    <i class="fas fa-paper-plane"></i> Submit Request
+                </button>
+            </div>
+        </div>
+        
+        <!-- Request Status Messages -->
+        <div id="add-money-message" class="add-money-message hidden"></div>
+        
+        <!-- Pending Transaction Info -->
+        <div id="pending-info" class="pending-info hidden">
+            <div class="pending-header">
+                <i class="fas fa-clock"></i>
+                <h4>Request Pending</h4>
+            </div>
+            <p>Your request has been submitted and is pending approval.</p>
+            <p class="pending-time"><i class="fas fa-hourglass-half"></i> Please wait until <strong>8:00 PM</strong> for processing</p>
+            <p class="pending-note">You will be notified once your request is approved or rejected.</p>
+        </div>
+        
+        <!-- Success Message -->
+        <div id="success-message" class="success-message-container hidden">
+            <i class="fas fa-check-circle"></i>
+            <h4>Request Submitted Successfully!</h4>
+            <p>Your request is pending approval. You will be notified once processed.</p>
+        </div>
+    </div>
+</div>
 
             <!-- ================================ -->
             <!-- 30. WITHDRAW PAGE                      -->
@@ -3465,169 +4150,368 @@ body {
     <!-- ======================================== -->
     <script>
         // ======================================== -->
-        // 34. GLOBAL VARIABLES
-        // ======================================== -->
-        const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
-        const MAX_BALANCE = 100000;
+// 34. GLOBAL VARIABLES
+// ======================================== -->
+const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
+const MAX_BALANCE = 100000;
 
-        let currentUserData = {
-            userId: '12345678',
-            name: 'Demo User',
-            email: 'demo@example.com',
-            phone: 'Not Set',
-            balance: 0,
-            bank_accounts: [],
-            upis: [],
-            notifications: [],
-            totalWins: 0,
-            gamesPlayed: 0,
-            createdAt: new Date(),
-            telegram_id: null,
-            telegram_username: null
-        };
+let currentUserData = {
+    userId: '12345678',
+    name: 'Demo User',
+    email: 'demo@example.com',
+    phone: 'Not Set',
+    balance: null,
+    bank_accounts: [],
+    upis: [],
+    notifications: [],
+    totalWins: 0,
+    gamesPlayed: 0,
+    createdAt: new Date(),
+    telegram_id: null,
+    telegram_username: null
+};
 
-        let selectedBankIndex = null;
-        let selectedUPIIndex = null;
-        let gameTimerInterval = null;
-        let currentBet = { green: 0, blue: 0 };
-        let userBetMap = { green: {}, blue: {} };
-        const BETTING_TIME = 15;
-        let gameState = {
-            totalGreenBets: 0,
-            totalBlueBets: 0,
-            allBets: [],
-            currentTime: 0
-        };
-        let isPlacingBet = false;
-        let timeLeft = 15;
-        let isBettingActive = true;
-        let currentRoundId = Date.now();
-        let fullHistoryFilter = 'all';
-        let fullTransactionFilter = 'all';
+let selectedBankIndex = null;
+let selectedUPIIndex = null;
+let gameTimerInterval = null;
+let currentBet = { green: 0, blue: 0 };
+let userBetMap = { green: {}, blue: {} };
+const BETTING_TIME = 15;
+let gameState = {
+    totalGreenBets: 0,
+    totalBlueBets: 0,
+    allBets: [],
+    currentTime: 0
+};
+let isPlacingBet = false;
+let timeLeft = 15;
+let isBettingActive = true;
+let currentRoundId = Date.now();
+let fullHistoryFilter = 'all';
+let fullTransactionFilter = 'all';
+
+// ======================================== -->
+// ADD MONEY PAGE VARIABLES
+// ======================================== -->
+let selectedAddAmount = 0;
+let utrFirst = '';
+let utrSecond = '';
         
         // ======================================== -->
-        // 35. UI HELPER FUNCTIONS
-        // ======================================== -->
-        function formatBalance(amount) {
-            if (amount > MAX_BALANCE) amount = MAX_BALANCE;
-            let numStr = Math.floor(amount).toString();
-            if (numStr.length <= 3) return numStr;
-            let lastThree = numStr.substring(numStr.length - 3);
-            let otherNumbers = numStr.substring(0, numStr.length - 3);
-            if (otherNumbers !== '') lastThree = ',' + lastThree;
-            return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-        }
+// 35. UI HELPER FUNCTIONS & ADD MONEY FUNCTIONS
+// ======================================== -->
 
-        function enforceMaxBalance(amount) {
-            return amount > MAX_BALANCE ? MAX_BALANCE : amount;
-        }
+// ========== UI HELPER FUNCTIONS ==========
+function formatBalance(amount) {
+    if (amount > MAX_BALANCE) amount = MAX_BALANCE;
+    if (amount === 0) return "0";
+    if (amount === null || amount === undefined) return "⟳";
+    
+    let numStr = Math.floor(amount).toString();
+    if (numStr.length <= 3) return numStr;
+    
+    let lastThree = numStr.substring(numStr.length - 3);
+    let otherNumbers = numStr.substring(0, numStr.length - 3);
+    if (otherNumbers !== '') lastThree = ',' + lastThree;
+    
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+}
 
-        function updateProfileDisplay() {
-            if (!currentUserData) return;
-            const balance = currentUserData.balance === 0 ? '--' : formatBalance(currentUserData.balance || 0);
-            
-            const elements = {
-                'current-balance': balance,
-                'profile-balance': balance,
-                'add-balance-display': balance,
-                'withdraw-balance-display': balance,
-                'profile-name': currentUserData.name || 'User',
-                'profile-email': currentUserData.email || 'demo@example.com',
-                'profile-user-id': currentUserData.userId || '123456',
-                'profile-phone': currentUserData.phone || 'Not Set'
-            };
-            
-            for (let [id, value] of Object.entries(elements)) {
-                const el = document.getElementById(id);
-                if (el) el.textContent = value;
-            }
-        }
+function enforceMaxBalance(amount) {
+    return amount > MAX_BALANCE ? MAX_BALANCE : amount;
+}
 
-        function loadUserStats() {
-            if (!currentUserData) return;
-            const wins = currentUserData.totalWins || 0;
-            const games = currentUserData.gamesPlayed || 0;
-            
-            const winsEl = document.getElementById('total-wins');
-            const gamesEl = document.getElementById('games-played');
-            const winRateEl = document.getElementById('win-rate');
-            
-            if (winsEl) winsEl.textContent = wins;
-            if (gamesEl) gamesEl.textContent = games;
-            if (winRateEl) winRateEl.textContent = games > 0 ? Math.round((wins/games)*100) + '%' : '0%';
-        }
+function updateProfileDisplay() {
+    if (!currentUserData) return;
+    
+    let balance;
+    
+    // FAST CHECK - Pehle loading icon dikhao, phir update ho jayega
+    if (currentUserData.balance === null || currentUserData.balance === undefined) {
+        balance = '⟳'; // Loading icon
+    } else {
+        balance = formatBalance(currentUserData.balance);
+    }
+    
+    // Sab elements ek saath update karo
+    const elements = {
+        'current-balance': balance,
+        'profile-balance': balance,
+        'add-balance-display': balance,
+        'withdraw-balance-display': balance
+    };
+    
+    // Name/ID elements hamesha available hain
+    const nameEl = document.getElementById('profile-name');
+    if (nameEl) nameEl.textContent = currentUserData.name || 'User';
+    
+    const emailEl = document.getElementById('profile-email');
+    if (emailEl) emailEl.textContent = currentUserData.email || 'demo@example.com';
+    
+    const userIdEl = document.getElementById('profile-user-id');
+    if (userIdEl) userIdEl.textContent = currentUserData.userId || '123456';
+    
+    const phoneEl = document.getElementById('profile-phone');
+    if (phoneEl) phoneEl.textContent = currentUserData.phone || 'Not Set';
+    
+    // Balance elements update
+    for (let [id, value] of Object.entries(elements)) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+    }
+}
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            
-            const managePage = document.getElementById('manage-account-page');
-            if (managePage) managePage.classList.add('hidden');
-            
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.remove('hidden');
-                window.scrollTo(0, 0);
-                
-                if (pageId === 'dashboard-page') {
-                    document.body.style.overflow = 'hidden';
-                    document.documentElement.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = 'auto';
-                    document.documentElement.style.overflow = 'auto';
-                }
-                
-                if (pageId === 'profile-page' && currentUserData) {
-                    updateProfileDisplay();
-                    loadUserStats();
-                }
-            }
-        }
+function loadUserStats() {
+    if (!currentUserData) return;
+    const wins = currentUserData.totalWins || 0;
+    const games = currentUserData.gamesPlayed || 0;
+    
+    const winsEl = document.getElementById('total-wins');
+    const gamesEl = document.getElementById('games-played');
+    const winRateEl = document.getElementById('win-rate');
+    
+    if (winsEl) winsEl.textContent = wins;
+    if (gamesEl) gamesEl.textContent = games;
+    if (winRateEl) winRateEl.textContent = games > 0 ? Math.round((wins / games) * 100) + '%' : '0%';
+}
 
-        function showStatusMessage(message, type = 'info') {
-            const statusEl = document.getElementById('betting-status');
-            const msgEl = document.getElementById('status-message');
-            if (!statusEl || !msgEl) return;
-            
-            statusEl.classList.remove('hidden', 'success', 'error');
-            if (type === 'success') statusEl.classList.add('success');
-            if (type === 'error') statusEl.classList.add('error');
-            
-            msgEl.textContent = message;
-            if (type !== 'info') setTimeout(() => statusEl.classList.add('hidden'), 3000);
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    
+    const managePage = document.getElementById('manage-account-page');
+    if (managePage) managePage.classList.add('hidden');
+    
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.remove('hidden');
+        window.scrollTo(0, 0);
+        
+        if (pageId === 'dashboard-page') {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
         }
+        
+        if (pageId === 'profile-page' && currentUserData) {
+            updateProfileDisplay();
+            loadUserStats();
+        }
+    }
+}
 
-        function showMessage(elementId, message, type = 'error') {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-            el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
-            el.className = type === 'error' ? 'error-message' : 'success-message';
-            el.classList.remove('hidden');
-            if (type === 'success') setTimeout(() => el.classList.add('hidden'), 3000);
-        }
+function showStatusMessage(message, type = 'info') {
+    const statusEl = document.getElementById('betting-status');
+    const msgEl = document.getElementById('status-message');
+    if (!statusEl || !msgEl) return;
+    
+    statusEl.classList.remove('hidden', 'success', 'error');
+    if (type === 'success') statusEl.classList.add('success');
+    if (type === 'error') statusEl.classList.add('error');
+    
+    msgEl.textContent = message;
+    if (type !== 'info') setTimeout(() => statusEl.classList.add('hidden'), 3000);
+}
 
-        function toggleNotificationPanel() {
-            const panel = document.getElementById('notification-panel');
-            if (panel) panel.classList.toggle('hidden');
-            const dot = document.getElementById('notification-dot');
-            if (dot) dot.classList.add('hidden');
-        }
+function showMessage(elementId, message, type = 'error') {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+    el.className = type === 'error' ? 'error-message' : 'success-message';
+    el.classList.remove('hidden');
+    if (type === 'success') setTimeout(() => el.classList.add('hidden'), 3000);
+}
 
-        function closeImportantNotification() {
-            const popup = document.getElementById('important-notification-popup');
-            if (popup) popup.classList.add('hidden');
-        }
+function toggleNotificationPanel() {
+    const panel = document.getElementById('notification-panel');
+    if (panel) panel.classList.toggle('hidden');
+    const dot = document.getElementById('notification-dot');
+    if (dot) dot.classList.add('hidden');
+}
 
-        function showManageAccount() {
-            const page = document.getElementById('manage-account-page');
-            if (page) page.classList.remove('hidden');
-            loadBankAccountsManage();
-            loadUPIsManage();
-        }
+function closeImportantNotification() {
+    const popup = document.getElementById('important-notification-popup');
+    if (popup) popup.classList.add('hidden');
+}
 
-        function hideManageAccount() {
-            const page = document.getElementById('manage-account-page');
-            if (page) page.classList.add('hidden');
+function showManageAccount() {
+    const page = document.getElementById('manage-account-page');
+    if (page) page.classList.remove('hidden');
+    loadBankAccountsManage();
+    loadUPIsManage();
+}
+
+function hideManageAccount() {
+    const page = document.getElementById('manage-account-page');
+    if (page) page.classList.add('hidden');
+}
+
+// ========== ADD MONEY PAGE FUNCTIONS ==========
+function goBackToProfile() {
+    showPage('profile-page');
+}
+
+function selectAddAmount(btn, amount) {
+    document.querySelectorAll('.amount-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    btn.classList.add('selected');
+    
+    const customContainer = document.getElementById('custom-amount-container');
+    if (customContainer) customContainer.classList.add('hidden');
+    
+    selectedAddAmount = amount;
+    const selectedValueEl = document.getElementById('selected-amount-value');
+    if (selectedValueEl) selectedValueEl.textContent = '₹' + amount.toLocaleString();
+    
+    checkContinueButton();
+}
+
+function showCustomAmountInput() {
+    document.querySelectorAll('.amount-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    const customContainer = document.getElementById('custom-amount-container');
+    if (customContainer) customContainer.classList.remove('hidden');
+}
+
+function applyCustomAmount() {
+    const customAmount = parseFloat(document.getElementById('custom-amount')?.value);
+    
+    if (isNaN(customAmount) || customAmount < 10) {
+        showAddMoneyMessage('Please enter a valid amount (minimum ₹10)', 'error');
+        return;
+    }
+    
+    selectedAddAmount = customAmount;
+    const selectedValueEl = document.getElementById('selected-amount-value');
+    if (selectedValueEl) selectedValueEl.textContent = '₹' + customAmount.toLocaleString();
+    
+    document.getElementById('custom-amount-container').classList.add('hidden');
+    
+    checkContinueButton();
+}
+
+function copyUPIId() {
+    const upiId = document.getElementById('upi-display')?.textContent;
+    if (!upiId) return;
+    
+    navigator.clipboard.writeText(upiId).then(() => {
+        showAddMoneyMessage('UPI ID copied!', 'success');
+        
+        const copyBtn = document.querySelector('.copy-upi-btn');
+        if (copyBtn) {
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
         }
+    }).catch(() => {
+        showAddMoneyMessage('Failed to copy', 'error');
+    });
+}
+
+function checkUTRMatch() {
+    const utrFirstInput = document.getElementById('utr-first');
+    const utrSecondInput = document.getElementById('utr-second');
+    
+    if (!utrFirstInput || !utrSecondInput) return false;
+    
+    utrFirst = utrFirstInput.value.trim();
+    utrSecond = utrSecondInput.value.trim();
+    
+    const indicator = document.getElementById('utr-match-indicator');
+    if (!indicator) return false;
+    
+    if (utrFirst && utrSecond) {
+        if (utrFirst === utrSecond) {
+            indicator.textContent = '✓ UTR matches';
+            indicator.className = 'utr-match-indicator match';
+            return true;
+        } else {
+            indicator.textContent = '✗ UTR does not match';
+            indicator.className = 'utr-match-indicator no-match';
+            return false;
+        }
+    } else {
+        indicator.textContent = '';
+        return false;
+    }
+}
+
+function checkContinueButton() {
+    const utrFirstInput = document.getElementById('utr-first');
+    if (!utrFirstInput) return;
+    
+    const utrFirst = utrFirstInput.value.trim();
+    const continueBtn = document.getElementById('continue-to-confirm');
+    
+    if (continueBtn) {
+        if (selectedAddAmount > 0 && utrFirst.length > 0) {
+            continueBtn.disabled = false;
+        } else {
+            continueBtn.disabled = true;
+        }
+    }
+}
+
+function proceedToConfirmation() {
+    const utrFirstInput = document.getElementById('utr-first');
+    if (!utrFirstInput) return;
+    
+    utrFirst = utrFirstInput.value.trim();
+    
+    if (!selectedAddAmount || selectedAddAmount < 10) {
+        showAddMoneyMessage('Please select an amount', 'error');
+        return;
+    }
+    
+    if (!utrFirst) {
+        showAddMoneyMessage('Please enter UTR/Transaction ID', 'error');
+        return;
+    }
+    
+    document.getElementById('utr-step-1')?.classList.add('hidden');
+    document.getElementById('utr-step-2')?.classList.remove('hidden');
+    
+    const continueBtn = document.getElementById('continue-to-confirm');
+    if (continueBtn) {
+        continueBtn.textContent = 'Confirm UTR';
+        continueBtn.onclick = confirmUTRAndShowSubmit;
+    }
+}
+
+function confirmUTRAndShowSubmit() {
+    if (checkUTRMatch()) {
+        document.getElementById('continue-to-confirm')?.classList.add('hidden');
+        document.getElementById('final-submit-container')?.classList.remove('hidden');
+        
+        const confirmAmount = document.getElementById('confirm-amount');
+        const confirmUtr = document.getElementById('confirm-utr');
+        
+        if (confirmAmount) confirmAmount.textContent = '₹' + selectedAddAmount.toLocaleString();
+        if (confirmUtr) confirmUtr.textContent = utrFirst;
+    } else {
+        showAddMoneyMessage('UTR does not match. Please enter the same UTR in both fields.', 'error');
+    }
+}
+
+function showAddMoneyMessage(message, type) {
+    const msgEl = document.getElementById('add-money-message');
+    if (!msgEl) return;
+    
+    msgEl.textContent = message;
+    msgEl.className = 'add-money-message ' + type;
+    msgEl.classList.remove('hidden');
+    
+    setTimeout(() => {
+        msgEl.classList.add('hidden');
+    }, 3000);
+}
         
         // ======================================== -->
         // 36. COPY USER ID FUNCTION
@@ -3824,60 +4708,69 @@ body {
         }
         
         // ======================================== -->
-        // 39. INITIALIZE USER FROM SHEETS
-        // ======================================== -->
-        async function initializeUser() {
-            const userId = currentUserData.userId;
-            const userName = currentUserData.name;
+// 39. INITIALIZE USER FROM SHEETS (FAST & BACKGROUND)
+// ======================================== -->
+async function initializeUser() {
+    const userId = currentUserData.userId;
+    const userName = currentUserData.name;
+    
+    if (!userId) {
+        updateProfileDisplay();
+        return;
+    }
+    
+    // Pehle updateProfileDisplay() call karo (⟳ dikhana hai)
+    updateProfileDisplay();
+    
+    try {
+        // API call background mein
+        const result = await getUserFromSheet(userId);
+        
+        if (result.success && result.user) {
+            currentUserData = {
+                ...currentUserData,
+                balance: parseFloat(result.user.balance) || 0,
+                name: result.user.name || userName,
+                email: result.user.email || '',
+                phone: result.user.phone || '',
+                totalWins: parseInt(result.user.totalWins) || 0,
+                gamesPlayed: parseInt(result.user.gamesPlayed) || 0,
+                bank_accounts: result.user.bank_accounts ? JSON.parse(result.user.bank_accounts) : [],
+                upis: result.user.upis ? JSON.parse(result.user.upis) : []
+            };
             
-            if (!userId) {
-                updateProfileDisplay();
-                return;
-            }
+            // Update display - ab balance aayega
+            updateProfileDisplay();
+            loadUserStats();
             
-            try {
-                const result = await getUserFromSheet(userId);
+            console.log(`💰 Balance loaded: ₹${currentUserData.balance}`);
+            
+        } else {
+            // User nahi mila - create karo
+            const createResult = await createUserInSheet(userId, userName, userId);
+            
+            if (createResult.success) {
+                currentUserData.balance = 11;
+                currentUserData.totalWins = 0;
+                currentUserData.gamesPlayed = 0;
                 
-                if (result.success && result.user) {
-                    currentUserData = {
-                        ...currentUserData,
-                        balance: parseFloat(result.user.balance) || 0,
-                        name: result.user.name || userName,
-                        email: result.user.email || '',
-                        phone: result.user.phone || '',
-                        totalWins: parseInt(result.user.totalWins) || 0,
-                        gamesPlayed: parseInt(result.user.gamesPlayed) || 0,
-                        bank_accounts: result.user.bank_accounts ? JSON.parse(result.user.bank_accounts) : [],
-                        upis: result.user.upis ? JSON.parse(result.user.upis) : []
-                    };
-                    
-                    updateProfileDisplay();
-                    loadUserStats();
-                    showStatusMessage(`Welcome back! Balance: ₹${formatBalance(currentUserData.balance)}`, 'success');
-                } else {
-                    const createResult = await createUserInSheet(userId, userName, userId);
-                    
-                    if (createResult.success) {
-                        currentUserData.balance = 11;
-                        currentUserData.totalWins = 0;
-                        currentUserData.gamesPlayed = 0;
-                        
-                        updateProfileDisplay();
-                        loadUserStats();
-                        showStatusMessage(`Welcome! ₹11 bonus credited.`, 'success');
-                        
-                        await updateBalanceInSheet(userId, 11);
-                    } else {
-                        updateProfileDisplay();
-                    }
-                }
-            } catch (error) {
-                console.error("Error in initializeUser:", error);
+                updateProfileDisplay();
+                loadUserStats();
+                
+                console.log(`💰 New user: ₹11 bonus added`);
+                
+                // Background mein update
+                updateBalanceInSheet(userId, 11).catch(e => {});
+            } else {
                 updateProfileDisplay();
             }
-            
-            return Promise.resolve();
         }
+    } catch (error) {
+        console.error("Error in initializeUser:", error);
+        // Error aane par bhi update karo
+        updateProfileDisplay();
+    }
+}
         
         // ======================================== -->
         // 40. GAME HISTORY FUNCTIONS
@@ -4230,54 +5123,76 @@ body {
         }
         
         // ======================================== -->
-        // 43. ADD MONEY / WITHDRAW (FIXED)
-        // ======================================== -->
-        async function submitAddMoneyRequest() {
-            if (!currentUserData) return showMessage('add-money-message', 'Please login.');
-            
-            const amount = parseFloat(document.getElementById('add-amount')?.value);
-            const txId = document.getElementById('transaction-id')?.value.trim();
-            
-            if (isNaN(amount) || amount < 10 || !txId) {
-                return showMessage('add-money-message', 'Valid amount (Min 10) and UTR ID required.');
-            }
-            
-            if (currentUserData.balance + amount > MAX_BALANCE) {
-                const maxAdd = MAX_BALANCE - currentUserData.balance;
-                return showMessage('add-money-message', `Cannot exceed maximum balance of ₹${formatBalance(MAX_BALANCE)}. You can add max ₹${formatBalance(maxAdd)} more.`, 'error');
-            }
-            
-            const newBalance = currentUserData.balance + amount;
-            
-            await updateBalanceInSheet(currentUserData.userId, newBalance);
-            
-            currentUserData.balance = newBalance;
-            
-            showMessage('add-money-message', `₹${formatBalance(amount)} added to balance!`, 'success');
-            document.getElementById('add-amount').value = '';
-            document.getElementById('transaction-id').value = '';
-            updateProfileDisplay();
-        }
+// 43. ADD MONEY REQUEST FUNCTION (UPDATED)
+// ======================================== -->
 
-        async function submitWithdrawRequest() {
-            if (!currentUserData) return showMessage('withdraw-message', 'Please login.');
-            
-            const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
-            
-            if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
-                return showMessage('withdraw-message', `Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}.`);
-            }
-            
-            const newBalance = currentUserData.balance - amount;
-            
-            await updateBalanceInSheet(currentUserData.userId, newBalance);
-            
-            currentUserData.balance = newBalance;
-            
-            showMessage('withdraw-message', `₹${formatBalance(amount)} withdrawal requested.`, 'success');
-            document.getElementById('withdraw-amount').value = '';
-            updateProfileDisplay();
-        }
+async function submitAddMoneyRequest() {
+    if (!currentUserData) {
+        showAddMoneyMessage('Please login first', 'error');
+        return;
+    }
+    
+    if (!selectedAddAmount || selectedAddAmount < 10) {
+        showAddMoneyMessage('Invalid amount', 'error');
+        return;
+    }
+    
+    if (!utrFirst || utrFirst !== utrSecond) {
+        showAddMoneyMessage('UTR confirmation failed', 'error');
+        return;
+    }
+    
+    if (currentUserData.balance + selectedAddAmount > MAX_BALANCE) {
+        const maxAdd = MAX_BALANCE - currentUserData.balance;
+        showAddMoneyMessage(`Cannot exceed maximum balance of ₹${formatBalance(MAX_BALANCE)}. You can add max ₹${formatBalance(maxAdd)} more.`, 'error');
+        return;
+    }
+    
+    const transaction = {
+        id: 'TXN' + Date.now(),
+        userId: currentUserData.userId,
+        amount: selectedAddAmount,
+        utr: utrFirst,
+        type: 'deposit',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        processedAt: null,
+        note: 'Waiting for admin approval'
+    };
+    
+    let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    transactions.push(transaction);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    
+    document.querySelector('.utr-section')?.classList.add('hidden');
+    document.getElementById('pending-info')?.classList.remove('hidden');
+    document.getElementById('success-message')?.classList.remove('hidden');
+    
+    window.scrollTo(0, 0);
+    
+    console.log('Transaction submitted:', transaction);
+}
+
+// Keep the original withdraw function
+async function submitWithdrawRequest() {
+    if (!currentUserData) return showMessage('withdraw-message', 'Please login.');
+    
+    const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
+    
+    if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
+        return showMessage('withdraw-message', `Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}.`);
+    }
+    
+    const newBalance = currentUserData.balance - amount;
+    
+    await updateBalanceInSheet(currentUserData.userId, newBalance);
+    
+    currentUserData.balance = newBalance;
+    
+    showMessage('withdraw-message', `₹${formatBalance(amount)} withdrawal requested.`, 'success');
+    document.getElementById('withdraw-amount').value = '';
+    updateProfileDisplay();
+}
         
         // ======================================== -->
         // 44. BANK ACCOUNT FUNCTIONS (FIXED)
@@ -4465,7 +5380,7 @@ body {
         }
         
         // ======================================== -->
-// 48. SIMPLE & RELIABLE INITIALIZATION
+// 48. SIMPLE & RELIABLE INITIALIZATION (UPDATED)
 // ======================================== -->
 
 // Ye code sabse pehle run hoga - FORCE SHOW LOADING
@@ -4474,12 +5389,9 @@ body {
     
     const loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) {
-        // FORCE SHOW LOADING SCREEN - पहले hidden था तो भी show होगा
         loadingScreen.classList.remove('hidden');
         loadingScreen.style.display = 'flex';
         console.log("✅ Loading screen forced to show");
-    } else {
-        console.log("❌ Loading screen not found");
     }
     
     // Loading hide function
@@ -4489,55 +5401,29 @@ body {
         if (!ls.classList.contains('hidden')) {
             ls.classList.add('hidden');
             console.log(`✅ Loading hidden: ${reason}`);
-            
-            try {
-                if (typeof startGameLoop === 'function') startGameLoop();
-                if (typeof loadGameHistory === 'function') loadGameHistory();
-                if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-                if (typeof fixHistoryStripPosition === 'function') fixHistoryStripPosition();
-            } catch (e) {
-                console.log("Game start error:", e);
-            }
-            
             return true;
         }
         return false;
     };
     
-    // ✅ सिर्फ 10 seconds वाला timer
-    setTimeout(() => hideLoadingScreen('timer-10s-final'), 10000);
-    
     // Telegram events
     if (window.Telegram && window.Telegram.WebApp) {
         try {
             const tg = window.Telegram.WebApp;
-            tg.onEvent('viewportChanged', () => hideLoadingScreen('telegram-viewport'));
-            tg.onEvent('mainButtonClicked', () => hideLoadingScreen('telegram-button'));
-            tg.onEvent('backButtonClicked', () => hideLoadingScreen('telegram-back'));
-            console.log("📱 Telegram events registered");
-        } catch (e) {
-            console.log("Telegram events error:", e);
-        }
+            tg.onEvent('viewportChanged', () => {});
+            tg.onEvent('mainButtonClicked', () => {});
+            tg.onEvent('backButtonClicked', () => {});
+        } catch (e) {}
     }
 })();
 
-// DOM Content Loaded - यही मेन इनिशियलाइजेशन है
+// DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log("📄 DOM Content Loaded - Initializing App");
     
-    // ======================================== -->
-    // LOADING SCREEN SETUP
-    // ======================================== -->
     const loadingScreen = document.getElementById('loading-screen');
     const loadingBar = document.getElementById('loading-bar');
     const loadingPercent = document.getElementById('loading-percent');
-    
-    // AGAIN FORCE SHOW LOADING SCREEN - सुनिश्चित करने के लिए
-    if (loadingScreen) {
-        loadingScreen.classList.remove('hidden');
-        loadingScreen.style.display = 'flex';
-        console.log("✅ Loading screen forced to show (again)");
-    }
     
     // Status icons
     const statusIcons = [
@@ -4547,24 +5433,26 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     
     // ======================================== -->
-    // ALWAYS START GAME LOOP - यह सबसे जरूरी है
+    // PEHLE HI LOADING SCREEN SHOW KARO
+    // ======================================== -->
+    if (loadingScreen) {
+        loadingScreen.classList.remove('hidden');
+        loadingScreen.style.display = 'flex';
+    }
+    
+    // ======================================== -->
+    // GAME LOOP START KARO (FAST)
     // ======================================== -->
     console.log("🎮 Starting Game Loop");
-    if (typeof startGameLoop === 'function') {
-        startGameLoop();
-    } else {
-        console.error("startGameLoop function not found");
-    }
+    if (typeof startGameLoop === 'function') startGameLoop();
     
     // ======================================== -->
-    // LOAD GAME HISTORY
+    // GAME HISTORY LOAD KARO (FAST)
     // ======================================== -->
-    if (typeof loadGameHistory === 'function') {
-        loadGameHistory();
-    }
+    if (typeof loadGameHistory === 'function') loadGameHistory();
     
     // ======================================== -->
-    // PROGRESS BAR ANIMATION - 10 सेकंड में 100%
+    // PROGRESS BAR ANIMATION - 10 SECOND
     // ======================================== -->
     let progress = 0;
     const progressInterval = setInterval(() => {
@@ -4579,7 +5467,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100); // 100ms * 100 = 10 seconds
     
     // ======================================== -->
-    // STATUS TICKS (क्रम से)
+    // STATUS TICKS
     // ======================================== -->
     setTimeout(() => {
         if (statusIcons[0]) {
@@ -4587,7 +5475,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statusIcons[0].style.color = '#00C853';
             statusIcons[0].style.animation = 'none';
         }
-    }, 1500); // 1.5 सेकंड
+    }, 1500);
     
     setTimeout(() => {
         if (statusIcons[1]) {
@@ -4595,7 +5483,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statusIcons[1].style.color = '#00C853';
             statusIcons[1].style.animation = 'none';
         }
-    }, 3000); // 3 सेकंड
+    }, 3000);
     
     setTimeout(() => {
         if (statusIcons[2]) {
@@ -4603,7 +5491,7 @@ document.addEventListener('DOMContentLoaded', function() {
             statusIcons[2].style.color = '#00C853';
             statusIcons[2].style.animation = 'none';
         }
-    }, 4500); // 4.5 सेकंड
+    }, 4500);
     
     // ======================================== -->
     // INPUT VALIDATION
@@ -4618,18 +5506,59 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // ======================================== -->
-    // TELEGRAM INITIALIZATION
+    // ADD MONEY EVENT LISTENERS
     // ======================================== -->
-    if (typeof initTelegramAndWelcome === 'function') {
-        initTelegramAndWelcome();
+    const utrFirst = document.getElementById('utr-first');
+    const utrSecond = document.getElementById('utr-second');
+    const customAmount = document.getElementById('custom-amount');
+    
+    if (utrFirst) {
+        utrFirst.addEventListener('input', function() {
+            if (typeof checkContinueButton === 'function') checkContinueButton();
+        });
+    }
+    
+    if (utrSecond) {
+        utrSecond.addEventListener('input', function() {
+            if (typeof checkUTRMatch === 'function') checkUTRMatch();
+        });
+    }
+    
+    if (customAmount) {
+        customAmount.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
     }
     
     // ======================================== -->
-    // USER DATA LOADING (अगर possible हो तो)
+    // TELEGRAM INITIALIZATION (BACKGROUND MEIN)
+    // ======================================== -->
+    if (typeof initTelegramAndWelcome === 'function') {
+        // DON'T AWAIT - Background mein chhodo
+        setTimeout(() => {
+            initTelegramAndWelcome();
+        }, 100);
+    }
+    
+    // ======================================== -->
+    // USER DATA LOADING (BACKGROUND MEIN - SABSE IMPORTANT)
     // ======================================== -->
     if (typeof initializeUser === 'function') {
-        initializeUser().catch(error => {
-            console.log("User data load error (non-critical):", error);
+        console.log("⏳ Loading user data in BACKGROUND...");
+        
+        // WITHOUT AWAIT - Background mein load hone do
+        initializeUser().then(() => {
+            console.log("✅ User data loaded in background");
+            
+            // Update display immediately
+            if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
+            if (typeof loadUserStats === 'function') loadUserStats();
+            
+            // Balance ab update ho chuka hai, lekin loading screen abhi dikhegi
+            console.log("💰 Balance updated in background");
+            
+        }).catch(error => {
+            console.log("User data load error (background):", error);
         });
     }
     
@@ -4641,26 +5570,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ======================================== -->
-    // UPDATE PROFILE DISPLAY
+    // UPDATE PROFILE DISPLAY IMMEDIATELY
     // ======================================== -->
     if (typeof updateProfileDisplay === 'function') {
+        // Pehle current value dikhao (null/loading icon)
         updateProfileDisplay();
     }
     
     // ======================================== -->
-    // HIDE LOADING SCREEN AFTER 10 SECONDS
+    // LOADING SCREEN HIDE AFTER EXACTLY 10 SECONDS (FIXED)
     // ======================================== -->
     setTimeout(() => {
         if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
             loadingScreen.classList.add('hidden');
-            console.log("✅ Loading screen hidden after 10 seconds");
+            console.log("✅ Loading screen hidden after exactly 10 seconds");
+            
+            // Final update to ensure balance is shown
+            if (typeof updateProfileDisplay === 'function') {
+                setTimeout(updateProfileDisplay, 50);
+            }
         }
-    }, 10000);
+    }, 10000); // EXACTLY 10 SECONDS
 });
 
-// ======================================== -->
-// FIX HISTORY STRIP POSITION
-// ======================================== -->
 function fixHistoryStripPosition() {
     const historyContainer = document.querySelector('.history-container');
     if (historyContainer) {
@@ -5022,42 +5954,46 @@ function fixHistoryStripPosition() {
         }
 
         // ======================================== -->
-        // 51. EXPORT FUNCTIONS TO GLOBAL SCOPE
-        // ======================================== -->
+// 51. EXPORT FUNCTIONS TO GLOBAL SCOPE
+// ======================================== -->
 
-        window.toggleNotificationPanel = toggleNotificationPanel;
-        window.selectAmount = selectAmount;
-        window.selectWithdrawAmount = selectWithdrawAmount;
-        window.submitAddMoneyRequest = submitAddMoneyRequest;
-        window.submitWithdrawRequest = submitWithdrawRequest;
-        window.closeImportantNotification = closeImportantNotification;
-        window.showAddBankPopup = showAddBankPopup;
-        window.closeAddBankPopup = closeAddBankPopup;
-        window.addBankAccount = addBankAccount;
-        window.showAddUPIPopup = showAddUPIPopup;
-        window.closeAddUPIPopup = closeAddUPIPopup;
-        window.addUPI = addUPI;
-        window.placeBet = placeBet;
-        window.setBetAmount = setBetAmount;
-        window.adjustBetAmount = adjustBetAmount;
-        window.copyUserId = copyUserId;
-        window.showManageAccount = showManageAccount;
-        window.hideManageAccount = hideManageAccount;
-        window.openFullWithdraw = openFullWithdraw;
-        window.closeFullWithdraw = closeFullWithdraw;
-        window.openFullHistory = openFullHistory;
-        window.closeFullHistory = closeFullHistory;
-        window.openFullTransaction = openFullTransaction;
-        window.closeFullTransaction = closeFullTransaction;
-        window.filterFullHistory = filterFullHistory;
-        window.filterFullTransaction = filterFullTransaction;
-        window.showPage = showPage;
-        window.logout = logout;
-        window.closeWelcomePopup = closeWelcomePopup;
-        window.loadBankAccountsManage = loadBankAccountsManage;
-        window.deleteBankAccount = deleteBankAccount;
-        window.loadUPIsManage = loadUPIsManage;
-        window.deleteUPI = deleteUPI;
-    </script>
-</body>
-</html>
+window.toggleNotificationPanel = toggleNotificationPanel;
+window.selectAmount = selectAmount;
+window.selectWithdrawAmount = selectWithdrawAmount;
+window.submitWithdrawRequest = submitWithdrawRequest;
+window.closeImportantNotification = closeImportantNotification;
+window.showAddBankPopup = showAddBankPopup;
+window.closeAddBankPopup = closeAddBankPopup;
+window.addBankAccount = addBankAccount;
+window.showAddUPIPopup = showAddUPIPopup;
+window.closeAddUPIPopup = closeAddUPIPopup;
+window.addUPI = addUPI;
+window.placeBet = placeBet;
+window.setBetAmount = setBetAmount;
+window.adjustBetAmount = adjustBetAmount;
+window.copyUserId = copyUserId;
+window.showManageAccount = showManageAccount;
+window.hideManageAccount = hideManageAccount;
+window.openFullWithdraw = openFullWithdraw;
+window.closeFullWithdraw = closeFullWithdraw;
+window.openFullHistory = openFullHistory;
+window.closeFullHistory = closeFullHistory;
+window.openFullTransaction = openFullTransaction;
+window.closeFullTransaction = closeFullTransaction;
+window.filterFullHistory = filterFullHistory;
+window.filterFullTransaction = filterFullTransaction;
+window.showPage = showPage;
+window.logout = logout;
+window.closeWelcomePopup = closeWelcomePopup;
+window.loadBankAccountsManage = loadBankAccountsManage;
+window.deleteBankAccount = deleteBankAccount;
+window.loadUPIsManage = loadUPIsManage;
+window.deleteUPI = deleteUPI;
+window.goBackToProfile = goBackToProfile;
+window.selectAddAmount = selectAddAmount;
+window.showCustomAmountInput = showCustomAmountInput;
+window.applyCustomAmount = applyCustomAmount;
+window.copyUPIId = copyUPIId;
+window.proceedToConfirmation = proceedToConfirmation;
+window.confirmUTRAndShowSubmit = confirmUTRAndShowSubmit;
+window.submitAddMoneyRequest = submitAddMoneyRequest;

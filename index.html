@@ -13,60 +13,72 @@
     <title>Apex Day App</title>    
     
     <!-- ======================================== -->
-    <!-- 2. TELEGRAM & GOOGLE SHEETS API INTEGRATION -->
-    <!-- ======================================== -->
+<!-- 2. TELEGRAM & GOOGLE SHEETS API INTEGRATION -->
+<!-- ======================================== -->
 
-    <!-- Google Sheets API (Apps Script) -->
-    <!-- Apps Script से connect करेंगे -->
+<!-- Google Sheets API (Apps Script) -->
+<!-- Apps Script से connect करेंगे -->
 
-    <!-- Telegram WebApp Script -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Telegram WebApp Script with Cache Buster -->
+<script>
+    (function() {
+        // Force reload with random parameter
+        const currentUrl = window.location.href;
+        if (!currentUrl.includes('_t=')) {
+            const separator = currentUrl.includes('?') ? '&' : '?';
+            const newUrl = currentUrl + separator + '_t=' + Date.now();
+            window.location.replace(newUrl);
+            return;
+        }
+    })();
+</script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    <!-- Telegram WebView Optimization -->
-    <script>
-        (function() {
-            // ======================================== -->
-            // TELEGRAM WEBAPP INITIALIZATION
-            // ======================================== -->
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    const tg = window.Telegram.WebApp;
-                    tg.ready();
-                    tg.expand();
-                    tg.disableVerticalSwipes();
-                    console.log("✅ Telegram WebApp initialized");
+<!-- Telegram WebView Optimization -->
+<script>
+    (function() {
+        // ======================================== -->
+        // TELEGRAM WEBAPP INITIALIZATION
+        // ======================================== -->
+        if (window.Telegram && window.Telegram.WebApp) {
+            try {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+                tg.disableVerticalSwipes();
+                console.log("✅ Telegram WebApp initialized");
+                
+                // Telegram user data को localStorage में save करो
+                const tgUser = tg.initDataUnsafe?.user;
+                if (tgUser) {
+                    const userId = tgUser.id.toString();
+                    const firstName = tgUser.first_name || '';
+                    const lastName = tgUser.last_name || '';
+                    const userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
                     
-                    // Telegram user data को localStorage में save करो
-                    const tgUser = tg.initDataUnsafe?.user;
-                    if (tgUser) {
-                        const userId = tgUser.id.toString();
-                        const firstName = tgUser.first_name || '';
-                        const lastName = tgUser.last_name || '';
-                        const userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                        
-                        localStorage.setItem('tg_id', userId);
-                        localStorage.setItem('tg_name', userName);
-                        console.log("✅ Telegram user saved:", userName);
-                    }
-                } catch (e) {
-                    console.log("Telegram init error:", e);
+                    localStorage.setItem('tg_id', userId);
+                    localStorage.setItem('tg_name', userName);
+                    console.log("✅ Telegram user saved:", userName);
                 }
-            } else {
-                console.log("ℹ️ Not in Telegram WebApp");
+            } catch (e) {
+                console.log("Telegram init error:", e);
             }
-            
-            // ======================================== -->
-            // PREVENT RIGHT CLICK & COPY
-            // ======================================== -->
-            document.addEventListener('contextmenu', (e) => e.preventDefault());
-            document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key)) {
-                    e.preventDefault();
-                }
-                if (e.key === 'F12') e.preventDefault();
-            });
-        })();
-    </script>
+        } else {
+            console.log("ℹ️ Not in Telegram WebApp");
+        }
+        
+        // ======================================== -->
+        // PREVENT RIGHT CLICK & COPY
+        // ======================================== -->
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key)) {
+                e.preventDefault();
+            }
+            if (e.key === 'F12') e.preventDefault();
+        });
+    })();
+</script>
     
     <!-- ======================================== -->
     <!-- 3.FONT AWESOME 6                            -->
@@ -2863,77 +2875,77 @@ body {
 </head>
 <body>
     <!-- ======================================== -->
-    <!-- 21. WELCOME POPUP & LOADING SCREEN HTML     -->
-    <!-- ======================================== -->
+<!-- 21. WELCOME POPUP & LOADING SCREEN HTML     -->
+<!-- ======================================== -->
 
-    <!-- WELCOME POPUP -->
-    <div id="welcome-popup" class="welcome-popup-overlay hidden">
-        <div class="welcome-popup-content">
-            <i class="fas fa-hand-peace"></i>
-            <h2>Welcome to Apex Day!</h2>
-            <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
-            <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
-            <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
-        </div>
+<!-- WELCOME POPUP -->
+<div id="welcome-popup" class="welcome-popup-overlay hidden">
+    <div class="welcome-popup-content">
+        <i class="fas fa-hand-peace"></i>
+        <h2>Welcome to Apex Day!</h2>
+        <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
+        <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
+        <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
     </div>
+</div>
 
-    <!-- PREMIUM LOADING SCREEN -->
-    <div id="loading-screen" class="loading-overlay">
-        <div class="loading-content">
-            <!-- Animated Logo -->
-            <div class="loading-logo-container">
-                <div class="loading-logo">
-                    <i class="fas fa-dice-d6"></i>
-                </div>
-                <div class="loading-logo-glow"></div>
+<!-- PREMIUM LOADING SCREEN - बिल्कुल सही -->
+<div id="loading-screen" class="loading-overlay">
+    <div class="loading-content">
+        <!-- Animated Logo -->
+        <div class="loading-logo-container">
+            <div class="loading-logo">
+                <i class="fas fa-dice-d6"></i>
             </div>
-            
-            <!-- Game Title -->
-            <h2 class="loading-title">Apex<span>Day</span></h2>
-            
-            <!-- Connection Status -->
-            <div class="connection-status">
-                <div class="status-item">
-                    <i class="fas fa-telegram-plane"></i>
-                    <span>Connecting to Telegram</span>
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
-                <div class="status-item">
-                    <i class="fas fa-cloud"></i>
-                    <span>Secure Server</span>
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
-                <div class="status-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Data Encrypted</span>
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
+            <div class="loading-logo-glow"></div>
+        </div>
+        
+        <!-- Game Title -->
+        <h2 class="loading-title">Apex<span>Day</span></h2>
+        
+        <!-- Connection Status -->
+        <div class="connection-status">
+            <div class="status-item">
+                <i class="fas fa-telegram-plane"></i>
+                <span>Connecting to Telegram</span>
+                <i class="fas fa-spinner fa-spin"></i>
             </div>
-            
-            <!-- Progress Bar -->
-            <div class="loading-progress-container">
-                <div class="loading-progress-bar-bg">
-                    <div class="loading-progress-bar" id="loading-bar"></div>
-                </div>
-                <div class="loading-percent" id="loading-percent">0%</div>
+            <div class="status-item">
+                <i class="fas fa-cloud"></i>
+                <span>Secure Server</span>
+                <i class="fas fa-spinner fa-spin"></i>
             </div>
-            
-            <!-- Moving Icons -->
-            <div class="moving-icons">
-                <i class="fas fa-robot floating-icon"></i>
-                <i class="fas fa-database floating-icon"></i>
-                <i class="fas fa-lock floating-icon"></i>
-                <i class="fas fa-cloud-upload-alt floating-icon"></i>
-            </div>
-            
-            <!-- Pulse Dots -->
-            <div class="pulse-dots">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="status-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Data Encrypted</span>
+                <i class="fas fa-spinner fa-spin"></i>
             </div>
         </div>
+        
+        <!-- Progress Bar -->
+        <div class="loading-progress-container">
+            <div class="loading-progress-bar-bg">
+                <div class="loading-progress-bar" id="loading-bar"></div>
+            </div>
+            <div class="loading-percent" id="loading-percent">0%</div>
+        </div>
+        
+        <!-- Moving Icons -->
+        <div class="moving-icons">
+            <i class="fas fa-robot floating-icon"></i>
+            <i class="fas fa-database floating-icon"></i>
+            <i class="fas fa-lock floating-icon"></i>
+            <i class="fas fa-cloud-upload-alt floating-icon"></i>
+        </div>
+        
+        <!-- Pulse Dots -->
+        <div class="pulse-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
+</div>
     
     <!-- ======================================== -->
     <!-- 22. BACKGROUND ELEMENTS                      -->
@@ -4436,194 +4448,210 @@ body {
         }
         
         // ======================================== -->
-        // 48. SIMPLE & RELIABLE INITIALIZATION
-        // ======================================== -->
+// 48. SIMPLE & RELIABLE INITIALIZATION
+// ======================================== -->
 
-        // Ye code sabse pehle run hoga (सिर्फ 5 सेकंड वाला timer)
-        (function() {
-            console.log("🚀 Apex Day Loading Manager Started");
+// Ye code sabse pehle run hoga - FORCE SHOW LOADING
+(function() {
+    console.log("🚀 Apex Day Loading Manager Started");
+    
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+        // FORCE SHOW LOADING SCREEN - पहले hidden था तो भी show होगा
+        loadingScreen.classList.remove('hidden');
+        loadingScreen.style.display = 'flex';
+        console.log("✅ Loading screen forced to show");
+    } else {
+        console.log("❌ Loading screen not found");
+    }
+    
+    // Loading hide function
+    window.hideLoadingScreen = function(reason) {
+        const ls = document.getElementById('loading-screen');
+        if (!ls) return;
+        if (!ls.classList.contains('hidden')) {
+            ls.classList.add('hidden');
+            console.log(`✅ Loading hidden: ${reason}`);
             
-            const loadingScreen = document.getElementById('loading-screen');
-            if (!loadingScreen) return;
-            
-            // Loading hide function
-            window.hideLoadingScreen = function(reason) {
-                if (!loadingScreen.classList.contains('hidden')) {
-                    loadingScreen.classList.add('hidden');
-                    console.log(`✅ Loading hidden: ${reason}`);
-                    
-                    try {
-                        if (typeof startGameLoop === 'function') startGameLoop();
-                        if (typeof loadGameHistory === 'function') loadGameHistory();
-                        if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-                        if (typeof fixHistoryStripPosition === 'function') fixHistoryStripPosition();
-                    } catch (e) {
-                        console.log("Game start error:", e);
-                    }
-                    
-                    return true;
-                }
-                return false;
-            };
-            
-            // ✅ सिर्फ 5 seconds वाला timer - बाकी सब हटा दिए
-            setTimeout(() => hideLoadingScreen('timer-5s-final'), 10000);
-            
-            // Telegram events
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    const tg = window.Telegram.WebApp;
-                    tg.onEvent('viewportChanged', () => hideLoadingScreen('telegram-viewport'));
-                    tg.onEvent('mainButtonClicked', () => hideLoadingScreen('telegram-button'));
-                    tg.onEvent('backButtonClicked', () => hideLoadingScreen('telegram-back'));
-                    console.log("📱 Telegram events registered");
-                } catch (e) {
-                    console.log("Telegram events error:", e);
-                }
-            }
-        })();
-
-        // DOM Content Loaded - यही मेन इनिशियलाइजेशन है
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("📄 DOM Content Loaded - Initializing App");
-            
-            // ======================================== -->
-            // LOADING SCREEN SETUP
-            // ======================================== -->
-            const loadingScreen = document.getElementById('loading-screen');
-            const loadingBar = document.getElementById('loading-bar');
-            const loadingPercent = document.getElementById('loading-percent');
-            
-            // Status icons
-            const statusIcons = [
-                document.querySelectorAll('.status-item i:last-child')[0],
-                document.querySelectorAll('.status-item i:last-child')[1],
-                document.querySelectorAll('.status-item i:last-child')[2]
-            ];
-            
-            // ======================================== -->
-            // ALWAYS START GAME LOOP - यह सबसे जरूरी है
-            // ======================================== -->
-            console.log("🎮 Starting Game Loop");
-            if (typeof startGameLoop === 'function') {
-                startGameLoop();
-            } else {
-                console.error("startGameLoop function not found");
+            try {
+                if (typeof startGameLoop === 'function') startGameLoop();
+                if (typeof loadGameHistory === 'function') loadGameHistory();
+                if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
+                if (typeof fixHistoryStripPosition === 'function') fixHistoryStripPosition();
+            } catch (e) {
+                console.log("Game start error:", e);
             }
             
-            // ======================================== -->
-            // LOAD GAME HISTORY
-            // ======================================== -->
-            if (typeof loadGameHistory === 'function') {
-                loadGameHistory();
-            }
-            
-            // ======================================== -->
-            // PROGRESS BAR ANIMATION - 5 सेकंड में 100%
-            // ======================================== -->
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += 1;
-                if (progress <= 100) {
-                    if (loadingBar) loadingBar.style.width = progress + '%';
-                    if (loadingPercent) loadingPercent.textContent = progress + '%';
-                }
-                if (progress >= 100) {
-                    clearInterval(progressInterval);
-                }
-            }, 100); // 50ms * 100 = 5 seconds
-            
-            // ======================================== -->
-            // STATUS TICKS (क्रम से 5 सेकंड में)
-            // ======================================== -->
-            setTimeout(() => {
-                if (statusIcons[0]) {
-                    statusIcons[0].className = 'fas fa-check-circle';
-                    statusIcons[0].style.color = '#00C853';
-                    statusIcons[0].style.animation = 'none';
-                }
-            }, 1500); // 1.5 सेकंड
-            
-            setTimeout(() => {
-                if (statusIcons[1]) {
-                    statusIcons[1].className = 'fas fa-check-circle';
-                    statusIcons[1].style.color = '#00C853';
-                    statusIcons[1].style.animation = 'none';
-                }
-            }, 3000); // 3 सेकंड
-            
-            setTimeout(() => {
-                if (statusIcons[2]) {
-                    statusIcons[2].className = 'fas fa-check-circle';
-                    statusIcons[2].style.color = '#00C853';
-                    statusIcons[2].style.animation = 'none';
-                }
-            }, 4500); // 4.5 सेकंड
-            
-            // ======================================== -->
-            // INPUT VALIDATION
-            // ======================================== -->
-            ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', function(e) {
-                        this.value = this.value.replace(/[^0-9]/g, '');
-                    });
-                }
-            });
-            
-            // ======================================== -->
-            // TELEGRAM INITIALIZATION
-            // ======================================== -->
-            if (typeof initTelegramAndWelcome === 'function') {
-                initTelegramAndWelcome();
-            }
-            
-            // ======================================== -->
-            // USER DATA LOADING (अगर possible हो तो)
-            // ======================================== -->
-            if (typeof initializeUser === 'function') {
-                initializeUser().catch(error => {
-                    console.log("User data load error (non-critical):", error);
-                });
-            }
-            
-            // ======================================== -->
-            // FIX HISTORY STRIP POSITION
-            // ======================================== -->
-            if (typeof fixHistoryStripPosition === 'function') {
-                setTimeout(fixHistoryStripPosition, 500);
-            }
-            
-            // ======================================== -->
-            // UPDATE PROFILE DISPLAY
-            // ======================================== -->
-            if (typeof updateProfileDisplay === 'function') {
-                updateProfileDisplay();
-            }
-            
-            // ======================================== -->
-            // HIDE LOADING SCREEN AFTER 5 SECONDS (सिर्फ एक बार)
-            // ======================================== -->
-            setTimeout(() => {
-                if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-                    loadingScreen.classList.add('hidden');
-                    console.log("✅ Loading screen hidden after 5 seconds");
-                }
-            }, 10000);
-        });
-
-        // ======================================== -->
-        // FIX HISTORY STRIP POSITION
-        // ======================================== -->
-        function fixHistoryStripPosition() {
-            const historyContainer = document.querySelector('.history-container');
-            if (historyContainer) {
-                historyContainer.style.marginTop = '';
-                historyContainer.style.marginBottom = '2px';
-                historyContainer.style.height = '38px';
-            }
+            return true;
         }
+        return false;
+    };
+    
+    // ✅ सिर्फ 10 seconds वाला timer
+    setTimeout(() => hideLoadingScreen('timer-10s-final'), 10000);
+    
+    // Telegram events
+    if (window.Telegram && window.Telegram.WebApp) {
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.onEvent('viewportChanged', () => hideLoadingScreen('telegram-viewport'));
+            tg.onEvent('mainButtonClicked', () => hideLoadingScreen('telegram-button'));
+            tg.onEvent('backButtonClicked', () => hideLoadingScreen('telegram-back'));
+            console.log("📱 Telegram events registered");
+        } catch (e) {
+            console.log("Telegram events error:", e);
+        }
+    }
+})();
+
+// DOM Content Loaded - यही मेन इनिशियलाइजेशन है
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("📄 DOM Content Loaded - Initializing App");
+    
+    // ======================================== -->
+    // LOADING SCREEN SETUP
+    // ======================================== -->
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingBar = document.getElementById('loading-bar');
+    const loadingPercent = document.getElementById('loading-percent');
+    
+    // AGAIN FORCE SHOW LOADING SCREEN - सुनिश्चित करने के लिए
+    if (loadingScreen) {
+        loadingScreen.classList.remove('hidden');
+        loadingScreen.style.display = 'flex';
+        console.log("✅ Loading screen forced to show (again)");
+    }
+    
+    // Status icons
+    const statusIcons = [
+        document.querySelectorAll('.status-item i:last-child')[0],
+        document.querySelectorAll('.status-item i:last-child')[1],
+        document.querySelectorAll('.status-item i:last-child')[2]
+    ];
+    
+    // ======================================== -->
+    // ALWAYS START GAME LOOP - यह सबसे जरूरी है
+    // ======================================== -->
+    console.log("🎮 Starting Game Loop");
+    if (typeof startGameLoop === 'function') {
+        startGameLoop();
+    } else {
+        console.error("startGameLoop function not found");
+    }
+    
+    // ======================================== -->
+    // LOAD GAME HISTORY
+    // ======================================== -->
+    if (typeof loadGameHistory === 'function') {
+        loadGameHistory();
+    }
+    
+    // ======================================== -->
+    // PROGRESS BAR ANIMATION - 10 सेकंड में 100%
+    // ======================================== -->
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += 1;
+        if (progress <= 100) {
+            if (loadingBar) loadingBar.style.width = progress + '%';
+            if (loadingPercent) loadingPercent.textContent = progress + '%';
+        }
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+        }
+    }, 100); // 100ms * 100 = 10 seconds
+    
+    // ======================================== -->
+    // STATUS TICKS (क्रम से)
+    // ======================================== -->
+    setTimeout(() => {
+        if (statusIcons[0]) {
+            statusIcons[0].className = 'fas fa-check-circle';
+            statusIcons[0].style.color = '#00C853';
+            statusIcons[0].style.animation = 'none';
+        }
+    }, 1500); // 1.5 सेकंड
+    
+    setTimeout(() => {
+        if (statusIcons[1]) {
+            statusIcons[1].className = 'fas fa-check-circle';
+            statusIcons[1].style.color = '#00C853';
+            statusIcons[1].style.animation = 'none';
+        }
+    }, 3000); // 3 सेकंड
+    
+    setTimeout(() => {
+        if (statusIcons[2]) {
+            statusIcons[2].className = 'fas fa-check-circle';
+            statusIcons[2].style.color = '#00C853';
+            statusIcons[2].style.animation = 'none';
+        }
+    }, 4500); // 4.5 सेकंड
+    
+    // ======================================== -->
+    // INPUT VALIDATION
+    // ======================================== -->
+    ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+    });
+    
+    // ======================================== -->
+    // TELEGRAM INITIALIZATION
+    // ======================================== -->
+    if (typeof initTelegramAndWelcome === 'function') {
+        initTelegramAndWelcome();
+    }
+    
+    // ======================================== -->
+    // USER DATA LOADING (अगर possible हो तो)
+    // ======================================== -->
+    if (typeof initializeUser === 'function') {
+        initializeUser().catch(error => {
+            console.log("User data load error (non-critical):", error);
+        });
+    }
+    
+    // ======================================== -->
+    // FIX HISTORY STRIP POSITION
+    // ======================================== -->
+    if (typeof fixHistoryStripPosition === 'function') {
+        setTimeout(fixHistoryStripPosition, 500);
+    }
+    
+    // ======================================== -->
+    // UPDATE PROFILE DISPLAY
+    // ======================================== -->
+    if (typeof updateProfileDisplay === 'function') {
+        updateProfileDisplay();
+    }
+    
+    // ======================================== -->
+    // HIDE LOADING SCREEN AFTER 10 SECONDS
+    // ======================================== -->
+    setTimeout(() => {
+        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+            loadingScreen.classList.add('hidden');
+            console.log("✅ Loading screen hidden after 10 seconds");
+        }
+    }, 10000);
+});
+
+// ======================================== -->
+// FIX HISTORY STRIP POSITION
+// ======================================== -->
+function fixHistoryStripPosition() {
+    const historyContainer = document.querySelector('.history-container');
+    if (historyContainer) {
+        historyContainer.style.marginTop = '';
+        historyContainer.style.marginBottom = '2px';
+        historyContainer.style.height = '38px';
+    }
+}
 
         // ======================================== -->
         // 49. DISABLE COPY & RIGHT CLICK (COMPLETE)

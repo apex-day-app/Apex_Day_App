@@ -19,36 +19,17 @@
 <!-- Google Sheets API (Apps Script) -->
 <!-- Apps Script से connect करेंगे -->
 
-<!-- Telegram WebApp Script - पहले लोड करो -->
+<!-- Telegram WebApp Script - सबसे पहले -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- Cache Buster - Telegram WebApp के बाद -->
+<!-- Telegram WebView Optimization & Cache Buster -->
 <script>
     (function() {
         // ======================================== -->
-        // SMART CACHE BUSTER - Telegram WebApp के साथ काम करेगा
+        // TELEGRAM WEBAPP INITIALIZATION - पहले यह होगा
         // ======================================== -->
+        let telegramUser = null;
         
-        // Current URL check
-        const currentUrl = window.location.href;
-        
-        // अगर URL में पहले से force parameter नहीं है तो ही reload करो
-        if (!currentUrl.includes('force=')) {
-            const timestamp = Date.now();
-            const random = Math.random().toString(36).substring(2);
-            const baseUrl = currentUrl.split('?')[0].split('#')[0];
-            const newUrl = baseUrl + '?force=' + timestamp + '&r=' + random;
-            
-            console.log("🔄 First time load - adding cache buster");
-            window.location.replace(newUrl);
-            return;
-        }
-        
-        console.log("✅ Cache buster already present - continuing normal load");
-        
-        // ======================================== -->
-        // TELEGRAM WEBAPP INITIALIZATION
-        // ======================================== -->
         if (window.Telegram && window.Telegram.WebApp) {
             try {
                 const tg = window.Telegram.WebApp;
@@ -60,6 +41,7 @@
                 // Telegram user data को localStorage में save करो
                 const tgUser = tg.initDataUnsafe?.user;
                 if (tgUser) {
+                    telegramUser = tgUser;
                     const userId = tgUser.id.toString();
                     const firstName = tgUser.first_name || '';
                     const lastName = tgUser.last_name || '';
@@ -77,6 +59,32 @@
         }
         
         // ======================================== -->
+        // CACHE BUSTER - Telegram WebApp initialize होने के बाद
+        // ======================================== -->
+        
+        // Current URL
+        const currentUrl = window.location.href;
+        
+        // Check if we've already done the cache busting in this session
+        if (!sessionStorage.getItem('cacheBusted')) {
+            // Mark that we've done cache busting for this session
+            sessionStorage.setItem('cacheBusted', 'true');
+            
+            // Create new URL with timestamp
+            const timestamp = Date.now();
+            const baseUrl = currentUrl.split('?')[0].split('#')[0];
+            const newUrl = baseUrl + '?v=' + timestamp;
+            
+            console.log("🔄 Cache busting for this session:", newUrl);
+            
+            // Redirect to new URL
+            window.location.replace(newUrl);
+            return;
+        }
+        
+        console.log("✅ Cache busting already done in this session");
+        
+        // ======================================== -->
         // PREVENT RIGHT CLICK & COPY
         // ======================================== -->
         document.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -87,7 +95,7 @@
             if (e.key === 'F12') e.preventDefault();
         });
     })();
-</script>
+</script>      
     
     <!-- ======================================== -->
     <!-- 3.FONT AWESOME 6                            -->

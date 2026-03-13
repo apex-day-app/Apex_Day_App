@@ -24,7 +24,7 @@
     (function() {
         // Force reload with random parameter
         const currentUrl = window.location.href;
-        if (!currentUrl.includes('_t=')) {
+        if (!sessionStorage.getItem('apex_loaded')) {
             const separator = currentUrl.includes('?') ? '&' : '?';
             const newUrl = currentUrl + separator + '_t=' + Date.now();
             window.location.replace(newUrl);

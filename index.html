@@ -9,91 +9,60 @@
     <title>Apex Day App</title>
     
     <!-- ======================================== -->
-    <!-- 2.GOOGLE SHEETS API (NO FIREBASE)          -->
+    <!-- 2. TELEGRAM & GOOGLE SHEETS API INTEGRATION -->
     <!-- ======================================== -->
+
+    <!-- Google Sheets API (Apps Script) -->
     <!-- Apps Script से connect करेंगे -->
-    
-    <!-- ======================================== -->
-<!-- 2. TELEGRAM & GOOGLE SHEETS API INTEGRATION -->
-<!-- ======================================== -->
 
-<!-- Google Sheets API (Apps Script) -->
-<!-- Apps Script से connect करेंगे -->
+    <!-- Telegram WebApp Script -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<!-- Telegram WebApp Script -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<!-- Telegram WebView Optimization & Loading Fix -->
-<script>
-    (function() {
-        // ======================================== -->
-        // TELEGRAM WEBAPP INITIALIZATION
-        // ======================================== -->
-        if (window.Telegram && window.Telegram.WebApp) {
-            try {
-                const tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand();
-                tg.disableVerticalSwipes();
-                console.log("✅ Telegram WebApp initialized");
-                
-                // Telegram user data को localStorage में save करो
-                const tgUser = tg.initDataUnsafe?.user;
-                if (tgUser) {
-                    const userId = tgUser.id.toString();
-                    const firstName = tgUser.first_name || '';
-                    const lastName = tgUser.last_name || '';
-                    const userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+    <!-- Telegram WebView Optimization -->
+    <script>
+        (function() {
+            // ======================================== -->
+            // TELEGRAM WEBAPP INITIALIZATION
+            // ======================================== -->
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    const tg = window.Telegram.WebApp;
+                    tg.ready();
+                    tg.expand();
+                    tg.disableVerticalSwipes();
+                    console.log("✅ Telegram WebApp initialized");
                     
-                    localStorage.setItem('tg_id', userId);
-                    localStorage.setItem('tg_name', userName);
-                    console.log("✅ Telegram user saved:", userName);
+                    // Telegram user data को localStorage में save करो
+                    const tgUser = tg.initDataUnsafe?.user;
+                    if (tgUser) {
+                        const userId = tgUser.id.toString();
+                        const firstName = tgUser.first_name || '';
+                        const lastName = tgUser.last_name || '';
+                        const userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+                        
+                        localStorage.setItem('tg_id', userId);
+                        localStorage.setItem('tg_name', userName);
+                        console.log("✅ Telegram user saved:", userName);
+                    }
+                } catch (e) {
+                    console.log("Telegram init error:", e);
                 }
-            } catch (e) {
-                console.log("Telegram init error:", e);
+            } else {
+                console.log("ℹ️ Not in Telegram WebApp");
             }
-        } else {
-            console.log("ℹ️ Not in Telegram WebApp");
-        }
-        
-        // ======================================== -->
-        // LOADING SCREEN EARLY FALLBACK
-        // ======================================== -->
-        const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            // Multiple timers to ensure loading screen hides
-            const hideLoading = function(reason) {
-                if (!loadingScreen.classList.contains('hidden')) {
-                    loadingScreen.classList.add('hidden');
-                    console.log(`✅ Loading hidden: ${reason}`);
+            
+            // ======================================== -->
+            // PREVENT RIGHT CLICK & COPY
+            // ======================================== -->
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key)) {
+                    e.preventDefault();
                 }
-            };
-            
-            // 2 seconds
-            setTimeout(() => hideLoading('early-2s'), 2000);
-            
-            // 3 seconds
-            setTimeout(() => hideLoading('early-3s'), 3000);
-            
-            // 4 seconds (safe)
-            setTimeout(() => hideLoading('early-4s'), 4000);
-            
-            // 5 seconds (final)
-            setTimeout(() => hideLoading('early-5s-final'), 5000);
-        }
-        
-        // ======================================== -->
-        // PREVENT RIGHT CLICK & COPY
-        // ======================================== -->
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key)) {
-                e.preventDefault();
-            }
-            if (e.key === 'F12') e.preventDefault();
-        });
-    })();
-</script>
+                if (e.key === 'F12') e.preventDefault();
+            });
+        })();
+    </script>
     
     <!-- ======================================== -->
     <!-- 3.FONT AWESOME 6                            -->
@@ -2890,127 +2859,77 @@ body {
 </head>
 <body>
     <!-- ======================================== -->
-<!-- 21. WELCOME POPUP & LOADING SCREEN HTML     -->
-<!-- ======================================== -->
+    <!-- 21. WELCOME POPUP & LOADING SCREEN HTML     -->
+    <!-- ======================================== -->
 
-<!-- WELCOME POPUP -->
-<div id="welcome-popup" class="welcome-popup-overlay hidden">
-    <div class="welcome-popup-content">
-        <i class="fas fa-hand-peace"></i>
-        <h2>Welcome to Apex Day!</h2>
-        <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
-        <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
-        <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
-    </div>
-</div>
-
-<!-- PREMIUM LOADING SCREEN -->
-<div id="loading-screen" class="loading-overlay">
-    <div class="loading-content">
-        <!-- Animated Logo -->
-        <div class="loading-logo-container">
-            <div class="loading-logo">
-                <i class="fas fa-dice-d6"></i>
-            </div>
-            <div class="loading-logo-glow"></div>
-        </div>
-        
-        <!-- Game Title -->
-        <h2 class="loading-title">Apex<span>Day</span></h2>
-        
-        <!-- Connection Status -->
-        <div class="connection-status">
-            <div class="status-item">
-                <i class="fas fa-telegram-plane"></i>
-                <span>Connecting to Telegram</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <div class="status-item">
-                <i class="fas fa-cloud"></i>
-                <span>Secure Server</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <div class="status-item">
-                <i class="fas fa-shield-alt"></i>
-                <span>Data Encrypted</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-        </div>
-        
-        <!-- Progress Bar -->
-        <div class="loading-progress-container">
-            <div class="loading-progress-bar-bg">
-                <div class="loading-progress-bar" id="loading-bar"></div>
-            </div>
-            <div class="loading-percent" id="loading-percent">0%</div>
-        </div>
-        
-        <!-- Moving Icons -->
-        <div class="moving-icons">
-            <i class="fas fa-robot floating-icon"></i>
-            <i class="fas fa-database floating-icon"></i>
-            <i class="fas fa-lock floating-icon"></i>
-            <i class="fas fa-cloud-upload-alt floating-icon"></i>
-        </div>
-        
-        <!-- Pulse Dots -->
-        <div class="pulse-dots">
-            <span></span>
-            <span></span>
-            <span></span>
+    <!-- WELCOME POPUP -->
+    <div id="welcome-popup" class="welcome-popup-overlay hidden">
+        <div class="welcome-popup-content">
+            <i class="fas fa-hand-peace"></i>
+            <h2>Welcome to Apex Day!</h2>
+            <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
+            <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
+            <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
         </div>
     </div>
-</div>
 
-<!-- LOADING SCREEN FALLBACK SCRIPT -->
-<script>
-    (function() {
-        const loadingScreen = document.getElementById('loading-screen');
-        if (!loadingScreen) return;
-        
-        console.log("🔄 Loading screen fallback active");
-        
-        // Hide loading function
-        const hideLoading = function(reason) {
-            if (!loadingScreen.classList.contains('hidden')) {
-                loadingScreen.classList.add('hidden');
-                console.log(`✅ Loading hidden: ${reason}`);
-                
-                // Try to start game
-                try {
-                    if (typeof startGameLoop === 'function') startGameLoop();
-                    if (typeof loadGameHistory === 'function') loadGameHistory();
-                    if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-                } catch (e) {
-                    console.log("Game start error:", e);
-                }
-            }
-        };
-        
-        // Multiple timers for Telegram WebView
-        setTimeout(() => hideLoading('fallback-2.5s'), 2500);
-        setTimeout(() => hideLoading('fallback-3.5s'), 3500);
-        setTimeout(() => hideLoading('fallback-4.5s'), 4500);
-        setTimeout(() => hideLoading('fallback-5.5s-final'), 5500);
-        
-        // Check every second
-        const interval = setInterval(() => {
-            if (loadingScreen.classList.contains('hidden')) {
-                clearInterval(interval);
-            } else if (performance.now() > 6000) {
-                hideLoading('force-6s');
-                clearInterval(interval);
-            }
-        }, 500);
-        
-        // Telegram specific
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.onEvent('viewportChanged', function() {
-                hideLoading('telegram-viewport');
-            });
-        }
-    })();
-</script>
+    <!-- PREMIUM LOADING SCREEN -->
+    <div id="loading-screen" class="loading-overlay">
+        <div class="loading-content">
+            <!-- Animated Logo -->
+            <div class="loading-logo-container">
+                <div class="loading-logo">
+                    <i class="fas fa-dice-d6"></i>
+                </div>
+                <div class="loading-logo-glow"></div>
+            </div>
+            
+            <!-- Game Title -->
+            <h2 class="loading-title">Apex<span>Day</span></h2>
+            
+            <!-- Connection Status -->
+            <div class="connection-status">
+                <div class="status-item">
+                    <i class="fas fa-telegram-plane"></i>
+                    <span>Connecting to Telegram</span>
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-cloud"></i>
+                    <span>Secure Server</span>
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Data Encrypted</span>
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="loading-progress-container">
+                <div class="loading-progress-bar-bg">
+                    <div class="loading-progress-bar" id="loading-bar"></div>
+                </div>
+                <div class="loading-percent" id="loading-percent">0%</div>
+            </div>
+            
+            <!-- Moving Icons -->
+            <div class="moving-icons">
+                <i class="fas fa-robot floating-icon"></i>
+                <i class="fas fa-database floating-icon"></i>
+                <i class="fas fa-lock floating-icon"></i>
+                <i class="fas fa-cloud-upload-alt floating-icon"></i>
+            </div>
+            
+            <!-- Pulse Dots -->
+            <div class="pulse-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
     
     <!-- ======================================== -->
     <!-- 22. BACKGROUND ELEMENTS                      -->
@@ -3513,26 +3432,26 @@ body {
     <!-- ======================================== -->
     <script>
         // ======================================== -->
-// 34. GLOBAL VARIABLES
-// ======================================== -->
-const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
-const MAX_BALANCE = 100000;
+        // 34. GLOBAL VARIABLES
+        // ======================================== -->
+        const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
+        const MAX_BALANCE = 100000;
 
-let currentUserData = {
-    userId: '12345678',
-    name: 'Demo User',
-    email: 'demo@example.com',
-    phone: 'Not Set',
-    balance: 0,
-    bank_accounts: [],
-    upis: [],
-    notifications: [],
-    totalWins: 0,
-    gamesPlayed: 0,
-    createdAt: new Date(),
-    telegram_id: null,
-    telegram_username: null
-};
+        let currentUserData = {
+            userId: '12345678',
+            name: 'Demo User',
+            email: 'demo@example.com',
+            phone: 'Not Set',
+            balance: 0,
+            bank_accounts: [],
+            upis: [],
+            notifications: [],
+            totalWins: 0,
+            gamesPlayed: 0,
+            createdAt: new Date(),
+            telegram_id: null,
+            telegram_username: null
+        };
 
         let selectedBankIndex = null;
         let selectedUPIIndex = null;
@@ -3554,42 +3473,42 @@ let currentUserData = {
         let fullTransactionFilter = 'all';
         
         // ======================================== -->
-// 35. UI HELPER FUNCTIONS
-// ======================================== -->
-function formatBalance(amount) {
-    if (amount > MAX_BALANCE) amount = MAX_BALANCE;
-    let numStr = Math.floor(amount).toString();
-    if (numStr.length <= 3) return numStr;
-    let lastThree = numStr.substring(numStr.length - 3);
-    let otherNumbers = numStr.substring(0, numStr.length - 3);
-    if (otherNumbers !== '') lastThree = ',' + lastThree;
-    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-}
+        // 35. UI HELPER FUNCTIONS
+        // ======================================== -->
+        function formatBalance(amount) {
+            if (amount > MAX_BALANCE) amount = MAX_BALANCE;
+            let numStr = Math.floor(amount).toString();
+            if (numStr.length <= 3) return numStr;
+            let lastThree = numStr.substring(numStr.length - 3);
+            let otherNumbers = numStr.substring(0, numStr.length - 3);
+            if (otherNumbers !== '') lastThree = ',' + lastThree;
+            return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+        }
 
-function enforceMaxBalance(amount) {
-    return amount > MAX_BALANCE ? MAX_BALANCE : amount;
-}
+        function enforceMaxBalance(amount) {
+            return amount > MAX_BALANCE ? MAX_BALANCE : amount;
+        }
 
-function updateProfileDisplay() {
-    if (!currentUserData) return;
-    const balance = currentUserData.balance === 0 ? '--' : formatBalance(currentUserData.balance || 0);
-    
-    const elements = {
-        'current-balance': balance,
-        'profile-balance': balance,
-        'add-balance-display': balance,
-        'withdraw-balance-display': balance,
-        'profile-name': currentUserData.name || 'User',
-        'profile-email': currentUserData.email || 'demo@example.com',
-        'profile-user-id': currentUserData.userId || '123456',
-        'profile-phone': currentUserData.phone || 'Not Set'
-    };
-    
-    for (let [id, value] of Object.entries(elements)) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = value;
-    }
-}
+        function updateProfileDisplay() {
+            if (!currentUserData) return;
+            const balance = currentUserData.balance === 0 ? '--' : formatBalance(currentUserData.balance || 0);
+            
+            const elements = {
+                'current-balance': balance,
+                'profile-balance': balance,
+                'add-balance-display': balance,
+                'withdraw-balance-display': balance,
+                'profile-name': currentUserData.name || 'User',
+                'profile-email': currentUserData.email || 'demo@example.com',
+                'profile-user-id': currentUserData.userId || '123456',
+                'profile-phone': currentUserData.phone || 'Not Set'
+            };
+            
+            for (let [id, value] of Object.entries(elements)) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            }
+        }
 
         function loadUserStats() {
             if (!currentUserData) return;
@@ -3715,218 +3634,217 @@ function updateProfileDisplay() {
         }
         
         // ======================================== -->
-// 37. TELEGRAM + WELCOME POPUP
-// ======================================== -->
+        // 37. TELEGRAM + WELCOME POPUP
+        // ======================================== -->
 
-function initTelegramAndWelcome() {
-    let userName = 'User';
-    let telegramId = null;
-    
-    console.log("📱 Initializing Telegram...");
-    
-    // Telegram WebApp se data lo
-    if (window.Telegram && window.Telegram.WebApp) {
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
+        function initTelegramAndWelcome() {
+            let userName = 'User';
+            let telegramId = null;
             
-            const tgUser = tg.initDataUnsafe?.user;
+            console.log("📱 Initializing Telegram...");
             
-            if (tgUser) {
-                telegramId = tgUser.id.toString();
-                const firstName = tgUser.first_name || '';
-                const lastName = tgUser.last_name || '';
-                userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                const username = tgUser.username || '';
-                
-                console.log(`✅ Telegram user: ${userName} (${telegramId})`);
-                
-                currentUserData = {
-                    userId: telegramId,
-                    name: userName,
-                    email: '',
-                    phone: '',
-                    balance: 0,
-                    bank_accounts: [],
-                    upis: [],
-                    notifications: [],
-                    totalWins: 0,
-                    gamesPlayed: 0,
-                    createdAt: new Date(),
-                    telegram_id: telegramId,
-                    telegram_username: username
-                };
-                
-                localStorage.setItem('tg_id', telegramId);
-                localStorage.setItem('tg_name', userName);
-                
-                setTimeout(() => {
-                    initializeUser();
-                }, 100);
+            // Telegram WebApp se data lo
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    const tg = window.Telegram.WebApp;
+                    tg.ready();
+                    tg.expand();
+                    
+                    const tgUser = tg.initDataUnsafe?.user;
+                    
+                    if (tgUser) {
+                        telegramId = tgUser.id.toString();
+                        const firstName = tgUser.first_name || '';
+                        const lastName = tgUser.last_name || '';
+                        userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+                        const username = tgUser.username || '';
+                        
+                        console.log(`✅ Telegram user: ${userName} (${telegramId})`);
+                        
+                        currentUserData = {
+                            userId: telegramId,
+                            name: userName,
+                            email: '',
+                            phone: '',
+                            balance: 0,
+                            bank_accounts: [],
+                            upis: [],
+                            notifications: [],
+                            totalWins: 0,
+                            gamesPlayed: 0,
+                            createdAt: new Date(),
+                            telegram_id: telegramId,
+                            telegram_username: username
+                        };
+                        
+                        localStorage.setItem('tg_id', telegramId);
+                        localStorage.setItem('tg_name', userName);
+                        
+                        setTimeout(() => {
+                            initializeUser();
+                        }, 100);
+                    } else {
+                        console.log("⚠️ No Telegram user data");
+                        loadFromLocalStorage();
+                    }
+                } catch (e) {
+                    console.error("Telegram error:", e);
+                    loadFromLocalStorage();
+                }
             } else {
-                console.log("⚠️ No Telegram user data");
+                console.log("ℹ️ Not in Telegram WebApp");
                 loadFromLocalStorage();
             }
-        } catch (e) {
-            console.error("Telegram error:", e);
-            loadFromLocalStorage();
-        }
-    } else {
-        console.log("ℹ️ Not in Telegram WebApp");
-        loadFromLocalStorage();
-    }
-    
-    function loadFromLocalStorage() {
-        const savedTgId = localStorage.getItem('tg_id');
-        const savedTgName = localStorage.getItem('tg_name');
-        
-        if (savedTgId) {
-            currentUserData = {
-                userId: savedTgId,
-                name: savedTgName || 'User',
-                email: '',
-                phone: '',
-                balance: 0,
-                bank_accounts: [],
-                upis: [],
-                notifications: [],
-                totalWins: 0,
-                gamesPlayed: 0,
-                createdAt: new Date(),
-                telegram_id: savedTgId,
-                telegram_username: savedTgName || null
-            };
             
-            setTimeout(() => {
-                initializeUser();
-            }, 100);
-        } else {
-            currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
-            currentUserData.name = 'Demo User';
-            updateProfileDisplay();
-        }
-    }
-    
-    // Welcome popup - sirf ek baar
-    const welcomeShown = localStorage.getItem('welcomePopupShown');
-    if (!welcomeShown) {
-        setTimeout(() => {
-            const popup = document.getElementById('welcome-popup');
-            const nameEl = document.getElementById('welcome-user-name');
-            if (popup && nameEl) {
-                nameEl.textContent = userName;
-                popup.classList.remove('hidden');
-                localStorage.setItem('welcomePopupShown', 'true');
-                console.log("🎉 Welcome popup shown");
+            function loadFromLocalStorage() {
+                const savedTgId = localStorage.getItem('tg_id');
+                const savedTgName = localStorage.getItem('tg_name');
+                
+                if (savedTgId) {
+                    currentUserData = {
+                        userId: savedTgId,
+                        name: savedTgName || 'User',
+                        email: '',
+                        phone: '',
+                        balance: 0,
+                        bank_accounts: [],
+                        upis: [],
+                        notifications: [],
+                        totalWins: 0,
+                        gamesPlayed: 0,
+                        createdAt: new Date(),
+                        telegram_id: savedTgId,
+                        telegram_username: savedTgName || null
+                    };
+                    
+                    setTimeout(() => {
+                        initializeUser();
+                    }, 100);
+                } else {
+                    currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
+                    currentUserData.name = 'Demo User';
+                    updateProfileDisplay();
+                }
             }
-        }, 1500);
-    }
-}
+            
+            // Welcome popup - sirf ek baar
+            const welcomeShown = localStorage.getItem('welcomePopupShown');
+            if (!welcomeShown) {
+                setTimeout(() => {
+                    const popup = document.getElementById('welcome-popup');
+                    const nameEl = document.getElementById('welcome-user-name');
+                    if (popup && nameEl) {
+                        nameEl.textContent = userName;
+                        popup.classList.remove('hidden');
+                        localStorage.setItem('welcomePopupShown', 'true');
+                        console.log("🎉 Welcome popup shown");
+                    }
+                }, 1500);
+            }
+        }
 
-function closeWelcomePopup() {
-    const popup = document.getElementById('welcome-popup');
-    if (popup) {
-        popup.classList.add('hidden');
-    }
-}
+        function closeWelcomePopup() {
+            const popup = document.getElementById('welcome-popup');
+            if (popup) {
+                popup.classList.add('hidden');
+            }
+        }
         
         // ======================================== -->
-// 38. GOOGLE SHEETS API FUNCTIONS
-// ======================================== -->
-async function getUserFromSheet(userId) {
-    try {
-        const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log("Google Sheets response:", data);
-        return data;
-    } catch (error) {
-        console.error("Error fetching user:", error);
-        return { success: false, error: error.message };
-    }
-}
+        // 38. GOOGLE SHEETS API FUNCTIONS
+        // ======================================== -->
+        async function getUserFromSheet(userId) {
+            try {
+                const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log("Google Sheets response:", data);
+                return data;
+            } catch (error) {
+                console.error("Error fetching user:", error);
+                return { success: false, error: error.message };
+            }
+        }
 
-async function createUserInSheet(userId, name, telegramId) {
-    try {
-        const url = `${GS_API_URL}?action=createUser&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(name)}&telegram_id=${encodeURIComponent(telegramId)}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error creating user:", error);
-        return { success: false };
-    }
-}
+        async function createUserInSheet(userId, name, telegramId) {
+            try {
+                const url = `${GS_API_URL}?action=createUser&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(name)}&telegram_id=${encodeURIComponent(telegramId)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error creating user:", error);
+                return { success: false };
+            }
+        }
 
-async function updateBalanceInSheet(userId, newBalance) {
-    try {
-        const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(userId)}&balance=${encodeURIComponent(newBalance)}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error updating balance:", error);
-        return { success: false };
-    }
-}
+        async function updateBalanceInSheet(userId, newBalance) {
+            try {
+                const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(userId)}&balance=${encodeURIComponent(newBalance)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error updating balance:", error);
+                return { success: false };
+            }
+        }
         
         // ======================================== -->
-// 39. INITIALIZE USER FROM SHEETS
-// ======================================== -->
-async function initializeUser() {
-    const userId = currentUserData.userId;
-    const userName = currentUserData.name;
-    
-    if (!userId) {
-        updateProfileDisplay();
-        return;
-    }
-    
-    try {
-        const result = await getUserFromSheet(userId);
-        
-        if (result.success && result.user) {
-            currentUserData = {
-                ...currentUserData,
-                balance: parseFloat(result.user.balance) || 0,
-                name: result.user.name || userName,
-                email: result.user.email || '',
-                phone: result.user.phone || '',
-                totalWins: parseInt(result.user.totalWins) || 0,
-                gamesPlayed: parseInt(result.user.gamesPlayed) || 0,
-                bank_accounts: result.user.bank_accounts ? JSON.parse(result.user.bank_accounts) : [],
-                upis: result.user.upis ? JSON.parse(result.user.upis) : []
-            };
+        // 39. INITIALIZE USER FROM SHEETS
+        // ======================================== -->
+        async function initializeUser() {
+            const userId = currentUserData.userId;
+            const userName = currentUserData.name;
             
-            updateProfileDisplay();
-            loadUserStats();
-            showStatusMessage(`Welcome back! Balance: ₹${formatBalance(currentUserData.balance)}`, 'success');
-        } else {
-            const createResult = await createUserInSheet(userId, userName, userId);
+            if (!userId) {
+                updateProfileDisplay();
+                return;
+            }
             
-            if (createResult.success) {
-    currentUserData.balance = 11; // नया: 11 रुपये
-    currentUserData.totalWins = 0;
-    currentUserData.gamesPlayed = 0;
-    
-    updateProfileDisplay();
-    loadUserStats();
-    showStatusMessage(`Welcome! ₹11 bonus credited.`, 'success');
-    
-    await updateBalanceInSheet(userId, 11); // Google Sheets में 11 save करो
-}
-             else {
+            try {
+                const result = await getUserFromSheet(userId);
+                
+                if (result.success && result.user) {
+                    currentUserData = {
+                        ...currentUserData,
+                        balance: parseFloat(result.user.balance) || 0,
+                        name: result.user.name || userName,
+                        email: result.user.email || '',
+                        phone: result.user.phone || '',
+                        totalWins: parseInt(result.user.totalWins) || 0,
+                        gamesPlayed: parseInt(result.user.gamesPlayed) || 0,
+                        bank_accounts: result.user.bank_accounts ? JSON.parse(result.user.bank_accounts) : [],
+                        upis: result.user.upis ? JSON.parse(result.user.upis) : []
+                    };
+                    
+                    updateProfileDisplay();
+                    loadUserStats();
+                    showStatusMessage(`Welcome back! Balance: ₹${formatBalance(currentUserData.balance)}`, 'success');
+                } else {
+                    const createResult = await createUserInSheet(userId, userName, userId);
+                    
+                    if (createResult.success) {
+                        currentUserData.balance = 11;
+                        currentUserData.totalWins = 0;
+                        currentUserData.gamesPlayed = 0;
+                        
+                        updateProfileDisplay();
+                        loadUserStats();
+                        showStatusMessage(`Welcome! ₹11 bonus credited.`, 'success');
+                        
+                        await updateBalanceInSheet(userId, 11);
+                    } else {
+                        updateProfileDisplay();
+                    }
+                }
+            } catch (error) {
+                console.error("Error in initializeUser:", error);
                 updateProfileDisplay();
             }
+            
+            return Promise.resolve();
         }
-    } catch (error) {
-        console.error("Error in initializeUser:", error);
-        updateProfileDisplay();
-    }
-    
-    return Promise.resolve();
-}
         
         // ======================================== -->
         // 40. GAME HISTORY FUNCTIONS
@@ -4180,51 +4098,42 @@ async function initializeUser() {
         }
 
         async function processWinning(winningColor) {
-    if (!currentUserData) return;
-    
-    const userBet = currentBet[winningColor] || 0;
-    
-    if (winningColor !== 'gray' && userBet > 0) {
-        // सही तरीका - सिर्फ जीतने वाली राशि का double दें
-        const winAmount = userBet * 2; // जीतने पर मिलने वाली कुल राशि
-        const currentTotalBet = currentBet.green + currentBet.blue; // कुल लगाई गई बाजी
-        
-        // नया बैलेंस = पुराना बैलेंस + (जीतने वाली राशि)
-        // Note: बाजी लगाने का पैसा पहले ही कट चुका है
-        let newBalance = currentUserData.balance + winAmount;
-        
-        // या अगर समझना आसान हो तो:
-        // let newBalance = currentUserData.balance + (userBet * 2);
-        
-        const finalBalance = enforceMaxBalance(newBalance);
-        
-        fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
-            .catch(error => console.error("API error:", error));
-        
-        currentUserData.balance = finalBalance;
-        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-        
-    } else if (winningColor === 'gray') {
-        // Gray (draw) होने पर - सारा पैसा वापस
-        const totalBet = currentBet.green + currentBet.blue;
-        if (totalBet > 0) {
-            let newBalance = currentUserData.balance + totalBet;
-            const finalBalance = enforceMaxBalance(newBalance);
+            if (!currentUserData) return;
             
-            fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
-                .catch(error => console.error("API error:", error));
+            const userBet = currentBet[winningColor] || 0;
             
-            currentUserData.balance = finalBalance;
-            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+            if (winningColor !== 'gray' && userBet > 0) {
+                const winAmount = userBet * 2;
+                
+                let newBalance = currentUserData.balance + winAmount;
+                
+                const finalBalance = enforceMaxBalance(newBalance);
+                
+                fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
+                    .catch(error => console.error("API error:", error));
+                
+                currentUserData.balance = finalBalance;
+                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                
+            } else if (winningColor === 'gray') {
+                const totalBet = currentBet.green + currentBet.blue;
+                if (totalBet > 0) {
+                    let newBalance = currentUserData.balance + totalBet;
+                    const finalBalance = enforceMaxBalance(newBalance);
+                    
+                    fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
+                        .catch(error => console.error("API error:", error));
+                    
+                    currentUserData.balance = finalBalance;
+                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                }
+            } else {
+                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+            }
+            
+            updateProfileDisplay();
         }
-    } else {
-        // हारने पर - कुछ नहीं मिलता, बस gamesPlayed बढ़ाओ
-        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-    }
-    
-    updateProfileDisplay();
-}
         
         // ======================================== -->
         // 42. BET AMOUNT UTILITIES
@@ -4523,711 +4432,583 @@ async function initializeUser() {
         }
         
         // ======================================== -->
-// 48. SMART INITIALIZATION WITH LOADING SCREEN
-// ======================================== -->
+        // 48. SIMPLE & RELIABLE INITIALIZATION
+        // ======================================== -->
 
-// Ye code sabse pehle run hoga
-(function() {
-    console.log("🚀 Apex Day Loading Manager Started");
-    
-    const loadingScreen = document.getElementById('loading-screen');
-    if (!loadingScreen) return;
-    
-    // Loading hide function
-    window.hideLoadingScreen = function(reason) {
-        if (!loadingScreen.classList.contains('hidden')) {
-            loadingScreen.classList.add('hidden');
-            console.log(`✅ Loading hidden: ${reason}`);
+        // Ye code sabse pehle run hoga (सिर्फ 5 सेकंड वाला timer)
+        (function() {
+            console.log("🚀 Apex Day Loading Manager Started");
             
-            try {
-                if (typeof startGameLoop === 'function') startGameLoop();
-                if (typeof loadGameHistory === 'function') loadGameHistory();
-                if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-                if (typeof fixHistoryStripPosition === 'function') fixHistoryStripPosition();
-            } catch (e) {
-                console.log("Game start error:", e);
-            }
+            const loadingScreen = document.getElementById('loading-screen');
+            if (!loadingScreen) return;
             
-            return true;
-        }
-        return false;
-    };
-    
-    // Multiple timers for Telegram WebView
-    setTimeout(() => hideLoadingScreen('timer-2s'), 2000);
-    setTimeout(() => hideLoadingScreen('timer-3s'), 3000);
-    setTimeout(() => hideLoadingScreen('timer-4s'), 4000);
-    setTimeout(() => hideLoadingScreen('timer-5s-final'), 5000);
-    
-    // Continuous monitor
-    const checkInterval = setInterval(() => {
-        if (performance.now() > 6000) {
-            if (hideLoadingScreen('force-6s')) {
-                clearInterval(checkInterval);
-            }
-        }
-        if (loadingScreen.classList.contains('hidden')) {
-            clearInterval(checkInterval);
-        }
-    }, 500);
-    
-    // Telegram events
-    if (window.Telegram && window.Telegram.WebApp) {
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.onEvent('viewportChanged', () => hideLoadingScreen('telegram-viewport'));
-            tg.onEvent('mainButtonClicked', () => hideLoadingScreen('telegram-button'));
-            tg.onEvent('backButtonClicked', () => hideLoadingScreen('telegram-back'));
-            console.log("📱 Telegram events registered");
-        } catch (e) {
-            console.log("Telegram events error:", e);
-        }
-    }
-})();
-
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("📄 DOM Content Loaded");
-    
-    // Status icons
-    const statusIcons = [
-        document.querySelectorAll('.status-item i:last-child')[0],
-        document.querySelectorAll('.status-item i:last-child')[1],
-        document.querySelectorAll('.status-item i:last-child')[2]
-    ];
-    
-    // Progress bar
-    const loadingBar = document.getElementById('loading-bar');
-    const loadingPercent = document.getElementById('loading-percent');
-    
-    // Progress bar animation
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 1;
-        if (progress <= 100) {
-            if (loadingBar) loadingBar.style.width = progress + '%';
-            if (loadingPercent) loadingPercent.textContent = progress + '%';
-        }
-        if (progress >= 100) {
-            clearInterval(progressInterval);
-        }
-    }, 40);
-    
-    // Status ticks
-    setTimeout(() => {
-        if (statusIcons[0]) {
-            statusIcons[0].className = 'fas fa-check-circle';
-            statusIcons[0].style.color = '#00C853';
-            statusIcons[0].style.animation = 'none';
-        }
-    }, 1500);
-    
-    setTimeout(() => {
-        if (statusIcons[1]) {
-            statusIcons[1].className = 'fas fa-check-circle';
-            statusIcons[1].style.color = '#00C853';
-            statusIcons[1].style.animation = 'none';
-        }
-    }, 2500);
-    
-    // Input validation
-    ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
-        }
-    });
-    
-    // Initialize Telegram
-    if (typeof initTelegramAndWelcome === 'function') {
-        initTelegramAndWelcome();
-    }
-    
-    // Data load with timeout
-    Promise.race([
-        (typeof initializeUser === 'function' ? initializeUser() : Promise.resolve()),
-        new Promise(resolve => setTimeout(resolve, 3000))
-    ]).then(() => {
-        setTimeout(() => {
-            if (statusIcons[2]) {
-                statusIcons[2].className = 'fas fa-check-circle';
-                statusIcons[2].style.color = '#00C853';
-                statusIcons[2].style.animation = 'none';
-            }
-        }, 500);
-        
-        if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-        if (typeof fixHistoryStripPosition === 'function') fixHistoryStripPosition();
-        
-        console.log("✅ Initialization complete");
-        
-    }).catch(error => {
-        console.error("Initialization error:", error);
-        
-        setTimeout(() => {
-            if (statusIcons[2]) {
-                statusIcons[2].className = 'fas fa-check-circle';
-                statusIcons[2].style.color = '#00C853';
-                statusIcons[2].style.animation = 'none';
-            }
-        }, 500);
-        
-        if (typeof startGameLoop === 'function') startGameLoop();
-        if (typeof loadGameHistory === 'function') loadGameHistory();
-        if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-    });
-});
-
-function fixHistoryStripPosition() {
-    const historyContainer = document.querySelector('.history-container');
-    if (historyContainer) {
-        historyContainer.style.marginTop = '';
-        historyContainer.style.marginBottom = '2px';
-        historyContainer.style.height = '38px';
-    }
-}
-
-// ======================================== -->
-// 49. DISABLE COPY & RIGHT CLICK (COMPLETE)
-// ======================================== -->
-
-// Disable right click
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    // Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
-    if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    // F12
-    if (e.key === 'F12') {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Ctrl+Shift+I (Developer Tools)
-    if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Ctrl+Shift+J (Console)
-    if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Ctrl+U (View Source)
-    if (e.ctrlKey && e.key === 'u') {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Ctrl+S (Save)
-    if (e.ctrlKey && e.key === 's') {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Ctrl+P (Print)
-    if (e.ctrlKey && e.key === 'p') {
-        e.preventDefault();
-        return false;
-    }
-    
-    // F5, Ctrl+R (Refresh)
-    if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-        e.preventDefault();
-        return false;
-    }
-    
-    // Alt+F4, Ctrl+W (Close)
-    if ((e.altKey && e.key === 'F4') || (e.ctrlKey && e.key === 'w')) {
-        e.preventDefault();
-        return false;
-    }
-});
-
-// Disable text selection
-document.addEventListener('selectstart', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable drag and drop
-document.addEventListener('dragstart', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable copy event
-document.addEventListener('copy', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable cut event
-document.addEventListener('cut', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable paste event
-document.addEventListener('paste', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable mouse middle button paste
-document.addEventListener('auxclick', function(e) {
-    if (e.button === 1) { // Middle button
-        e.preventDefault();
-        return false;
-    }
-});
-
-// Disable context menu on touch devices
-document.addEventListener('touchstart', function(e) {
-    if (e.touches.length > 1) { // Multi-touch
-        e.preventDefault();
-        return false;
-    }
-});
-
-// Disable long press menu on mobile
-document.addEventListener('touchhold', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-// Disable select all on double click
-document.addEventListener('dblclick', function(e) {
-    e.preventDefault();
-    return false;
-});
-
-console.log("🛡️ Copy protection enabled");
-
-// ======================================== -->
-// 50. FULL SCREEN PAGE FUNCTIONS
-// ======================================== -->
-
-function openFullWithdraw() {
-    document.getElementById('full-withdraw-page').classList.add('active');
-    document.getElementById('profile-page').classList.add('hidden');
-    loadPaymentMethods();
-}
-
-function closeFullWithdraw() {
-    document.getElementById('full-withdraw-page').classList.remove('active');
-    document.getElementById('profile-page').classList.remove('hidden');
-}
-
-function openFullHistory() {
-    document.getElementById('full-history-page').classList.add('active');
-    document.getElementById('profile-page').classList.add('hidden');
-    loadFullGameHistory();
-}
-
-function closeFullHistory() {
-    document.getElementById('full-history-page').classList.remove('active');
-    document.getElementById('profile-page').classList.remove('hidden');
-}
-
-function openFullTransaction() {
-    document.getElementById('full-transaction-page').classList.add('active');
-    document.getElementById('profile-page').classList.add('hidden');
-    loadFullTransactionHistory();
-}
-
-function closeFullTransaction() {
-    document.getElementById('full-transaction-page').classList.remove('active');
-    document.getElementById('profile-page').classList.remove('hidden');
-}
-
-function filterFullHistory(filter) {
-    fullHistoryFilter = filter;
-    document.querySelectorAll('#full-history-page .fullscreen-filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    loadFullGameHistory();
-}
-
-function filterFullTransaction(filter) {
-    fullTransactionFilter = filter;
-    document.querySelectorAll('#full-transaction-page .fullscreen-filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    loadFullTransactionHistory();
-}
-
-function loadPaymentMethods() {
-    const container = document.getElementById('payment-methods-container');
-    if (!container) return;
-    
-    const banks = currentUserData?.bank_accounts || [];
-    const upis = currentUserData?.upis || [];
-    
-    if (banks.length === 0 && upis.length === 0) {
-        container.innerHTML = '<div class="fullscreen-empty"><i class="fas fa-credit-card"></i> No payment methods added</div>';
-        return;
-    }
-    
-    let html = '';
-    
-    if (banks.length > 0) {
-        html += '<div class="payment-section-title"><i class="fas fa-university"></i> Bank Accounts</div>';
-        banks.forEach((bank, index) => {
-            html += `
-                <div class="payment-method-item" onclick="selectPaymentMethod('bank', ${index})">
-                    <div class="payment-icon"><i class="fas fa-university"></i></div>
-                    <div class="payment-details">
-                        <h4>${bank.bankName || 'Bank Account'}</h4>
-                        <p>${bank.accountHolder} •••• ${bank.accountNumber?.slice(-4) || '****'}</p>
-                    </div>
-                </div>
-            `;
-        });
-    }
-    
-    if (upis.length > 0) {
-        html += '<div class="payment-section-title"><i class="fas fa-mobile-alt"></i> UPI IDs</div>';
-        upis.forEach((upi, index) => {
-            html += `
-                <div class="payment-method-item" onclick="selectPaymentMethod('upi', ${index})">
-                    <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
-                    <div class="payment-details">
-                        <h4>${upi.upiId || 'UPI ID'}</h4>
-                        <p>${upi.holderName || 'User'}</p>
-                    </div>
-                </div>
-            `;
-        });
-    }
-    
-    container.innerHTML = html;
-}
-
-function selectPaymentMethod(type, index) {
-    const container = document.getElementById('payment-methods-container');
-    
-    const oldForm = document.querySelector('.withdraw-form');
-    if (oldForm) oldForm.remove();
-    
-    const form = document.createElement('div');
-    form.className = 'withdraw-form';
-    
-    let paymentInfo = '';
-    if (type === 'bank') {
-        const bank = currentUserData.bank_accounts[index];
-        paymentInfo = `${bank.bankName} - ${bank.accountHolder} (${bank.accountNumber?.slice(-4)})`;
-    } else {
-        const upi = currentUserData.upis[index];
-        paymentInfo = `${upi.upiId} - ${upi.holderName}`;
-    }
-    
-    form.innerHTML = `
-        <h3 style="color: #D4AF37; margin-bottom: 15px;">Withdraw to:</h3>
-        <p style="color: #FFE4B5; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-            <i class="fas fa-check-circle" style="color: #00C853;"></i> ${paymentInfo}
-        </p>
-        <input type="number" id="withdraw-amount-full" placeholder="Enter amount (Min ₹100)" class="auth-input" min="100">
-        <button class="auth-btn" onclick="submitFullWithdraw('${type}', ${index})">
-            <i class="fas fa-arrow-up"></i> Request Withdrawal
-        </button>
-        <button class="back-btn" onclick="this.parentElement.remove()" style="margin-top: 10px;">
-            <i class="fas fa-times"></i> Cancel
-        </button>
-    `;
-    
-    container.appendChild(form);
-}
-
-function submitFullWithdraw(type, index) {
-    const amount = parseFloat(document.getElementById('withdraw-amount-full')?.value);
-    
-    if (!amount || amount < 100) {
-        showImportantNotification('Error', 'Minimum withdrawal amount is ₹100');
-        return;
-    }
-    
-    if (amount > currentUserData.balance) {
-        showImportantNotification('Error', 'Insufficient balance');
-        return;
-    }
-    
-    let paymentDetails = '';
-    if (type === 'bank') {
-        const bank = currentUserData.bank_accounts[index];
-        paymentDetails = `${bank.bankName} - ${bank.accountNumber?.slice(-4)}`;
-    } else {
-        const upi = currentUserData.upis[index];
-        paymentDetails = upi.upiId;
-    }
-    
-    showImportantNotification(
-        'Withdrawal Request Submitted',
-        `₹${amount} will be sent to ${paymentDetails}. It will be processed within 24 hours.`
-    );
-    
-    console.log(`Withdraw: ₹${amount} to ${type} ${index}`);
-}
-
-function loadFullGameHistory() {
-    const container = document.getElementById('full-history-content');
-    if (!container) return;
-    
-    const demoHistory = [
-        { date: '2024-01-15 14:30', result: 'green', bet: 100, win: 200, status: 'won' },
-        { date: '2024-01-15 14:15', result: 'blue', bet: 50, win: 0, status: 'lost' },
-        { date: '2024-01-15 14:00', result: 'gray', bet: 75, win: 75, status: 'refund' },
-        { date: '2024-01-15 13:45', result: 'green', bet: 200, win: 400, status: 'won' },
-        { date: '2024-01-15 13:30', result: 'blue', bet: 150, win: 300, status: 'won' }
-    ];
-    
-    const filtered = demoHistory.filter(item => {
-        if (fullHistoryFilter === 'all') return true;
-        if (fullHistoryFilter === 'won') return item.status === 'won';
-        if (fullHistoryFilter === 'lost') return item.status === 'lost';
-        return true;
-    });
-    
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="fullscreen-empty"><i class="fas fa-history"></i> No game history found</div>';
-        return;
-    }
-    
-    let html = '';
-    filtered.forEach(item => {
-        const badgeClass = item.status === 'won' ? 'badge-won' : (item.status === 'lost' ? 'badge-lost' : 'badge-pending');
-        const badgeText = item.status === 'won' ? 'WON' : (item.status === 'lost' ? 'LOST' : 'REFUND');
-        
-        html += `
-            <div class="fullscreen-item">
-                <div class="fullscreen-item-left">
-                    <div class="fullscreen-item-date">${item.date}</div>
-                    <div class="fullscreen-item-details">
-                        <span class="fullscreen-item-badge ${badgeClass}">${badgeText}</span>
-                        <span>Bet: ₹${item.bet}</span>
-                    </div>
-                </div>
-                <div class="fullscreen-item-amount ${item.status === 'won' ? 'deposit' : (item.status === 'lost' ? 'withdraw' : '')}">
-                    ${item.status === 'won' ? '+' : ''}₹${item.win}
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function loadFullTransactionHistory() {
-    const container = document.getElementById('full-transaction-content');
-    if (!container) return;
-    
-    const demoTransactions = [
-        { date: '2024-01-15 10:30', type: 'deposit', amount: 500, status: 'completed' },
-        { date: '2024-01-14 16:45', type: 'withdraw', amount: 200, status: 'pending' },
-        { date: '2024-01-14 09:20', type: 'deposit', amount: 1000, status: 'completed' },
-        { date: '2024-01-13 18:10', type: 'withdraw', amount: 300, status: 'completed' },
-        { date: '2024-01-12 12:00', type: 'deposit', amount: 200, status: 'completed' }
-    ];
-    
-    const filtered = demoTransactions.filter(item => {
-        if (fullTransactionFilter === 'all') return true;
-        return item.type === fullTransactionFilter;
-    });
-    
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="fullscreen-empty"><i class="fas fa-exchange-alt"></i> No transactions found</div>';
-        return;
-    }
-    
-    let html = '';
-    filtered.forEach(item => {
-        const amountClass = item.type === 'deposit' ? 'deposit' : 'withdraw';
-        const amountPrefix = item.type === 'deposit' ? '+' : '-';
-        
-        html += `
-            <div class="fullscreen-item">
-                <div class="fullscreen-item-left">
-                    <div class="fullscreen-item-date">${item.date}</div>
-                    <div class="fullscreen-item-details">
-                        <span class="fullscreen-item-badge ${item.status === 'completed' ? 'badge-won' : 'badge-pending'}">
-                            ${item.status === 'completed' ? 'COMPLETED' : 'PENDING'}
-                        </span>
-                        <span>${item.type === 'deposit' ? 'Deposit' : 'Withdraw'}</span>
-                    </div>
-                </div>
-                <div class="fullscreen-item-amount ${amountClass}">
-                    ${amountPrefix}₹${item.amount}
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-}
-
-function showImportantNotification(title, message) {
-    const popup = document.getElementById('important-notification-popup');
-    const titleEl = document.getElementById('important-notification-title');
-    const msgEl = document.getElementById('important-notification-message');
-    
-    if (titleEl) titleEl.textContent = title;
-    if (msgEl) msgEl.textContent = message;
-    if (popup) popup.classList.remove('hidden');
-}
-
-function logout() {
-    if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('tg_id');
-        localStorage.removeItem('tg_name');
-        localStorage.removeItem('welcomePopupShown');
-        currentUserData = {
-            userId: '12345678',
-            name: 'Demo User',
-            email: 'demo@example.com',
-            phone: 'Not Set',
-            balance: 0,
-            bank_accounts: [],
-            upis: [],
-            notifications: [],
-            totalWins: 0,
-            gamesPlayed: 0,
-            createdAt: new Date(),
-            telegram_id: null,
-            telegram_username: null
-        };
-        updateProfileDisplay();
-        showPage('dashboard-page');
-        showStatusMessage('Logged out successfully', 'success');
-    }
-}
-
-// ======================================== -->
-// 51. ULTIMATE SAFETY NET - ALWAYS HIDE LOADING
-// ======================================== -->
-
-(function() {
-    setTimeout(function() {
-        var ls = document.getElementById('loading-screen');
-        if (ls && !ls.classList.contains('hidden')) {
-            ls.classList.add('hidden');
-            console.log("🛡️ Safety net 1: loading hidden");
+            // Loading hide function
+            window.hideLoadingScreen = function(reason) {
+                if (!loadingScreen.classList.contains('hidden')) {
+                    loadingScreen.classList.add('hidden');
+                    console.log(`✅ Loading hidden: ${reason}`);
+                    
+                    try {
+                        if (typeof startGameLoop === 'function') startGameLoop();
+                        if (typeof loadGameHistory === 'function') loadGameHistory();
+                        if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
+                        if (typeof fixHistoryStripPosition === 'function') fixHistoryStripPosition();
+                    } catch (e) {
+                        console.log("Game start error:", e);
+                    }
+                    
+                    return true;
+                }
+                return false;
+            };
             
-            try {
-                if (typeof startGameLoop === 'function') startGameLoop();
-                if (typeof loadGameHistory === 'function') loadGameHistory();
-            } catch(e) {}
-        }
-    }, 3500);
-    
-    setTimeout(function() {
-        var ls = document.getElementById('loading-screen');
-        if (ls && !ls.classList.contains('hidden')) {
-            ls.classList.add('hidden');
-            console.log("🛡️ Safety net 2: loading hidden (FINAL)");
+            // ✅ सिर्फ 5 seconds वाला timer - बाकी सब हटा दिए
+            setTimeout(() => hideLoadingScreen('timer-5s-final'), 10000);
             
-            try {
-                if (typeof startGameLoop === 'function') startGameLoop();
-                if (typeof loadGameHistory === 'function') loadGameHistory();
-            } catch(e) {}
-        }
-    }, 5000);
-    
-    window.addEventListener('load', function() {
-        setTimeout(function() {
-            var ls = document.getElementById('loading-screen');
-            if (ls && !ls.classList.contains('hidden')) {
-                ls.classList.add('hidden');
-                console.log("🛡️ Window load: loading hidden");
-            }
-        }, 1000);
-    });
-    
-    if (document.readyState === 'complete') {
-        setTimeout(function() {
-            var ls = document.getElementById('loading-screen');
-            if (ls && !ls.classList.contains('hidden')) {
-                ls.classList.add('hidden');
-                console.log("🛡️ Document ready: loading hidden");
-            }
-        }, 500);
-    }
-})();
-
-// ======================================== -->
-// 52. FINAL CHECK - PAGE FULLY LOADED
-// ======================================== -->
-
-(function() {
-    let checkCount = 0;
-    const finalInterval = setInterval(function() {
-        checkCount++;
-        var ls = document.getElementById('loading-screen');
-        
-        if (ls && !ls.classList.contains('hidden')) {
-            if (checkCount > 10) {
-                ls.classList.add('hidden');
-                console.log("🛡️ Final force: loading hidden after 10s");
-                clearInterval(finalInterval);
-                
+            // Telegram events
+            if (window.Telegram && window.Telegram.WebApp) {
                 try {
-                    if (typeof startGameLoop === 'function') startGameLoop();
-                    if (typeof loadGameHistory === 'function') loadGameHistory();
-                } catch(e) {}
+                    const tg = window.Telegram.WebApp;
+                    tg.onEvent('viewportChanged', () => hideLoadingScreen('telegram-viewport'));
+                    tg.onEvent('mainButtonClicked', () => hideLoadingScreen('telegram-button'));
+                    tg.onEvent('backButtonClicked', () => hideLoadingScreen('telegram-back'));
+                    console.log("📱 Telegram events registered");
+                } catch (e) {
+                    console.log("Telegram events error:", e);
+                }
             }
-        } else {
-            clearInterval(finalInterval);
+        })();
+
+        // DOM Content Loaded - यही मेन इनिशियलाइजेशन है
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("📄 DOM Content Loaded - Initializing App");
+            
+            // ======================================== -->
+            // LOADING SCREEN SETUP
+            // ======================================== -->
+            const loadingScreen = document.getElementById('loading-screen');
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingPercent = document.getElementById('loading-percent');
+            
+            // Status icons
+            const statusIcons = [
+                document.querySelectorAll('.status-item i:last-child')[0],
+                document.querySelectorAll('.status-item i:last-child')[1],
+                document.querySelectorAll('.status-item i:last-child')[2]
+            ];
+            
+            // ======================================== -->
+            // ALWAYS START GAME LOOP - यह सबसे जरूरी है
+            // ======================================== -->
+            console.log("🎮 Starting Game Loop");
+            if (typeof startGameLoop === 'function') {
+                startGameLoop();
+            } else {
+                console.error("startGameLoop function not found");
+            }
+            
+            // ======================================== -->
+            // LOAD GAME HISTORY
+            // ======================================== -->
+            if (typeof loadGameHistory === 'function') {
+                loadGameHistory();
+            }
+            
+            // ======================================== -->
+            // PROGRESS BAR ANIMATION - 5 सेकंड में 100%
+            // ======================================== -->
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 1;
+                if (progress <= 100) {
+                    if (loadingBar) loadingBar.style.width = progress + '%';
+                    if (loadingPercent) loadingPercent.textContent = progress + '%';
+                }
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                }
+            }, 100); // 50ms * 100 = 5 seconds
+            
+            // ======================================== -->
+            // STATUS TICKS (क्रम से 5 सेकंड में)
+            // ======================================== -->
+            setTimeout(() => {
+                if (statusIcons[0]) {
+                    statusIcons[0].className = 'fas fa-check-circle';
+                    statusIcons[0].style.color = '#00C853';
+                    statusIcons[0].style.animation = 'none';
+                }
+            }, 1500); // 1.5 सेकंड
+            
+            setTimeout(() => {
+                if (statusIcons[1]) {
+                    statusIcons[1].className = 'fas fa-check-circle';
+                    statusIcons[1].style.color = '#00C853';
+                    statusIcons[1].style.animation = 'none';
+                }
+            }, 3000); // 3 सेकंड
+            
+            setTimeout(() => {
+                if (statusIcons[2]) {
+                    statusIcons[2].className = 'fas fa-check-circle';
+                    statusIcons[2].style.color = '#00C853';
+                    statusIcons[2].style.animation = 'none';
+                }
+            }, 4500); // 4.5 सेकंड
+            
+            // ======================================== -->
+            // INPUT VALIDATION
+            // ======================================== -->
+            ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function(e) {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                    });
+                }
+            });
+            
+            // ======================================== -->
+            // TELEGRAM INITIALIZATION
+            // ======================================== -->
+            if (typeof initTelegramAndWelcome === 'function') {
+                initTelegramAndWelcome();
+            }
+            
+            // ======================================== -->
+            // USER DATA LOADING (अगर possible हो तो)
+            // ======================================== -->
+            if (typeof initializeUser === 'function') {
+                initializeUser().catch(error => {
+                    console.log("User data load error (non-critical):", error);
+                });
+            }
+            
+            // ======================================== -->
+            // FIX HISTORY STRIP POSITION
+            // ======================================== -->
+            if (typeof fixHistoryStripPosition === 'function') {
+                setTimeout(fixHistoryStripPosition, 500);
+            }
+            
+            // ======================================== -->
+            // UPDATE PROFILE DISPLAY
+            // ======================================== -->
+            if (typeof updateProfileDisplay === 'function') {
+                updateProfileDisplay();
+            }
+            
+            // ======================================== -->
+            // HIDE LOADING SCREEN AFTER 5 SECONDS (सिर्फ एक बार)
+            // ======================================== -->
+            setTimeout(() => {
+                if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+                    loadingScreen.classList.add('hidden');
+                    console.log("✅ Loading screen hidden after 5 seconds");
+                }
+            }, 10000);
+        });
+
+        // ======================================== -->
+        // FIX HISTORY STRIP POSITION
+        // ======================================== -->
+        function fixHistoryStripPosition() {
+            const historyContainer = document.querySelector('.history-container');
+            if (historyContainer) {
+                historyContainer.style.marginTop = '';
+                historyContainer.style.marginBottom = '2px';
+                historyContainer.style.height = '38px';
+            }
         }
-    }, 1000);
-})();
 
-// ======================================== -->
-// 53. EXPORT FUNCTIONS TO GLOBAL SCOPE
-// ======================================== -->
+        // ======================================== -->
+        // 49. DISABLE COPY & RIGHT CLICK (COMPLETE)
+        // ======================================== -->
 
-window.toggleNotificationPanel = toggleNotificationPanel;
-window.selectAmount = selectAmount;
-window.selectWithdrawAmount = selectWithdrawAmount;
-window.submitAddMoneyRequest = submitAddMoneyRequest;
-window.submitWithdrawRequest = submitWithdrawRequest;
-window.closeImportantNotification = closeImportantNotification;
-window.showAddBankPopup = showAddBankPopup;
-window.closeAddBankPopup = closeAddBankPopup;
-window.addBankAccount = addBankAccount;
-window.showAddUPIPopup = showAddUPIPopup;
-window.closeAddUPIPopup = closeAddUPIPopup;
-window.addUPI = addUPI;
-window.placeBet = placeBet;
-window.setBetAmount = setBetAmount;
-window.adjustBetAmount = adjustBetAmount;
-window.copyUserId = copyUserId;
-window.showManageAccount = showManageAccount;
-window.hideManageAccount = hideManageAccount;
-window.openFullWithdraw = openFullWithdraw;
-window.closeFullWithdraw = closeFullWithdraw;
-window.openFullHistory = openFullHistory;
-window.closeFullHistory = closeFullHistory;
-window.openFullTransaction = openFullTransaction;
-window.closeFullTransaction = closeFullTransaction;
-window.filterFullHistory = filterFullHistory;
-window.filterFullTransaction = filterFullTransaction;
-window.showPage = showPage;
-window.logout = logout;
-window.closeWelcomePopup = closeWelcomePopup;
-window.loadBankAccountsManage = loadBankAccountsManage;
-window.deleteBankAccount = deleteBankAccount;
-window.loadUPIsManage = loadUPIsManage;
-window.deleteUPI = deleteUPI;
+        // Disable right click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                return false;
+            }
+            if ((e.altKey && e.key === 'F4') || (e.ctrlKey && e.key === 'w')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        console.log("🛡️ Copy protection enabled");
+
+        // ======================================== -->
+        // 50. FULL SCREEN PAGE FUNCTIONS
+        // ======================================== -->
+
+        function openFullWithdraw() {
+            document.getElementById('full-withdraw-page').classList.add('active');
+            document.getElementById('profile-page').classList.add('hidden');
+            loadPaymentMethods();
+        }
+
+        function closeFullWithdraw() {
+            document.getElementById('full-withdraw-page').classList.remove('active');
+            document.getElementById('profile-page').classList.remove('hidden');
+        }
+
+        function openFullHistory() {
+            document.getElementById('full-history-page').classList.add('active');
+            document.getElementById('profile-page').classList.add('hidden');
+            loadFullGameHistory();
+        }
+
+        function closeFullHistory() {
+            document.getElementById('full-history-page').classList.remove('active');
+            document.getElementById('profile-page').classList.remove('hidden');
+        }
+
+        function openFullTransaction() {
+            document.getElementById('full-transaction-page').classList.add('active');
+            document.getElementById('profile-page').classList.add('hidden');
+            loadFullTransactionHistory();
+        }
+
+        function closeFullTransaction() {
+            document.getElementById('full-transaction-page').classList.remove('active');
+            document.getElementById('profile-page').classList.remove('hidden');
+        }
+
+        function filterFullHistory(filter) {
+            fullHistoryFilter = filter;
+            document.querySelectorAll('#full-history-page .fullscreen-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadFullGameHistory();
+        }
+
+        function filterFullTransaction(filter) {
+            fullTransactionFilter = filter;
+            document.querySelectorAll('#full-transaction-page .fullscreen-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            loadFullTransactionHistory();
+        }
+
+        function loadPaymentMethods() {
+            const container = document.getElementById('payment-methods-container');
+            if (!container) return;
+            
+            const banks = currentUserData?.bank_accounts || [];
+            const upis = currentUserData?.upis || [];
+            
+            if (banks.length === 0 && upis.length === 0) {
+                container.innerHTML = '<div class="fullscreen-empty"><i class="fas fa-credit-card"></i> No payment methods added</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            if (banks.length > 0) {
+                html += '<div class="payment-section-title"><i class="fas fa-university"></i> Bank Accounts</div>';
+                banks.forEach((bank, index) => {
+                    html += `
+                        <div class="payment-method-item" onclick="selectPaymentMethod('bank', ${index})">
+                            <div class="payment-icon"><i class="fas fa-university"></i></div>
+                            <div class="payment-details">
+                                <h4>${bank.bankName || 'Bank Account'}</h4>
+                                <p>${bank.accountHolder} •••• ${bank.accountNumber?.slice(-4) || '****'}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (upis.length > 0) {
+                html += '<div class="payment-section-title"><i class="fas fa-mobile-alt"></i> UPI IDs</div>';
+                upis.forEach((upi, index) => {
+                    html += `
+                        <div class="payment-method-item" onclick="selectPaymentMethod('upi', ${index})">
+                            <div class="payment-icon"><i class="fas fa-mobile-alt"></i></div>
+                            <div class="payment-details">
+                                <h4>${upi.upiId || 'UPI ID'}</h4>
+                                <p>${upi.holderName || 'User'}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function selectPaymentMethod(type, index) {
+            const container = document.getElementById('payment-methods-container');
+            
+            const oldForm = document.querySelector('.withdraw-form');
+            if (oldForm) oldForm.remove();
+            
+            const form = document.createElement('div');
+            form.className = 'withdraw-form';
+            
+            let paymentInfo = '';
+            if (type === 'bank') {
+                const bank = currentUserData.bank_accounts[index];
+                paymentInfo = `${bank.bankName} - ${bank.accountHolder} (${bank.accountNumber?.slice(-4)})`;
+            } else {
+                const upi = currentUserData.upis[index];
+                paymentInfo = `${upi.upiId} - ${upi.holderName}`;
+            }
+            
+            form.innerHTML = `
+                <h3 style="color: #D4AF37; margin-bottom: 15px;">Withdraw to:</h3>
+                <p style="color: #FFE4B5; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+                    <i class="fas fa-check-circle" style="color: #00C853;"></i> ${paymentInfo}
+                </p>
+                <input type="number" id="withdraw-amount-full" placeholder="Enter amount (Min ₹100)" class="auth-input" min="100">
+                <button class="auth-btn" onclick="submitFullWithdraw('${type}', ${index})">
+                    <i class="fas fa-arrow-up"></i> Request Withdrawal
+                </button>
+                <button class="back-btn" onclick="this.parentElement.remove()" style="margin-top: 10px;">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            `;
+            
+            container.appendChild(form);
+        }
+
+        function submitFullWithdraw(type, index) {
+            const amount = parseFloat(document.getElementById('withdraw-amount-full')?.value);
+            
+            if (!amount || amount < 100) {
+                showImportantNotification('Error', 'Minimum withdrawal amount is ₹100');
+                return;
+            }
+            
+            if (amount > currentUserData.balance) {
+                showImportantNotification('Error', 'Insufficient balance');
+                return;
+            }
+            
+            let paymentDetails = '';
+            if (type === 'bank') {
+                const bank = currentUserData.bank_accounts[index];
+                paymentDetails = `${bank.bankName} - ${bank.accountNumber?.slice(-4)}`;
+            } else {
+                const upi = currentUserData.upis[index];
+                paymentDetails = upi.upiId;
+            }
+            
+            showImportantNotification(
+                'Withdrawal Request Submitted',
+                `₹${amount} will be sent to ${paymentDetails}. It will be processed within 24 hours.`
+            );
+            
+            console.log(`Withdraw: ₹${amount} to ${type} ${index}`);
+        }
+
+        function loadFullGameHistory() {
+            const container = document.getElementById('full-history-content');
+            if (!container) return;
+            
+            const demoHistory = [
+                { date: '2024-01-15 14:30', result: 'green', bet: 100, win: 200, status: 'won' },
+                { date: '2024-01-15 14:15', result: 'blue', bet: 50, win: 0, status: 'lost' },
+                { date: '2024-01-15 14:00', result: 'gray', bet: 75, win: 75, status: 'refund' },
+                { date: '2024-01-15 13:45', result: 'green', bet: 200, win: 400, status: 'won' },
+                { date: '2024-01-15 13:30', result: 'blue', bet: 150, win: 300, status: 'won' }
+            ];
+            
+            const filtered = demoHistory.filter(item => {
+                if (fullHistoryFilter === 'all') return true;
+                if (fullHistoryFilter === 'won') return item.status === 'won';
+                if (fullHistoryFilter === 'lost') return item.status === 'lost';
+                return true;
+            });
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="fullscreen-empty"><i class="fas fa-history"></i> No game history found</div>';
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(item => {
+                const badgeClass = item.status === 'won' ? 'badge-won' : (item.status === 'lost' ? 'badge-lost' : 'badge-pending');
+                const badgeText = item.status === 'won' ? 'WON' : (item.status === 'lost' ? 'LOST' : 'REFUND');
+                
+                html += `
+                    <div class="fullscreen-item">
+                        <div class="fullscreen-item-left">
+                            <div class="fullscreen-item-date">${item.date}</div>
+                            <div class="fullscreen-item-details">
+                                <span class="fullscreen-item-badge ${badgeClass}">${badgeText}</span>
+                                <span>Bet: ₹${item.bet}</span>
+                            </div>
+                        </div>
+                        <div class="fullscreen-item-amount ${item.status === 'won' ? 'deposit' : (item.status === 'lost' ? 'withdraw' : '')}">
+                            ${item.status === 'won' ? '+' : ''}₹${item.win}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function loadFullTransactionHistory() {
+            const container = document.getElementById('full-transaction-content');
+            if (!container) return;
+            
+            const demoTransactions = [
+                { date: '2024-01-15 10:30', type: 'deposit', amount: 500, status: 'completed' },
+                { date: '2024-01-14 16:45', type: 'withdraw', amount: 200, status: 'pending' },
+                { date: '2024-01-14 09:20', type: 'deposit', amount: 1000, status: 'completed' },
+                { date: '2024-01-13 18:10', type: 'withdraw', amount: 300, status: 'completed' },
+                { date: '2024-01-12 12:00', type: 'deposit', amount: 200, status: 'completed' }
+            ];
+            
+            const filtered = demoTransactions.filter(item => {
+                if (fullTransactionFilter === 'all') return true;
+                return item.type === fullTransactionFilter;
+            });
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="fullscreen-empty"><i class="fas fa-exchange-alt"></i> No transactions found</div>';
+                return;
+            }
+            
+            let html = '';
+            filtered.forEach(item => {
+                const amountClass = item.type === 'deposit' ? 'deposit' : 'withdraw';
+                const amountPrefix = item.type === 'deposit' ? '+' : '-';
+                
+                html += `
+                    <div class="fullscreen-item">
+                        <div class="fullscreen-item-left">
+                            <div class="fullscreen-item-date">${item.date}</div>
+                            <div class="fullscreen-item-details">
+                                <span class="fullscreen-item-badge ${item.status === 'completed' ? 'badge-won' : 'badge-pending'}">
+                                    ${item.status === 'completed' ? 'COMPLETED' : 'PENDING'}
+                                </span>
+                                <span>${item.type === 'deposit' ? 'Deposit' : 'Withdraw'}</span>
+                            </div>
+                        </div>
+                        <div class="fullscreen-item-amount ${amountClass}">
+                            ${amountPrefix}₹${item.amount}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function showImportantNotification(title, message) {
+            const popup = document.getElementById('important-notification-popup');
+            const titleEl = document.getElementById('important-notification-title');
+            const msgEl = document.getElementById('important-notification-message');
+            
+            if (titleEl) titleEl.textContent = title;
+            if (msgEl) msgEl.textContent = message;
+            if (popup) popup.classList.remove('hidden');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('tg_id');
+                localStorage.removeItem('tg_name');
+                localStorage.removeItem('welcomePopupShown');
+                currentUserData = {
+                    userId: '12345678',
+                    name: 'Demo User',
+                    email: 'demo@example.com',
+                    phone: 'Not Set',
+                    balance: 0,
+                    bank_accounts: [],
+                    upis: [],
+                    notifications: [],
+                    totalWins: 0,
+                    gamesPlayed: 0,
+                    createdAt: new Date(),
+                    telegram_id: null,
+                    telegram_username: null
+                };
+                updateProfileDisplay();
+                showPage('dashboard-page');
+                showStatusMessage('Logged out successfully', 'success');
+            }
+        }
+
+        // ======================================== -->
+        // 51. EXPORT FUNCTIONS TO GLOBAL SCOPE
+        // ======================================== -->
+
+        window.toggleNotificationPanel = toggleNotificationPanel;
+        window.selectAmount = selectAmount;
+        window.selectWithdrawAmount = selectWithdrawAmount;
+        window.submitAddMoneyRequest = submitAddMoneyRequest;
+        window.submitWithdrawRequest = submitWithdrawRequest;
+        window.closeImportantNotification = closeImportantNotification;
+        window.showAddBankPopup = showAddBankPopup;
+        window.closeAddBankPopup = closeAddBankPopup;
+        window.addBankAccount = addBankAccount;
+        window.showAddUPIPopup = showAddUPIPopup;
+        window.closeAddUPIPopup = closeAddUPIPopup;
+        window.addUPI = addUPI;
+        window.placeBet = placeBet;
+        window.setBetAmount = setBetAmount;
+        window.adjustBetAmount = adjustBetAmount;
+        window.copyUserId = copyUserId;
+        window.showManageAccount = showManageAccount;
+        window.hideManageAccount = hideManageAccount;
+        window.openFullWithdraw = openFullWithdraw;
+        window.closeFullWithdraw = closeFullWithdraw;
+        window.openFullHistory = openFullHistory;
+        window.closeFullHistory = closeFullHistory;
+        window.openFullTransaction = openFullTransaction;
+        window.closeFullTransaction = closeFullTransaction;
+        window.filterFullHistory = filterFullHistory;
+        window.filterFullTransaction = filterFullTransaction;
+        window.showPage = showPage;
+        window.logout = logout;
+        window.closeWelcomePopup = closeWelcomePopup;
+        window.loadBankAccountsManage = loadBankAccountsManage;
+        window.deleteBankAccount = deleteBankAccount;
+        window.loadUPIsManage = loadUPIsManage;
+        window.deleteUPI = deleteUPI;
+    </script>
+</body>
+</html>

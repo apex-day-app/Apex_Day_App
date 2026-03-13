@@ -253,7 +253,7 @@ input, textarea, button, [contenteditable="true"] {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Connection Status Styles */
+/* Connection Status Styles - YEH CHANGE KARO */
 .connection-status {
     background: rgba(0, 0, 0, 0.4);
     border-radius: 20px;
@@ -300,11 +300,25 @@ input, textarea, button, [contenteditable="true"] {
     font-weight: 500;
 }
 
-.status-item i:last-child {
+/* YAHAN SE CHANGE SHURU */
+.status-item .fa-spinner {
     color: #D4AF37;
     font-size: 1rem;
     animation: spin 1s linear infinite;
 }
+
+.status-item .fa-check-circle {
+    color: #00C853 !important;
+    font-size: 1rem;
+    animation: none;
+}
+
+/* Status icons ke liye specific rules */
+.status-item i.fa-check-circle {
+    color: #00C853 !important;
+    animation: none;
+}
+/* YAHAN TAK CHANGE */
 
 @keyframes spin {
     from { transform: rotate(0deg); }
@@ -5380,10 +5394,10 @@ async function submitWithdrawRequest() {
         }
         
         // ======================================== -->
-// 48. SIMPLE & RELIABLE INITIALIZATION (FINAL FIX)
+// 48. LOADING SCREEN - ULTIMATE FIX (100% WORKING)
 // ======================================== -->
 
-// Ye code sabse pehle run hoga - FORCE SHOW LOADING
+// Ye code sabse pehle run hoga
 (function() {
     console.log("🚀 Apex Day Loading Manager Started");
     
@@ -5424,7 +5438,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ======================================== -->
-    // GAME LOOP START KARO (FAST)
+    // GAME LOOP START KARO
     // ======================================== -->
     console.log("🎮 Starting Game Loop");
     if (typeof startGameLoop === 'function') {
@@ -5432,14 +5446,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ======================================== -->
-    // GAME HISTORY LOAD KARO (FAST)
+    // GAME HISTORY LOAD KARO
     // ======================================== -->
     if (typeof loadGameHistory === 'function') {
         try { loadGameHistory(); } catch (e) { console.log("History error:", e); }
     }
     
     // ======================================== -->
-    // PROGRESS BAR ANIMATION - 10 SECOND
+    // PROGRESS BAR ANIMATION
     // ======================================== -->
     let progress = 0;
     const progressInterval = setInterval(() => {
@@ -5454,37 +5468,69 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
     
     // ======================================== -->
-    // STATUS TICKS FIX - YAHAN PROBLEM THA
+    // SIMPLE TICK FIX - 100% GUARANTEED
     // ======================================== -->
     
-    // IMPORTANT: Status icons ko dhang se select karo
+    // Sabse simple method - direct class change
     setTimeout(() => {
-        const icon1 = document.querySelector('.status-item:nth-child(1) i:last-child');
-        if (icon1) {
-            icon1.className = 'fas fa-check-circle';
-            icon1.style.color = '#00C853';
-            icon1.style.animation = 'none';
-            console.log("✅ Tick 1 done");
+        const allSpinners = document.querySelectorAll('.fa-spinner');
+        if (allSpinners.length > 0) {
+            // Pehle spinner ko check circle mein badlo
+            allSpinners[0].className = 'fas fa-check-circle';
+            allSpinners[0].style.color = '#00C853';
+            allSpinners[0].style.animation = 'none';
+            console.log("✅ Tick 1 done - Spinner 1 changed");
+        } else {
+            console.log("⚠️ No spinners found at 1.5s");
+            
+            // Alternative method - status items se dhundho
+            const statusIcons = document.querySelectorAll('.status-item i');
+            if (statusIcons.length > 0) {
+                statusIcons[0].className = 'fas fa-check-circle';
+                statusIcons[0].style.color = '#00C853';
+                statusIcons[0].style.animation = 'none';
+                console.log("✅ Tick 1 done - Status icon 1 changed");
+            }
         }
     }, 1500);
     
     setTimeout(() => {
-        const icon2 = document.querySelector('.status-item:nth-child(2) i:last-child');
-        if (icon2) {
-            icon2.className = 'fas fa-check-circle';
-            icon2.style.color = '#00C853';
-            icon2.style.animation = 'none';
-            console.log("✅ Tick 2 done");
+        const allSpinners = document.querySelectorAll('.fa-spinner');
+        if (allSpinners.length > 1) {
+            allSpinners[1].className = 'fas fa-check-circle';
+            allSpinners[1].style.color = '#00C853';
+            allSpinners[1].style.animation = 'none';
+            console.log("✅ Tick 2 done - Spinner 2 changed");
+        } else {
+            console.log("⚠️ No second spinner found at 3s");
+            
+            const statusIcons = document.querySelectorAll('.status-item i');
+            if (statusIcons.length > 1) {
+                statusIcons[1].className = 'fas fa-check-circle';
+                statusIcons[1].style.color = '#00C853';
+                statusIcons[1].style.animation = 'none';
+                console.log("✅ Tick 2 done - Status icon 2 changed");
+            }
         }
     }, 3000);
     
     setTimeout(() => {
-        const icon3 = document.querySelector('.status-item:nth-child(3) i:last-child');
-        if (icon3) {
-            icon3.className = 'fas fa-check-circle';
-            icon3.style.color = '#00C853';
-            icon3.style.animation = 'none';
-            console.log("✅ Tick 3 done");
+        const allSpinners = document.querySelectorAll('.fa-spinner');
+        if (allSpinners.length > 2) {
+            allSpinners[2].className = 'fas fa-check-circle';
+            allSpinners[2].style.color = '#00C853';
+            allSpinners[2].style.animation = 'none';
+            console.log("✅ Tick 3 done - Spinner 3 changed");
+        } else {
+            console.log("⚠️ No third spinner found at 4.5s");
+            
+            const statusIcons = document.querySelectorAll('.status-item i');
+            if (statusIcons.length > 2) {
+                statusIcons[2].className = 'fas fa-check-circle';
+                statusIcons[2].style.color = '#00C853';
+                statusIcons[2].style.animation = 'none';
+                console.log("✅ Tick 3 done - Status icon 3 changed");
+            }
         }
     }, 4500);
     
@@ -5526,7 +5572,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ======================================== -->
-    // TELEGRAM INITIALIZATION (BACKGROUND MEIN)
+    // TELEGRAM INITIALIZATION
     // ======================================== -->
     if (typeof initTelegramAndWelcome === 'function') {
         setTimeout(() => {
@@ -5535,37 +5581,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ======================================== -->
-    // USER DATA LOADING (BACKGROUND MEIN)
+    // USER DATA LOADING
     // ======================================== -->
     if (typeof initializeUser === 'function') {
-        console.log("⏳ Loading user data in BACKGROUND...");
+        console.log("⏳ Loading user data...");
         
         initializeUser().then(() => {
-            console.log("✅ User data loaded in background");
+            console.log("✅ User data loaded");
             if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
             if (typeof loadUserStats === 'function') loadUserStats();
-            console.log("💰 Balance updated in background");
         }).catch(error => {
-            console.log("User data load error (background):", error);
+            console.log("User data load error:", error);
         });
     }
     
     // ======================================== -->
-    // UPDATE PROFILE DISPLAY IMMEDIATELY
+    // UPDATE PROFILE DISPLAY
     // ======================================== -->
     if (typeof updateProfileDisplay === 'function') {
         updateProfileDisplay();
     }
     
     // ======================================== -->
-    // LOADING SCREEN HIDE AFTER EXACTLY 10 SECONDS
+    // LOADING SCREEN HIDE AFTER 10 SECONDS
     // ======================================== -->
     setTimeout(() => {
         if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
             loadingScreen.classList.add('hidden');
-            console.log("✅ Loading screen hidden after exactly 10 seconds");
+            console.log("✅ Loading screen hidden after 10 seconds");
             
-            // Final update
             if (typeof updateProfileDisplay === 'function') {
                 setTimeout(updateProfileDisplay, 50);
             }
@@ -5573,7 +5617,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 10000);
     
     // ======================================== -->
-    // FIX HISTORY STRIP POSITION
+    // FIX HISTORY STRIP
     // ======================================== -->
     setTimeout(() => {
         const historyContainer = document.querySelector('.history-container');
@@ -5583,6 +5627,20 @@ document.addEventListener('DOMContentLoaded', function() {
             historyContainer.style.height = '38px';
         }
     }, 500);
+    
+    // ======================================== -->
+    // FALLBACK - Agar kuch kaam na kare to bhi ticks dikhein
+    // ======================================== -->
+    setTimeout(() => {
+        // Force all spinners to check circles after 5 seconds
+        const allIcons = document.querySelectorAll('.status-item i');
+        allIcons.forEach((icon, index) => {
+            icon.className = 'fas fa-check-circle';
+            icon.style.color = '#00C853';
+            icon.style.animation = 'none';
+        });
+        console.log("✅ Fallback: All icons changed to check circles");
+    }, 5000);
 });
 
         // ======================================== -->

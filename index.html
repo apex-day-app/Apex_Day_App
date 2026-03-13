@@ -5380,7 +5380,7 @@ async function submitWithdrawRequest() {
         }
         
         // ======================================== -->
-// 48. SIMPLE & RELIABLE INITIALIZATION (UPDATED)
+// 48. SIMPLE & RELIABLE INITIALIZATION (FINAL FIX)
 // ======================================== -->
 
 // Ye code sabse pehle run hoga - FORCE SHOW LOADING
@@ -5397,7 +5397,7 @@ async function submitWithdrawRequest() {
     // Loading hide function
     window.hideLoadingScreen = function(reason) {
         const ls = document.getElementById('loading-screen');
-        if (!ls) return;
+        if (!ls) return false;
         if (!ls.classList.contains('hidden')) {
             ls.classList.add('hidden');
             console.log(`✅ Loading hidden: ${reason}`);
@@ -5405,16 +5405,6 @@ async function submitWithdrawRequest() {
         }
         return false;
     };
-    
-    // Telegram events
-    if (window.Telegram && window.Telegram.WebApp) {
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.onEvent('viewportChanged', () => {});
-            tg.onEvent('mainButtonClicked', () => {});
-            tg.onEvent('backButtonClicked', () => {});
-        } catch (e) {}
-    }
 })();
 
 // DOM Content Loaded
@@ -5424,13 +5414,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingScreen = document.getElementById('loading-screen');
     const loadingBar = document.getElementById('loading-bar');
     const loadingPercent = document.getElementById('loading-percent');
-    
-    // Status icons
-    const statusIcons = [
-        document.querySelectorAll('.status-item i:last-child')[0],
-        document.querySelectorAll('.status-item i:last-child')[1],
-        document.querySelectorAll('.status-item i:last-child')[2]
-    ];
     
     // ======================================== -->
     // PEHLE HI LOADING SCREEN SHOW KARO
@@ -5444,12 +5427,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // GAME LOOP START KARO (FAST)
     // ======================================== -->
     console.log("🎮 Starting Game Loop");
-    if (typeof startGameLoop === 'function') startGameLoop();
+    if (typeof startGameLoop === 'function') {
+        try { startGameLoop(); } catch (e) { console.log("Game loop error:", e); }
+    }
     
     // ======================================== -->
     // GAME HISTORY LOAD KARO (FAST)
     // ======================================== -->
-    if (typeof loadGameHistory === 'function') loadGameHistory();
+    if (typeof loadGameHistory === 'function') {
+        try { loadGameHistory(); } catch (e) { console.log("History error:", e); }
+    }
     
     // ======================================== -->
     // PROGRESS BAR ANIMATION - 10 SECOND
@@ -5464,32 +5451,40 @@ document.addEventListener('DOMContentLoaded', function() {
         if (progress >= 100) {
             clearInterval(progressInterval);
         }
-    }, 100); // 100ms * 100 = 10 seconds
+    }, 100);
     
     // ======================================== -->
-    // STATUS TICKS
+    // STATUS TICKS FIX - YAHAN PROBLEM THA
     // ======================================== -->
+    
+    // IMPORTANT: Status icons ko dhang se select karo
     setTimeout(() => {
-        if (statusIcons[0]) {
-            statusIcons[0].className = 'fas fa-check-circle';
-            statusIcons[0].style.color = '#00C853';
-            statusIcons[0].style.animation = 'none';
+        const icon1 = document.querySelector('.status-item:nth-child(1) i:last-child');
+        if (icon1) {
+            icon1.className = 'fas fa-check-circle';
+            icon1.style.color = '#00C853';
+            icon1.style.animation = 'none';
+            console.log("✅ Tick 1 done");
         }
     }, 1500);
     
     setTimeout(() => {
-        if (statusIcons[1]) {
-            statusIcons[1].className = 'fas fa-check-circle';
-            statusIcons[1].style.color = '#00C853';
-            statusIcons[1].style.animation = 'none';
+        const icon2 = document.querySelector('.status-item:nth-child(2) i:last-child');
+        if (icon2) {
+            icon2.className = 'fas fa-check-circle';
+            icon2.style.color = '#00C853';
+            icon2.style.animation = 'none';
+            console.log("✅ Tick 2 done");
         }
     }, 3000);
     
     setTimeout(() => {
-        if (statusIcons[2]) {
-            statusIcons[2].className = 'fas fa-check-circle';
-            statusIcons[2].style.color = '#00C853';
-            statusIcons[2].style.animation = 'none';
+        const icon3 = document.querySelector('.status-item:nth-child(3) i:last-child');
+        if (icon3) {
+            icon3.className = 'fas fa-check-circle';
+            icon3.style.color = '#00C853';
+            icon3.style.animation = 'none';
+            console.log("✅ Tick 3 done");
         }
     }, 4500);
     
@@ -5534,73 +5529,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // TELEGRAM INITIALIZATION (BACKGROUND MEIN)
     // ======================================== -->
     if (typeof initTelegramAndWelcome === 'function') {
-        // DON'T AWAIT - Background mein chhodo
         setTimeout(() => {
-            initTelegramAndWelcome();
+            try { initTelegramAndWelcome(); } catch (e) { console.log("Telegram init error:", e); }
         }, 100);
     }
     
     // ======================================== -->
-    // USER DATA LOADING (BACKGROUND MEIN - SABSE IMPORTANT)
+    // USER DATA LOADING (BACKGROUND MEIN)
     // ======================================== -->
     if (typeof initializeUser === 'function') {
         console.log("⏳ Loading user data in BACKGROUND...");
         
-        // WITHOUT AWAIT - Background mein load hone do
         initializeUser().then(() => {
             console.log("✅ User data loaded in background");
-            
-            // Update display immediately
             if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
             if (typeof loadUserStats === 'function') loadUserStats();
-            
-            // Balance ab update ho chuka hai, lekin loading screen abhi dikhegi
             console.log("💰 Balance updated in background");
-            
         }).catch(error => {
             console.log("User data load error (background):", error);
         });
     }
     
     // ======================================== -->
-    // FIX HISTORY STRIP POSITION
-    // ======================================== -->
-    if (typeof fixHistoryStripPosition === 'function') {
-        setTimeout(fixHistoryStripPosition, 500);
-    }
-    
-    // ======================================== -->
     // UPDATE PROFILE DISPLAY IMMEDIATELY
     // ======================================== -->
     if (typeof updateProfileDisplay === 'function') {
-        // Pehle current value dikhao (null/loading icon)
         updateProfileDisplay();
     }
     
     // ======================================== -->
-    // LOADING SCREEN HIDE AFTER EXACTLY 10 SECONDS (FIXED)
+    // LOADING SCREEN HIDE AFTER EXACTLY 10 SECONDS
     // ======================================== -->
     setTimeout(() => {
         if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
             loadingScreen.classList.add('hidden');
             console.log("✅ Loading screen hidden after exactly 10 seconds");
             
-            // Final update to ensure balance is shown
+            // Final update
             if (typeof updateProfileDisplay === 'function') {
                 setTimeout(updateProfileDisplay, 50);
             }
         }
-    }, 10000); // EXACTLY 10 SECONDS
+    }, 10000);
+    
+    // ======================================== -->
+    // FIX HISTORY STRIP POSITION
+    // ======================================== -->
+    setTimeout(() => {
+        const historyContainer = document.querySelector('.history-container');
+        if (historyContainer) {
+            historyContainer.style.marginTop = '';
+            historyContainer.style.marginBottom = '2px';
+            historyContainer.style.height = '38px';
+        }
+    }, 500);
 });
-
-function fixHistoryStripPosition() {
-    const historyContainer = document.querySelector('.history-container');
-    if (historyContainer) {
-        historyContainer.style.marginTop = '';
-        historyContainer.style.marginBottom = '2px';
-        historyContainer.style.height = '38px';
-    }
-}
 
         // ======================================== -->
         // 49. DISABLE COPY & RIGHT CLICK (COMPLETE)

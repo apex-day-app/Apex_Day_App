@@ -19,19 +19,34 @@
 <!-- Google Sheets API (Apps Script) -->
 <!-- Apps Script से connect करेंगे -->
 
-<!-- Telegram WebApp Script with Cache Buster -->
+<!-- Telegram WebApp Script with HARD RELOAD - HAR BAAR CHALU HOGA -->
 <script>
     (function() {
-        // Force reload with random parameter
-        const currentUrl = window.location.href;
-        if (!sessionStorage.getItem('apex_loaded')) {
-            const separator = currentUrl.includes('?') ? '&' : '?';
-            const newUrl = currentUrl + separator + '_t=' + Date.now();
-            window.location.replace(newUrl);
-            return;
-        }
+        // ======================================== -->
+        // FORCE RELOAD ON EVERY OPEN - 100% HAR BAAR
+        // ======================================== -->
+        
+        // Unique parameter with timestamp - HAR BAAR change hoga
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2);
+        
+        // Current URL se saare parameters hatao
+        const baseUrl = window.location.href.split('?')[0].split('#')[0];
+        
+        // Naya URL with fresh parameters - HAR BAAR unique
+        const newUrl = baseUrl + '?force=' + timestamp + '&r=' + random;
+        
+        console.log("🔄 Force reloading with new URL:", newUrl);
+        
+        // Hard reload - page completely refresh hoga
+        window.location.replace(newUrl);
+        
+        // Ye function yahin ruk jayega, agey kuch nahi chalega
+        return;
     })();
 </script>
+
+<!-- Telegram WebApp Script - यह हमेशा लोड होगा -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <!-- Telegram WebView Optimization -->

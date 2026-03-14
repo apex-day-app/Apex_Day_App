@@ -130,347 +130,6 @@ input, textarea, button, [contenteditable="true"] {
     -ms-user-select: text;
 }
 
-/* Loading icon animation for balance */
-@keyframes loadingPulse {
-    0%, 100% { 
-        opacity: 0.3; 
-        transform: scale(1); 
-    }
-    50% { 
-        opacity: 1; 
-        transform: scale(1.1); 
-    }
-}
-
-/* Balance loading icon */
-#current-balance:contains('⟳'),
-#profile-balance:contains('⟳'),
-#add-balance-display:contains('⟳'),
-#withdraw-balance-display:contains('⟳') {
-    animation: loadingPulse 1s infinite;
-    display: inline-block;
-}
-
-/* ======================================== */
-/* LOADING SCREEN STYLES                      */
-/* ======================================== */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 30% 30%, #6B4A2A, #2A1A0A);
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Poppins', sans-serif;
-}
-
-.loading-content {
-    text-align: center;
-    color: #fff;
-    max-width: 400px;
-    width: 90%;
-    padding: 30px 20px;
-    background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 40px;
-    border: 2px solid rgba(212, 175, 55, 0.5);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* Logo Styles */
-.loading-logo-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 20px;
-}
-
-.loading-logo {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, #D4AF37, #8B5A2B);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    color: #fff;
-    border: 4px solid #FFD700;
-    animation: logoPulse 2s ease-in-out infinite;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
-
-.loading-logo-glow {
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
-    background: radial-gradient(circle, rgba(212,175,55,0.6) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: glowPulse 2s ease-in-out infinite;
-    z-index: 1;
-}
-
-@keyframes logoPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-@keyframes glowPulse {
-    0%, 100% { opacity: 0.3; transform: scale(0.8); }
-    50% { opacity: 0.8; transform: scale(1.2); }
-}
-
-/* Title Styles */
-.loading-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 25px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    animation: slideDown 0.5s ease-out;
-}
-
-.loading-title span {
-    color: #D4AF37;
-    font-weight: 800;
-}
-
-@keyframes slideDown {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Connection Status Styles - YEH CHANGE KARO */
-.connection-status {
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 20px;
-    padding: 15px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(212, 175, 55, 0.3);
-    backdrop-filter: blur(5px);
-}
-
-.status-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    animation: slideIn 0.5s ease-out forwards;
-    opacity: 0;
-    transform: translateX(-20px);
-}
-
-.status-item:last-child {
-    border-bottom: none;
-}
-
-.status-item:nth-child(1) { animation-delay: 0.2s; }
-.status-item:nth-child(2) { animation-delay: 0.4s; }
-.status-item:nth-child(3) { animation-delay: 0.6s; }
-
-@keyframes slideIn {
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.status-item i:first-child {
-    color: #D4AF37;
-    font-size: 1.3rem;
-    filter: drop-shadow(0 2px 4px rgba(212,175,55,0.3));
-}
-
-.status-item span {
-    flex: 1;
-    text-align: left;
-    font-size: 1rem;
-    color: #FFE4B5;
-    font-weight: 500;
-}
-
-/* YAHAN SE CHANGE SHURU */
-.status-item .fa-spinner {
-    color: #D4AF37;
-    font-size: 1rem;
-    animation: spin 1s linear infinite;
-}
-
-.status-item .fa-check-circle {
-    color: #00C853 !important;
-    font-size: 1rem;
-    animation: none;
-}
-
-/* Status icons ke liye specific rules */
-.status-item i.fa-check-circle {
-    color: #00C853 !important;
-    animation: none;
-}
-/* YAHAN TAK CHANGE */
-
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Progress Bar Styles */
-.loading-progress-container {
-    margin-bottom: 25px;
-    animation: fadeInUp 0.5s ease-out 0.8s both;
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.loading-progress-bar-bg {
-    width: 100%;
-    height: 12px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 30px;
-    overflow: hidden;
-    border: 1px solid #D4AF37;
-    margin-bottom: 8px;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.loading-progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #D4AF37, #FFD700, #D4AF37);
-    background-size: 200% 100%;
-    animation: gradientMove 1s linear infinite;
-    border-radius: 30px;
-    transition: width 0.3s ease;
-    box-shadow: 0 0 15px #FFD700;
-}
-
-@keyframes gradientMove {
-    0% { background-position: 0% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.loading-percent {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #D4AF37;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* Moving Icons Styles */
-.moving-icons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 25px;
-    animation: fadeIn 0.5s ease-out 1s both;
-}
-
-.floating-icon {
-    color: #D4AF37;
-    font-size: 1.3rem;
-    animation: float 3s ease-in-out infinite;
-    opacity: 0.7;
-    filter: drop-shadow(0 5px 10px rgba(212,175,55,0.3));
-}
-
-.floating-icon:nth-child(1) { animation-delay: 0s; }
-.floating-icon:nth-child(2) { animation-delay: 0.5s; }
-.floating-icon:nth-child(3) { animation-delay: 1s; }
-.floating-icon:nth-child(4) { animation-delay: 1.5s; }
-
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-15px) rotate(5deg); }
-}
-
-/* Pulse Dots Styles */
-.pulse-dots {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    animation: fadeIn 0.5s ease-out 1.2s both;
-}
-
-.pulse-dots span {
-    width: 10px;
-    height: 10px;
-    background: #D4AF37;
-    border-radius: 50%;
-    animation: pulse 1.5s ease-in-out infinite;
-    box-shadow: 0 0 10px #D4AF37;
-}
-
-.pulse-dots span:nth-child(1) { animation-delay: 0s; }
-.pulse-dots span:nth-child(2) { animation-delay: 0.5s; }
-.pulse-dots span:nth-child(3) { animation-delay: 1s; }
-
-@keyframes pulse {
-    0%, 100% { 
-        transform: scale(1); 
-        opacity: 0.5;
-        box-shadow: 0 0 10px #D4AF37;
-    }
-    50% { 
-        transform: scale(1.5); 
-        opacity: 1;
-        box-shadow: 0 0 20px #FFD700;
-    }
-}
-
-/* Hidden State */
-.loading-overlay.hidden {
-    display: none;
-}
-
-/* Responsive Styles */
-@media (max-width: 480px) {
-    .loading-content {
-        padding: 25px 15px;
-    }
-    
-    .loading-logo-container {
-        width: 80px;
-        height: 80px;
-    }
-    
-    .loading-logo {
-        width: 80px;
-        height: 80px;
-        font-size: 2.5rem;
-    }
-    
-    .loading-title {
-        font-size: 2rem;
-    }
-    
-    .status-item span {
-        font-size: 0.9rem;
-    }
-    
-    .loading-percent {
-        font-size: 1.2rem;
-    }
-    
-    .floating-icon {
-        font-size: 1.1rem;
-    }
-}
-
 .add-money-container {
     background: linear-gradient(135deg, #1a2a3a, #0f1a24);
     min-height: 100vh;
@@ -3489,64 +3148,6 @@ body {
         <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
     </div>
 </div>
-
-<!-- PREMIUM LOADING SCREEN - बिल्कुल सही -->
-<div id="loading-screen" class="loading-overlay">
-    <div class="loading-content">
-        <!-- Animated Logo -->
-        <div class="loading-logo-container">
-            <div class="loading-logo">
-                <i class="fas fa-dice-d6"></i>
-            </div>
-            <div class="loading-logo-glow"></div>
-        </div>
-        
-        <!-- Game Title -->
-        <h2 class="loading-title">Apex<span>Day</span></h2>
-        
-        <!-- Connection Status -->
-        <div class="connection-status">
-            <div class="status-item">
-                <i class="fas fa-telegram-plane"></i>
-                <span>Connecting to Telegram</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <div class="status-item">
-                <i class="fas fa-cloud"></i>
-                <span>Secure Server</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-            <div class="status-item">
-                <i class="fas fa-shield-alt"></i>
-                <span>Data Encrypted</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </div>
-        </div>
-        
-        <!-- Progress Bar -->
-        <div class="loading-progress-container">
-            <div class="loading-progress-bar-bg">
-                <div class="loading-progress-bar" id="loading-bar"></div>
-            </div>
-            <div class="loading-percent" id="loading-percent">0%</div>
-        </div>
-        
-        <!-- Moving Icons -->
-        <div class="moving-icons">
-            <i class="fas fa-robot floating-icon"></i>
-            <i class="fas fa-database floating-icon"></i>
-            <i class="fas fa-lock floating-icon"></i>
-            <i class="fas fa-cloud-upload-alt floating-icon"></i>
-        </div>
-        
-        <!-- Pulse Dots -->
-        <div class="pulse-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </div>
-</div>
     
     <!-- ======================================== -->
     <!-- 22. BACKGROUND ELEMENTS                      -->
@@ -4174,12 +3775,13 @@ let currentUserData = {
     name: 'Demo User',
     email: 'demo@example.com',
     phone: 'Not Set',
-    balance: null,
+    // ✅ Cache से balance लो - तुरंत दिखेगा
+    balance: 0,
     bank_accounts: [],
     upis: [],
     notifications: [],
-    totalWins: 0,
-    gamesPlayed: 0,
+    totalWins: (localStorage.getItem('cached_wins') ? parseInt(localStorage.getItem('cached_wins')) : 0),
+    gamesPlayed: (localStorage.getItem('cached_games') ? parseInt(localStorage.getItem('cached_games')) : 0),
     createdAt: new Date(),
     telegram_id: null,
     telegram_username: null
@@ -4219,7 +3821,6 @@ let utrSecond = '';
 function formatBalance(amount) {
     if (amount > MAX_BALANCE) amount = MAX_BALANCE;
     if (amount === 0) return "0";
-    if (amount === null || amount === undefined) return "⟳";
     
     let numStr = Math.floor(amount).toString();
     if (numStr.length <= 3) return numStr;
@@ -4238,14 +3839,7 @@ function enforceMaxBalance(amount) {
 function updateProfileDisplay() {
     if (!currentUserData) return;
     
-    let balance;
-    
-    // FAST CHECK - Pehle loading icon dikhao, phir update ho jayega
-    if (currentUserData.balance === null || currentUserData.balance === undefined) {
-        balance = '⟳'; // Loading icon
-    } else {
-        balance = formatBalance(currentUserData.balance);
-    }
+    let balance = formatBalance(currentUserData.balance);
     
     // Sab elements ek saath update karo
     const elements = {
@@ -4569,110 +4163,171 @@ function showAddMoneyMessage(message, type) {
         // ======================================== -->
 
         function initTelegramAndWelcome() {
-            let userName = 'User';
-            let telegramId = null;
+    let userName = 'User';
+    let telegramId = null;
+    
+    console.log("📱 Initializing Telegram...");
+    
+    // ✅ Timer start - हर हाल में start होगा
+    setTimeout(() => {
+        console.log("🎮 Trying to start game loop...");
+        if (typeof startGameLoop === 'function') {
+            try {
+                startGameLoop();
+                console.log("✅ Game loop started successfully");
+            } catch (e) {
+                console.error("❌ Game loop error:", e);
+            }
+        } else {
+            console.error("❌ startGameLoop function not found!");
+        }
+    }, 500);
+    
+    // Telegram WebApp se data lo
+    if (window.Telegram && window.Telegram.WebApp) {
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
             
-            console.log("📱 Initializing Telegram...");
+            const tgUser = tg.initDataUnsafe?.user;
             
-            // Telegram WebApp se data lo
-            if (window.Telegram && window.Telegram.WebApp) {
-                try {
-                    const tg = window.Telegram.WebApp;
-                    tg.ready();
-                    tg.expand();
-                    
-                    const tgUser = tg.initDataUnsafe?.user;
-                    
-                    if (tgUser) {
-                        telegramId = tgUser.id.toString();
-                        const firstName = tgUser.first_name || '';
-                        const lastName = tgUser.last_name || '';
-                        userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                        const username = tgUser.username || '';
-                        
-                        console.log(`✅ Telegram user: ${userName} (${telegramId})`);
-                        
-                        currentUserData = {
-                            userId: telegramId,
-                            name: userName,
-                            email: '',
-                            phone: '',
-                            balance: 0,
-                            bank_accounts: [],
-                            upis: [],
-                            notifications: [],
-                            totalWins: 0,
-                            gamesPlayed: 0,
-                            createdAt: new Date(),
-                            telegram_id: telegramId,
-                            telegram_username: username
-                        };
-                        
-                        localStorage.setItem('tg_id', telegramId);
-                        localStorage.setItem('tg_name', userName);
-                        
-                        setTimeout(() => {
-                            initializeUser();
-                        }, 100);
-                    } else {
-                        console.log("⚠️ No Telegram user data");
-                        loadFromLocalStorage();
-                    }
-                } catch (e) {
-                    console.error("Telegram error:", e);
-                    loadFromLocalStorage();
+            if (tgUser) {
+                telegramId = tgUser.id.toString();
+                const firstName = tgUser.first_name || '';
+                const lastName = tgUser.last_name || '';
+                userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+                const username = tgUser.username || '';
+                
+                console.log(`✅ Telegram user: ${userName} (${telegramId})`);
+                
+                // ✅ CACHE से balance लोड करो - नहीं है तो 11 दो
+                const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
+                const cachedWins = localStorage.getItem(`wins_${telegramId}`);
+                const cachedGames = localStorage.getItem(`games_${telegramId}`);
+                
+                // ✅ अगर cache नहीं है तो 11 दो - तुरंत!
+                const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+                const initialWins = cachedWins ? parseInt(cachedWins) : 0;
+                const initialGames = cachedGames ? parseInt(cachedGames) : 0;
+                
+                console.log(`⚡ Loading balance: ${initialBalance} (${cachedBalance ? 'from cache' : 'default ₹11'})`);
+                
+                currentUserData = {
+                    userId: telegramId,
+                    name: userName,
+                    email: '',
+                    phone: '',
+                    balance: initialBalance,
+                    bank_accounts: [],
+                    upis: [],
+                    notifications: [],
+                    totalWins: initialWins,
+                    gamesPlayed: initialGames,
+                    createdAt: new Date(),
+                    telegram_id: telegramId,
+                    telegram_username: username
+                };
+                
+                // ✅ तुरंत display update करो
+                updateProfileDisplay();
+                loadUserStats();
+                
+                localStorage.setItem('tg_id', telegramId);
+                localStorage.setItem('tg_name', userName);
+                
+                // ✅ अगर cache नहीं था तो cache में 11 save करो
+                if (!cachedBalance) {
+                    localStorage.setItem(`balance_${telegramId}`, '11');
+                    localStorage.setItem(`wins_${telegramId}`, '0');
+                    localStorage.setItem(`games_${telegramId}`, '0');
                 }
+                
+                // ✅ Background में Google Sheets से sync करो
+                setTimeout(() => {
+                    initializeUser();
+                }, 100);
             } else {
-                console.log("ℹ️ Not in Telegram WebApp");
+                console.log("⚠️ No Telegram user data");
                 loadFromLocalStorage();
             }
-            
-            function loadFromLocalStorage() {
-                const savedTgId = localStorage.getItem('tg_id');
-                const savedTgName = localStorage.getItem('tg_name');
-                
-                if (savedTgId) {
-                    currentUserData = {
-                        userId: savedTgId,
-                        name: savedTgName || 'User',
-                        email: '',
-                        phone: '',
-                        balance: 0,
-                        bank_accounts: [],
-                        upis: [],
-                        notifications: [],
-                        totalWins: 0,
-                        gamesPlayed: 0,
-                        createdAt: new Date(),
-                        telegram_id: savedTgId,
-                        telegram_username: savedTgName || null
-                    };
-                    
-                    setTimeout(() => {
-                        initializeUser();
-                    }, 100);
-                } else {
-                    currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
-                    currentUserData.name = 'Demo User';
-                    updateProfileDisplay();
-                }
-            }
-            
-            // Welcome popup - sirf ek baar
-            const welcomeShown = localStorage.getItem('welcomePopupShown');
-            if (!welcomeShown) {
-                setTimeout(() => {
-                    const popup = document.getElementById('welcome-popup');
-                    const nameEl = document.getElementById('welcome-user-name');
-                    if (popup && nameEl) {
-                        nameEl.textContent = userName;
-                        popup.classList.remove('hidden');
-                        localStorage.setItem('welcomePopupShown', 'true');
-                        console.log("🎉 Welcome popup shown");
-                    }
-                }, 1500);
-            }
+        } catch (e) {
+            console.error("Telegram error:", e);
+            loadFromLocalStorage();
         }
+    } else {
+        console.log("ℹ️ Not in Telegram WebApp");
+        loadFromLocalStorage();
+    }
+    
+    function loadFromLocalStorage() {
+        const savedTgId = localStorage.getItem('tg_id');
+        const savedTgName = localStorage.getItem('tg_name');
+        
+        if (savedTgId) {
+            // ✅ CACHE से balance लोड करो
+            const cachedBalance = localStorage.getItem(`balance_${savedTgId}`);
+            const cachedWins = localStorage.getItem(`wins_${savedTgId}`);
+            const cachedGames = localStorage.getItem(`games_${savedTgId}`);
+            
+            // ✅ अगर cache नहीं है तो 11 दो
+            const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+            
+            console.log(`⚡ Loading from localStorage: ${initialBalance} (${cachedBalance ? 'cached' : 'default'})`);
+            
+            currentUserData = {
+                userId: savedTgId,
+                name: savedTgName || 'User',
+                email: '',
+                phone: '',
+                balance: initialBalance,
+                bank_accounts: [],
+                upis: [],
+                notifications: [],
+                totalWins: cachedWins ? parseInt(cachedWins) : 0,
+                gamesPlayed: cachedGames ? parseInt(cachedGames) : 0,
+                createdAt: new Date(),
+                telegram_id: savedTgId,
+                telegram_username: savedTgName || null
+            };
+            
+            // ✅ तुरंत display update करो
+            updateProfileDisplay();
+            loadUserStats();
+            
+            // ✅ अगर cache नहीं था तो cache में 11 save करो
+            if (!cachedBalance) {
+                localStorage.setItem(`balance_${savedTgId}`, '11');
+                localStorage.setItem(`wins_${savedTgId}`, '0');
+                localStorage.setItem(`games_${savedTgId}`, '0');
+            }
+            
+            setTimeout(() => {
+                initializeUser();
+            }, 100);
+        } else {
+            currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
+            currentUserData.name = 'Demo User';
+            currentUserData.balance = 11; // ✅ Demo user को भी 11
+            updateProfileDisplay();
+        }
+    }
+    
+    // Welcome popup - sirf ek baar
+    const welcomeShown = localStorage.getItem('welcomePopupShown');
+    if (!welcomeShown) {
+        setTimeout(() => {
+            const popup = document.getElementById('welcome-popup');
+            const nameEl = document.getElementById('welcome-user-name');
+            if (popup && nameEl) {
+                nameEl.textContent = userName;
+                popup.classList.remove('hidden');
+                localStorage.setItem('welcomePopupShown', 'true');
+                console.log("🎉 Welcome popup shown");
+            }
+        }, 1500);
+    }
+}    
 
         function closeWelcomePopup() {
             const popup = document.getElementById('welcome-popup');
@@ -4733,57 +4388,68 @@ async function initializeUser() {
         return;
     }
     
-    // Pehle updateProfileDisplay() call karo (⟳ dikhana hai)
-    updateProfileDisplay();
+    // ✅ STEP 1: CACHE से तुरंत लोड करो
+    const cachedBalance = localStorage.getItem(`balance_${userId}`);
+    const cachedWins = localStorage.getItem(`wins_${userId}`);
+    const cachedGames = localStorage.getItem(`games_${userId}`);
     
-    try {
-        // API call background mein
-        const result = await getUserFromSheet(userId);
-        
-        if (result.success && result.user) {
-            currentUserData = {
-                ...currentUserData,
-                balance: parseFloat(result.user.balance) || 0,
-                name: result.user.name || userName,
-                email: result.user.email || '',
-                phone: result.user.phone || '',
-                totalWins: parseInt(result.user.totalWins) || 0,
-                gamesPlayed: parseInt(result.user.gamesPlayed) || 0,
-                bank_accounts: result.user.bank_accounts ? JSON.parse(result.user.bank_accounts) : [],
-                upis: result.user.upis ? JSON.parse(result.user.upis) : []
-            };
-            
-            // Update display - ab balance aayega
-            updateProfileDisplay();
-            loadUserStats();
-            
-            console.log(`💰 Balance loaded: ₹${currentUserData.balance}`);
-            
-        } else {
-            // User nahi mila - create karo
-            const createResult = await createUserInSheet(userId, userName, userId);
-            
-            if (createResult.success) {
-                currentUserData.balance = 11;
-                currentUserData.totalWins = 0;
-                currentUserData.gamesPlayed = 0;
-                
-                updateProfileDisplay();
-                loadUserStats();
-                
-                console.log(`💰 New user: ₹11 bonus added`);
-                
-                // Background mein update
-                updateBalanceInSheet(userId, 11).catch(e => {});
-            } else {
-                updateProfileDisplay();
-            }
-        }
-    } catch (error) {
-        console.error("Error in initializeUser:", error);
-        // Error aane par bhi update karo
-        updateProfileDisplay();
+    if (cachedBalance) {
+        currentUserData.balance = parseFloat(cachedBalance);
+        currentUserData.totalWins = parseInt(cachedWins) || 0;
+        currentUserData.gamesPlayed = parseInt(cachedGames) || 0;
+        console.log(`⚡ Cached balance loaded: ₹${cachedBalance}`);
+    } else {
+        // ✅ कोई cache नहीं तो 11 दे दो - तुरंत!
+        currentUserData.balance = 11;
+        console.log(`💰 New user: ₹11 bonus added (cached)`);
     }
+    
+    // ✅ STEP 2: तुरंत display update करो
+    updateProfileDisplay();
+    loadUserStats();
+    
+    // ✅ STEP 3: API call background में (बिना रुकावट)
+    setTimeout(async () => {
+        try {
+            console.log("📡 Fetching live data from Google Sheets...");
+            const result = await getUserFromSheet(userId);
+            
+            if (result.success && result.user) {
+                const liveBalance = parseFloat(result.user.balance) || 0;
+                const liveWins = parseInt(result.user.totalWins) || 0;
+                const liveGames = parseInt(result.user.gamesPlayed) || 0;
+                
+                // ✅ Cache update
+                localStorage.setItem(`balance_${userId}`, liveBalance);
+                localStorage.setItem(`wins_${userId}`, liveWins);
+                localStorage.setItem(`games_${userId}`, liveGames);
+                
+                // ✅ Update if changed
+                if (currentUserData.balance !== liveBalance) {
+                    currentUserData.balance = liveBalance;
+                    currentUserData.totalWins = liveWins;
+                    currentUserData.gamesPlayed = liveGames;
+                    
+                    updateProfileDisplay();
+                    loadUserStats();
+                    console.log(`✅ Live balance updated: ₹${liveBalance}`);
+                }
+            } else {
+                // User nahi mila - create karo
+                const createResult = await createUserInSheet(userId, userName, userId);
+                if (createResult.success) {
+                    // ✅ Already 11 set किया हुआ है
+                    localStorage.setItem(`balance_${userId}`, '11');
+                    localStorage.setItem(`wins_${userId}`, '0');
+                    localStorage.setItem(`games_${userId}`, '0');
+                    
+                    updateBalanceInSheet(userId, 11).catch(e => {});
+                }
+            }
+        } catch (error) {
+            console.error("Background sync error:", error);
+        }
+    }, 100);
 }
         
         // ======================================== -->
@@ -4813,77 +4479,95 @@ async function initializeUser() {
         // 41. GAME LOOP & BETTING (FIXED)
         // ======================================== -->
         function startGameLoop() {
-            if (gameTimerInterval) {
-                clearInterval(gameTimerInterval);
-                gameTimerInterval = null;
-            }
-            
-            timeLeft = 15;
-            isBettingActive = true;
-            currentRoundId = Date.now();
-            
-            const timerValue = document.querySelector('.timer-value');
-            const resultBox = document.getElementById('result-box');
-            
-            if (!timerValue || !resultBox) return;
-            
-            timerValue.textContent = '15.0';
-            resultBox.classList.add('loading');
-            resultBox.innerHTML = '';
-            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-            
-            currentBet = { green: 0, blue: 0 };
-            gameState = { 
-                totalGreenBets: 0, 
-                totalBlueBets: 0, 
-                allBets: [], 
-                currentTime: 0,
-                roundId: currentRoundId
-            };
-            userBetMap = { green: {}, blue: {} };
-            
-            const greenList = document.getElementById('green-bets-list');
-            const blueList = document.getElementById('blue-bets-list');
-            const greenTotal = document.getElementById('green-total');
-            const blueTotal = document.getElementById('blue-total');
-            const greenBadge = document.getElementById('bet-amount-green');
-            const blueBadge = document.getElementById('bet-amount-blue');
-            
-            if (greenList) {
-                greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
-            }
-            if (blueList) {
-                blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
-            }
-            if (greenTotal) greenTotal.textContent = '0';
-            if (blueTotal) blueTotal.textContent = '0';
-            if (greenBadge) {
-                greenBadge.textContent = '0';
-                greenBadge.style.display = 'none';
-            }
-            if (blueBadge) {
-                blueBadge.textContent = '0';
-                blueBadge.style.display = 'none';
-            }
-            
-            gameTimerInterval = setInterval(function() {
-                timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
-                
-                if (timerValue) {
-                    timerValue.textContent = timeLeft.toFixed(1);
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(gameTimerInterval);
-                    gameTimerInterval = null;
-                    isBettingActive = false;
-                    if (timerValue) {
-                        timerValue.textContent = '0.0';
-                    }
-                    endGameRound();
-                }
-            }, 100);
+    console.log("🎯 startGameLoop() EXECUTED at", new Date().toLocaleTimeString());
+    
+    // पुराना timer हटाओ
+    if (gameTimerInterval) {
+        clearInterval(gameTimerInterval);
+        gameTimerInterval = null;
+    }
+    
+    timeLeft = 15;
+    isBettingActive = true;
+    currentRoundId = Date.now();
+    
+    // Elements ढूंढो
+    const timerValue = document.querySelector('.timer-value');
+    const resultBox = document.getElementById('result-box');
+    
+    console.log("🔍 Element check:", {
+        timerValue: timerValue ? "✅ Found" : "❌ Not found",
+        resultBox: resultBox ? "✅ Found" : "❌ Not found"
+    });
+    
+    // अगर elements नहीं मिले तो 1 सेकंड बाद फिर try करो
+    if (!timerValue || !resultBox) {
+        console.log("⏳ Elements not found, retrying in 1 second...");
+        setTimeout(startGameLoop, 1000);
+        return;
+    }
+    
+    // Timer set करो
+    timerValue.textContent = '15.0';
+    resultBox.classList.add('loading');
+    resultBox.innerHTML = '';
+    resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+    
+    // Game state reset
+    currentBet = { green: 0, blue: 0 };
+    gameState = {
+        totalGreenBets: 0,
+        totalBlueBets: 0,
+        allBets: [],
+        currentTime: 0,
+        roundId: currentRoundId
+    };
+    userBetMap = { green: {}, blue: {} };
+    
+    // Bet lists reset
+    const greenList = document.getElementById('green-bets-list');
+    const blueList = document.getElementById('blue-bets-list');
+    const greenTotal = document.getElementById('green-total');
+    const blueTotal = document.getElementById('blue-total');
+    const greenBadge = document.getElementById('bet-amount-green');
+    const blueBadge = document.getElementById('bet-amount-blue');
+    
+    if (greenList) greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
+    if (blueList) blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
+    if (greenTotal) greenTotal.textContent = '0';
+    if (blueTotal) blueTotal.textContent = '0';
+    if (greenBadge) {
+        greenBadge.textContent = '0';
+        greenBadge.style.display = 'none';
+    }
+    if (blueBadge) {
+        blueBadge.textContent = '0';
+        blueBadge.style.display = 'none';
+    }
+    
+    console.log("✅ Timer starting now! Countdown begins...");
+    
+    // Timer interval start
+    gameTimerInterval = setInterval(function() {
+        timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
+        
+        const timerElem = document.querySelector('.timer-value');
+        if (timerElem) {
+            timerElem.textContent = timeLeft.toFixed(1);
         }
+        
+        if (timeLeft <= 0) {
+            clearInterval(gameTimerInterval);
+            gameTimerInterval = null;
+            isBettingActive = false;
+            
+            const timerElem = document.querySelector('.timer-value');
+            if (timerElem) timerElem.textContent = '0.0';
+            
+            endGameRound();
+        }
+    }, 100);
+}
 
         function endGameRound() {
             if (gameTimerInterval) { 
@@ -4931,86 +4615,92 @@ async function initializeUser() {
         }
 
         async function placeBet(color) {
-            if (!isBettingActive) {
-                showStatusMessage('Betting closed for this round!', 'error');
-                return;
-            }
-            
-            if (isPlacingBet) return;
-            
-            if (!currentUserData) {
-                showStatusMessage('Please login first!', 'error');
-                return;
-            }
-            
-            const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
-            if (isNaN(betAmount) || betAmount < 1) {
-                showStatusMessage('Enter valid amount (Min 1)', 'error');
-                return;
-            }
-            
-            if (betAmount > currentUserData.balance) {
-                showStatusMessage('Insufficient balance!', 'error');
-                return;
-            }
-            
-            const currentBetAmount = currentBet[color] || 0;
-            const potentialWin = (currentBetAmount + betAmount) * 2;
-            const totalOtherBets = color === 'green' ? currentBet.blue : currentBet.green;
-            const projectedBalance = currentUserData.balance - betAmount + potentialWin;
-            
-            if (projectedBalance > MAX_BALANCE) {
-                showStatusMessage(`Cannot place bet - would exceed ₹${formatBalance(MAX_BALANCE)}`, 'error');
-                return;
-            }
-            
-            isPlacingBet = true;
-            
-            currentUserData.balance -= betAmount;
-            
-            if (!userBetMap[color]) userBetMap[color] = {};
-            const userKey = currentUserData.userId || 'demo';
-            
-            if (userBetMap[color][userKey]) {
-                userBetMap[color][userKey].amount += betAmount;
-            } else {
-                userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
-            }
-            
-            currentBet[color] += betAmount;
-            if (color === 'green') {
-                gameState.totalGreenBets += betAmount;
-            } else {
-                gameState.totalBlueBets += betAmount;
-            }
-            
-            updateBetListDisplay(color);
-            
-            const betBadge = document.getElementById(`bet-amount-${color}`);
-            if (betBadge) {
-                betBadge.textContent = Math.floor(currentBet[color]);
-                betBadge.style.display = 'flex';
-            }
-            
-            const totalSpan = document.getElementById(`${color}-total`);
-            if (totalSpan) {
-                totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
-            }
-            
-            updateProfileDisplay();
-            showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
-            
-            try {
-                const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${currentUserData.balance}&actionType=bet&amount=${betAmount}`;
-                fetch(url).catch(error => console.error("API error:", error));
-            } catch (error) {
-                console.error("Bet error:", error);
-            }
-            
-            setTimeout(() => {
-                isPlacingBet = false;
-            }, 300);
-        }
+    if (!isBettingActive) {
+        showStatusMessage('Betting closed for this round!', 'error');
+        return;
+    }
+    
+    if (isPlacingBet) return;
+    
+    if (!currentUserData) {
+        showStatusMessage('Please login first!', 'error');
+        return;
+    }
+    
+    const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
+    if (isNaN(betAmount) || betAmount < 1) {
+        showStatusMessage('Enter valid amount (Min 1)', 'error');
+        return;
+    }
+    
+    if (betAmount > currentUserData.balance) {
+        showStatusMessage('Insufficient balance!', 'error');
+        return;
+    }
+    
+    const currentBetAmount = currentBet[color] || 0;
+    const potentialWin = (currentBetAmount + betAmount) * 2;
+    const totalOtherBets = color === 'green' ? currentBet.blue : currentBet.green;
+    const projectedBalance = currentUserData.balance - betAmount + potentialWin;
+    
+    if (projectedBalance > MAX_BALANCE) {
+        showStatusMessage(`Cannot place bet - would exceed ₹${formatBalance(MAX_BALANCE)}`, 'error');
+        return;
+    }
+    
+    isPlacingBet = true;
+    
+    currentUserData.balance -= betAmount;
+    
+    // ✅ CACHE UPDATE - Balance change तुरंत save करो
+    if (currentUserData.userId) {
+        localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+        console.log(`💰 Cache updated: New balance ₹${currentUserData.balance}`);
+    }
+    
+    if (!userBetMap[color]) userBetMap[color] = {};
+    const userKey = currentUserData.userId || 'demo';
+    
+    if (userBetMap[color][userKey]) {
+        userBetMap[color][userKey].amount += betAmount;
+    } else {
+        userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
+    }
+    
+    currentBet[color] += betAmount;
+    if (color === 'green') {
+        gameState.totalGreenBets += betAmount;
+    } else {
+        gameState.totalBlueBets += betAmount;
+    }
+    
+    updateBetListDisplay(color);
+    
+    const betBadge = document.getElementById(`bet-amount-${color}`);
+    if (betBadge) {
+        betBadge.textContent = Math.floor(currentBet[color]);
+        betBadge.style.display = 'flex';
+    }
+    
+    const totalSpan = document.getElementById(`${color}-total`);
+    if (totalSpan) {
+        totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
+    }
+    
+    updateProfileDisplay();
+    showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
+    
+    try {
+        const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${currentUserData.balance}&actionType=bet&amount=${betAmount}`;
+        fetch(url).catch(error => console.error("API error:", error));
+    } catch (error) {
+        console.error("Bet error:", error);
+    }
+    
+    setTimeout(() => {
+        isPlacingBet = false;
+    }, 300);
+}
 
         function updateBetListDisplay(color) {
             const list = document.getElementById(`${color}-bets-list`);
@@ -5038,42 +4728,62 @@ async function initializeUser() {
         }
 
         async function processWinning(winningColor) {
-            if (!currentUserData) return;
-            
-            const userBet = currentBet[winningColor] || 0;
-            
-            if (winningColor !== 'gray' && userBet > 0) {
-                const winAmount = userBet * 2;
-                
-                let newBalance = currentUserData.balance + winAmount;
-                
-                const finalBalance = enforceMaxBalance(newBalance);
-                
-                fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
-                    .catch(error => console.error("API error:", error));
-                
-                currentUserData.balance = finalBalance;
-                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                
-            } else if (winningColor === 'gray') {
-                const totalBet = currentBet.green + currentBet.blue;
-                if (totalBet > 0) {
-                    let newBalance = currentUserData.balance + totalBet;
-                    const finalBalance = enforceMaxBalance(newBalance);
-                    
-                    fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
-                        .catch(error => console.error("API error:", error));
-                    
-                    currentUserData.balance = finalBalance;
-                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-                }
-            } else {
-                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-            }
-            
-            updateProfileDisplay();
+    if (!currentUserData) return;
+    
+    const userBet = currentBet[winningColor] || 0;
+    
+    if (winningColor !== 'gray' && userBet > 0) {
+        const winAmount = userBet * 2;
+        
+        let newBalance = currentUserData.balance + winAmount;
+        
+        const finalBalance = enforceMaxBalance(newBalance);
+        
+        fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
+            .catch(error => console.error("API error:", error));
+        
+        currentUserData.balance = finalBalance;
+        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+        
+        // ✅ CACHE UPDATE - सारा data cache में save करो
+        if (currentUserData.userId) {
+            localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+            localStorage.setItem(`wins_${currentUserData.userId}`, currentUserData.totalWins);
+            localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
+            console.log(`💰 Cache updated: Won ₹${winAmount}, New balance ₹${currentUserData.balance}`);
         }
+        
+    } else if (winningColor === 'gray') {
+        const totalBet = currentBet.green + currentBet.blue;
+        if (totalBet > 0) {
+            let newBalance = currentUserData.balance + totalBet;
+            const finalBalance = enforceMaxBalance(newBalance);
+            
+            fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
+                .catch(error => console.error("API error:", error));
+            
+            currentUserData.balance = finalBalance;
+            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+            
+            // ✅ CACHE UPDATE - Gray result (refund) के बाद
+            if (currentUserData.userId) {
+                localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+                localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
+                console.log(`💰 Cache updated: Gray result, New balance ₹${currentUserData.balance}`);
+            }
+        }
+    } else {
+        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+        
+        // ✅ CACHE UPDATE - सिर्फ games count update करो
+        if (currentUserData.userId) {
+            localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
+        }
+    }
+    
+    updateProfileDisplay();
+}
         
         // ======================================== -->
         // 42. BET AMOUNT UTILITIES
@@ -5394,254 +5104,8 @@ async function submitWithdrawRequest() {
         }
         
         // ======================================== -->
-// 48. LOADING SCREEN - ULTIMATE FIX (100% WORKING)
-// ======================================== -->
-
-// Ye code sabse pehle run hoga
-(function() {
-    console.log("🚀 Apex Day Loading Manager Started");
-    
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-        loadingScreen.classList.remove('hidden');
-        loadingScreen.style.display = 'flex';
-        console.log("✅ Loading screen forced to show");
-    }
-    
-    // Loading hide function
-    window.hideLoadingScreen = function(reason) {
-        const ls = document.getElementById('loading-screen');
-        if (!ls) return false;
-        if (!ls.classList.contains('hidden')) {
-            ls.classList.add('hidden');
-            console.log(`✅ Loading hidden: ${reason}`);
-            return true;
-        }
-        return false;
-    };
-})();
-
-// DOM Content Loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("📄 DOM Content Loaded - Initializing App");
-    
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadingBar = document.getElementById('loading-bar');
-    const loadingPercent = document.getElementById('loading-percent');
-    
-    // ======================================== -->
-    // PEHLE HI LOADING SCREEN SHOW KARO
-    // ======================================== -->
-    if (loadingScreen) {
-        loadingScreen.classList.remove('hidden');
-        loadingScreen.style.display = 'flex';
-    }
-    
-    // ======================================== -->
-    // GAME LOOP START KARO
-    // ======================================== -->
-    console.log("🎮 Starting Game Loop");
-    if (typeof startGameLoop === 'function') {
-        try { startGameLoop(); } catch (e) { console.log("Game loop error:", e); }
-    }
-    
-    // ======================================== -->
-    // GAME HISTORY LOAD KARO
-    // ======================================== -->
-    if (typeof loadGameHistory === 'function') {
-        try { loadGameHistory(); } catch (e) { console.log("History error:", e); }
-    }
-    
-    // ======================================== -->
-    // PROGRESS BAR ANIMATION
-    // ======================================== -->
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += 1;
-        if (progress <= 100) {
-            if (loadingBar) loadingBar.style.width = progress + '%';
-            if (loadingPercent) loadingPercent.textContent = progress + '%';
-        }
-        if (progress >= 100) {
-            clearInterval(progressInterval);
-        }
-    }, 100);
-    
-    // ======================================== -->
-    // SIMPLE TICK FIX - 100% GUARANTEED
-    // ======================================== -->
-    
-    // Sabse simple method - direct class change
-    setTimeout(() => {
-        const allSpinners = document.querySelectorAll('.fa-spinner');
-        if (allSpinners.length > 0) {
-            // Pehle spinner ko check circle mein badlo
-            allSpinners[0].className = 'fas fa-check-circle';
-            allSpinners[0].style.color = '#00C853';
-            allSpinners[0].style.animation = 'none';
-            console.log("✅ Tick 1 done - Spinner 1 changed");
-        } else {
-            console.log("⚠️ No spinners found at 1.5s");
-            
-            // Alternative method - status items se dhundho
-            const statusIcons = document.querySelectorAll('.status-item i');
-            if (statusIcons.length > 0) {
-                statusIcons[0].className = 'fas fa-check-circle';
-                statusIcons[0].style.color = '#00C853';
-                statusIcons[0].style.animation = 'none';
-                console.log("✅ Tick 1 done - Status icon 1 changed");
-            }
-        }
-    }, 1500);
-    
-    setTimeout(() => {
-        const allSpinners = document.querySelectorAll('.fa-spinner');
-        if (allSpinners.length > 1) {
-            allSpinners[1].className = 'fas fa-check-circle';
-            allSpinners[1].style.color = '#00C853';
-            allSpinners[1].style.animation = 'none';
-            console.log("✅ Tick 2 done - Spinner 2 changed");
-        } else {
-            console.log("⚠️ No second spinner found at 3s");
-            
-            const statusIcons = document.querySelectorAll('.status-item i');
-            if (statusIcons.length > 1) {
-                statusIcons[1].className = 'fas fa-check-circle';
-                statusIcons[1].style.color = '#00C853';
-                statusIcons[1].style.animation = 'none';
-                console.log("✅ Tick 2 done - Status icon 2 changed");
-            }
-        }
-    }, 3000);
-    
-    setTimeout(() => {
-        const allSpinners = document.querySelectorAll('.fa-spinner');
-        if (allSpinners.length > 2) {
-            allSpinners[2].className = 'fas fa-check-circle';
-            allSpinners[2].style.color = '#00C853';
-            allSpinners[2].style.animation = 'none';
-            console.log("✅ Tick 3 done - Spinner 3 changed");
-        } else {
-            console.log("⚠️ No third spinner found at 4.5s");
-            
-            const statusIcons = document.querySelectorAll('.status-item i');
-            if (statusIcons.length > 2) {
-                statusIcons[2].className = 'fas fa-check-circle';
-                statusIcons[2].style.color = '#00C853';
-                statusIcons[2].style.animation = 'none';
-                console.log("✅ Tick 3 done - Status icon 3 changed");
-            }
-        }
-    }, 4500);
-    
-    // ======================================== -->
-    // INPUT VALIDATION
-    // ======================================== -->
-    ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
-        }
-    });
-    
-    // ======================================== -->
-    // ADD MONEY EVENT LISTENERS
-    // ======================================== -->
-    const utrFirst = document.getElementById('utr-first');
-    const utrSecond = document.getElementById('utr-second');
-    const customAmount = document.getElementById('custom-amount');
-    
-    if (utrFirst) {
-        utrFirst.addEventListener('input', function() {
-            if (typeof checkContinueButton === 'function') checkContinueButton();
-        });
-    }
-    
-    if (utrSecond) {
-        utrSecond.addEventListener('input', function() {
-            if (typeof checkUTRMatch === 'function') checkUTRMatch();
-        });
-    }
-    
-    if (customAmount) {
-        customAmount.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-    }
-    
-    // ======================================== -->
-    // TELEGRAM INITIALIZATION
-    // ======================================== -->
-    if (typeof initTelegramAndWelcome === 'function') {
-        setTimeout(() => {
-            try { initTelegramAndWelcome(); } catch (e) { console.log("Telegram init error:", e); }
-        }, 100);
-    }
-    
-    // ======================================== -->
-    // USER DATA LOADING
-    // ======================================== -->
-    if (typeof initializeUser === 'function') {
-        console.log("⏳ Loading user data...");
-        
-        initializeUser().then(() => {
-            console.log("✅ User data loaded");
-            if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
-            if (typeof loadUserStats === 'function') loadUserStats();
-        }).catch(error => {
-            console.log("User data load error:", error);
-        });
-    }
-    
-    // ======================================== -->
-    // UPDATE PROFILE DISPLAY
-    // ======================================== -->
-    if (typeof updateProfileDisplay === 'function') {
-        updateProfileDisplay();
-    }
-    
-    // ======================================== -->
-    // LOADING SCREEN HIDE AFTER 10 SECONDS
-    // ======================================== -->
-    setTimeout(() => {
-        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
-            loadingScreen.classList.add('hidden');
-            console.log("✅ Loading screen hidden after 10 seconds");
-            
-            if (typeof updateProfileDisplay === 'function') {
-                setTimeout(updateProfileDisplay, 50);
-            }
-        }
-    }, 10000);
-    
-    // ======================================== -->
-    // FIX HISTORY STRIP
-    // ======================================== -->
-    setTimeout(() => {
-        const historyContainer = document.querySelector('.history-container');
-        if (historyContainer) {
-            historyContainer.style.marginTop = '';
-            historyContainer.style.marginBottom = '2px';
-            historyContainer.style.height = '38px';
-        }
-    }, 500);
-    
-    // ======================================== -->
-    // FALLBACK - Agar kuch kaam na kare to bhi ticks dikhein
-    // ======================================== -->
-    setTimeout(() => {
-        // Force all spinners to check circles after 5 seconds
-        const allIcons = document.querySelectorAll('.status-item i');
-        allIcons.forEach((icon, index) => {
-            icon.className = 'fas fa-check-circle';
-            icon.style.color = '#00C853';
-            icon.style.animation = 'none';
-        });
-        console.log("✅ Fallback: All icons changed to check circles");
-    }, 5000);
-});
+// 48. LOADING SCREEN HATAYA GYA
+// ========================================
 
         // ======================================== -->
         // 49. DISABLE COPY & RIGHT CLICK (COMPLETE)
@@ -6038,3 +5502,67 @@ window.copyUPIId = copyUPIId;
 window.proceedToConfirmation = proceedToConfirmation;
 window.confirmUTRAndShowSubmit = confirmUTRAndShowSubmit;
 window.submitAddMoneyRequest = submitAddMoneyRequest;
+
+// ======================================== -->
+// 52. EMERGENCY TIMER FIX
+// ======================================== -->
+
+(function() {
+    console.log("🚨 Emergency timer fix running...");
+    
+    function forceStartTimer() {
+        console.log("⏰ forceStartTimer called, startGameLoop exists?", typeof startGameLoop === 'function');
+        
+        if (typeof startGameLoop === 'function') {
+            try {
+                startGameLoop();
+                console.log("✅ Timer force started!");
+            } catch (e) {
+                console.error("❌ Timer force start error:", e);
+            }
+        } else {
+            console.error("❌ startGameLoop function not found!");
+        }
+    }
+    
+    setTimeout(forceStartTimer, 1000);
+    setTimeout(forceStartTimer, 2000);
+    setTimeout(forceStartTimer, 3000);
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(forceStartTimer, 500);
+        });
+    }
+    
+    window.addEventListener('load', function() {
+        setTimeout(forceStartTimer, 500);
+    });
+    
+    console.log("📝 Manual test: type 'startGameLoop()' in console to start timer manually");
+})();
+
+// ======================================== -->
+// 53. EMERGENCY BALANCE FIX
+// ======================================== -->
+(function() {
+    console.log("💰 Emergency balance fix running...");
+    
+    // हर हाल में balance 11 दिखाओ
+    function forceBalance11() {
+        if (!currentUserData) return;
+        
+        // अगर balance 0 है तो 11 कर दो
+        if (currentUserData.balance === 0) {
+            currentUserData.balance = 11;
+            console.log("💰 Force set balance to 11");
+            updateProfileDisplay();
+        }
+    }
+    
+    // कई बार try करो
+    setTimeout(forceBalance11, 10);
+    setTimeout(forceBalance11, 50);
+    setTimeout(forceBalance11, 100);
+    setTimeout(forceBalance11, 500);
+})();

@@ -6,96 +6,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Cache Control - Har baar loading screen dikhane ke liye -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Apex Day App</title>    
     
     <!-- ======================================== -->
-<!-- 2. TELEGRAM & GOOGLE SHEETS API INTEGRATION -->
-<!-- ======================================== -->
-
-<!-- Google Sheets API (Apps Script) -->
-<!-- Apps Script से connect करेंगे -->
-
-<!-- Telegram WebApp Script - सबसे पहले -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-<!-- Telegram WebView Optimization & Cache Buster -->
-<script>
-    (function() {
-        // ======================================== -->
-        // TELEGRAM WEBAPP INITIALIZATION - पहले यह होगा
-        // ======================================== -->
-        let telegramUser = null;
-        
-        if (window.Telegram && window.Telegram.WebApp) {
-            try {
-                const tg = window.Telegram.WebApp;
-                tg.ready();
-                tg.expand();
-                tg.disableVerticalSwipes();
-                console.log("✅ Telegram WebApp initialized");
-                
-                // Telegram user data को localStorage में save करो
-                const tgUser = tg.initDataUnsafe?.user;
-                if (tgUser) {
-                    telegramUser = tgUser;
-                    const userId = tgUser.id.toString();
-                    const firstName = tgUser.first_name || '';
-                    const lastName = tgUser.last_name || '';
-                    const userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                    
-                    localStorage.setItem('tg_id', userId);
-                    localStorage.setItem('tg_name', userName);
-                    console.log("✅ Telegram user saved:", userName);
-                }
-            } catch (e) {
-                console.log("Telegram init error:", e);
-            }
-        } else {
-            console.log("ℹ️ Not in Telegram WebApp");
-        }
-        
-        // ======================================== -->
-        // CACHE BUSTER - Telegram WebApp initialize होने के बाद
-        // ======================================== -->
-        
-        // Current URL
-        const currentUrl = window.location.href;
-        
-        // Check if we've already done the cache busting in this session
-        if (!sessionStorage.getItem('cacheBusted')) {
-            // Mark that we've done cache busting for this session
-            sessionStorage.setItem('cacheBusted', 'true');
-            
-            // Create new URL with timestamp
-            const timestamp = Date.now();
-            const baseUrl = currentUrl.split('?')[0].split('#')[0];
-            const newUrl = baseUrl + '?v=' + timestamp;
-            
-            console.log("🔄 Cache busting for this session:", newUrl);
-            
-            // Redirect to new URL
-            window.location.replace(newUrl);
-            return;
-        }
-        
-        console.log("✅ Cache busting already done in this session");
-        
-        // ======================================== -->
-        // PREVENT RIGHT CLICK & COPY
-        // ======================================== -->
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && ['c', 'v', 'x', 'a'].includes(e.key)) {
-                e.preventDefault();
-            }
-            if (e.key === 'F12') e.preventDefault();
-        });
-    })();
-</script>          
+    <!-- 2. TELEGRAM & SUPABASE INTEGRATION       -->
+    <!-- ======================================== -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- ======================================== -->
     <!-- 3.FONT AWESOME 6                            -->
@@ -109,7 +31,7 @@
     
     <style>
 /* ============================================ */
-/* 5.GLOBAL RESET & LOADING SCREEN STYLES         */
+/* 5.GLOBAL RESET & STYLES                      */
 /* ============================================ */
 
 /* Global Reset */
@@ -3135,19 +3057,17 @@ body {
 </head>
 <body>
     <!-- ======================================== -->
-<!-- 21. WELCOME POPUP & LOADING SCREEN HTML     -->
-<!-- ======================================== -->
-
-<!-- WELCOME POPUP -->
-<div id="welcome-popup" class="welcome-popup-overlay hidden">
-    <div class="welcome-popup-content">
-        <i class="fas fa-hand-peace"></i>
-        <h2>Welcome to Apex Day!</h2>
-        <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
-        <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
-        <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
+    <!-- 21. WELCOME POPUP HTML                     -->
+    <!-- ======================================== -->
+    <div id="welcome-popup" class="welcome-popup-overlay hidden">
+        <div class="welcome-popup-content">
+            <i class="fas fa-hand-peace"></i>
+            <h2>Welcome to Apex Day!</h2>
+            <p id="welcome-user-name" style="font-size: 1.3rem; color: #D4AF37; font-weight: 600;">User</p>
+            <p style="margin: 15px 0;">✨ ₹11 Bonus Added</p>
+            <button class="welcome-ok-btn" onclick="closeWelcomePopup()">Start Playing</button>
+        </div>
     </div>
-</div>
     
     <!-- ======================================== -->
     <!-- 22. BACKGROUND ELEMENTS                      -->
@@ -3521,144 +3441,131 @@ body {
             </div>
 
             <!-- ================================ -->
-<!-- 29. ADD MONEY PAGE (REDESIGNED)     -->
-<!-- ================================ -->
-<div id="add-money-page" class="page hidden">
-    <div class="add-money-container">
-        <!-- Header with Back Button -->
-        <div class="add-money-header">
-            <button class="add-money-back-btn" onclick="goBackToProfile()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <h2><i class="fas fa-plus-circle"></i> Add Money</h2>
-            <div style="width: 40px;"></div> <!-- Spacer for alignment -->
-        </div>
-        
-        <!-- Current Balance Display -->
-        <div class="add-money-balance-card">
-            <div class="balance-label">Current Balance</div>
-            <div class="balance-amount" id="add-balance-display">0</div>
-        </div>
-        
-        <!-- Amount Selection -->
-        <div class="amount-section">
-            <h3>Select Amount</h3>
-            <div class="amount-options-grid">
-                <button class="amount-card" data-amount="100" onclick="selectAddAmount(this, 100)">
-                    <span class="amount-currency">₹</span>
-                    <span class="amount-value">100</span>
-                </button>
-                <button class="amount-card" data-amount="500" onclick="selectAddAmount(this, 500)">
-                    <span class="amount-currency">₹</span>
-                    <span class="amount-value">500</span>
-                </button>
-                <button class="amount-card" data-amount="1000" onclick="selectAddAmount(this, 1000)">
-                    <span class="amount-currency">₹</span>
-                    <span class="amount-value">1,000</span>
-                </button>
-                <button class="amount-card" data-amount="2000" onclick="selectAddAmount(this, 2000)">
-                    <span class="amount-currency">₹</span>
-                    <span class="amount-value">2,000</span>
-                </button>
-                <button class="amount-card" data-amount="5000" onclick="selectAddAmount(this, 5000)">
-                    <span class="amount-currency">₹</span>
-                    <span class="amount-value">5,000</span>
-                </button>
-                <button class="amount-card custom-amount-btn" onclick="showCustomAmountInput()">
-                    <i class="fas fa-pencil-alt"></i>
-                    <span>Custom</span>
-                </button>
-            </div>
-            
-            <!-- Custom Amount Input (hidden by default) -->
-            <div id="custom-amount-container" class="custom-amount-container hidden">
-                <input type="number" id="custom-amount" placeholder="Enter amount" class="custom-amount-input" min="10">
-                <button class="apply-custom-btn" onclick="applyCustomAmount()">Apply</button>
-            </div>
-        </div>
-        
-        <!-- Selected Amount Display -->
-        <div class="selected-amount-display" id="selected-amount-display">
-            <span>Selected Amount:</span>
-            <span class="selected-amount-value" id="selected-amount-value">₹0</span>
-        </div>
-        
-        <!-- UTR Confirmation Section (2-step) -->
-        <div class="utr-section">
-            <h3><i class="fas fa-qrcode"></i> UPI Payment</h3>
-            
-            <!-- UPI ID Display -->
-            <div class="upi-info-card">
-                <div class="upi-label">UPI ID</div>
-                <div class="upi-value-container">
-                    <span id="upi-display" class="upi-value">fundmoney@upi</span>
-                    <button class="copy-upi-btn" onclick="copyUPIId()">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- UTR Input Section (2-step confirmation) -->
-            <div class="utr-input-section">
-                <div class="utr-step" id="utr-step-1">
-                    <label for="utr-first">Enter UTR/Transaction ID</label>
-                    <input type="text" id="utr-first" placeholder="e.g., UTR123456789" class="utr-input">
-                </div>
-                
-                <div class="utr-step hidden" id="utr-step-2">
-                    <label for="utr-second">Confirm UTR/Transaction ID</label>
-                    <input type="text" id="utr-second" placeholder="Enter again to confirm" class="utr-input">
-                    <div class="utr-match-indicator" id="utr-match-indicator"></div>
-                </div>
-            </div>
-            
-            <!-- Continue to Confirmation Button -->
-            <button class="continue-btn" id="continue-to-confirm" onclick="proceedToConfirmation()">
-                Continue to Confirm
-            </button>
-            
-            <!-- Final Submit Button (hidden initially) -->
-            <div id="final-submit-container" class="final-submit-container hidden">
-                <div class="confirmation-details">
-                    <p><i class="fas fa-info-circle"></i> Please verify your details:</p>
-                    <div class="confirm-item">
-                        <span>Amount:</span>
-                        <span class="confirm-amount" id="confirm-amount">₹0</span>
+            <!-- 29. ADD MONEY PAGE                     -->
+            <!-- ================================ -->
+            <div id="add-money-page" class="page hidden">
+                <div class="add-money-container">
+                    <div class="add-money-header">
+                        <button class="add-money-back-btn" onclick="goBackToProfile()">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h2><i class="fas fa-plus-circle"></i> Add Money</h2>
+                        <div style="width: 40px;"></div>
                     </div>
-                    <div class="confirm-item">
-                        <span>UTR:</span>
-                        <span class="confirm-utr" id="confirm-utr">-</span>
+                    
+                    <div class="add-money-balance-card">
+                        <div class="balance-label">Current Balance</div>
+                        <div class="balance-amount" id="add-balance-display">0</div>
+                    </div>
+                    
+                    <div class="amount-section">
+                        <h3>Select Amount</h3>
+                        <div class="amount-options-grid">
+                            <button class="amount-card" data-amount="100" onclick="selectAddAmount(this, 100)">
+                                <span class="amount-currency">₹</span>
+                                <span class="amount-value">100</span>
+                            </button>
+                            <button class="amount-card" data-amount="500" onclick="selectAddAmount(this, 500)">
+                                <span class="amount-currency">₹</span>
+                                <span class="amount-value">500</span>
+                            </button>
+                            <button class="amount-card" data-amount="1000" onclick="selectAddAmount(this, 1000)">
+                                <span class="amount-currency">₹</span>
+                                <span class="amount-value">1,000</span>
+                            </button>
+                            <button class="amount-card" data-amount="2000" onclick="selectAddAmount(this, 2000)">
+                                <span class="amount-currency">₹</span>
+                                <span class="amount-value">2,000</span>
+                            </button>
+                            <button class="amount-card" data-amount="5000" onclick="selectAddAmount(this, 5000)">
+                                <span class="amount-currency">₹</span>
+                                <span class="amount-value">5,000</span>
+                            </button>
+                            <button class="amount-card custom-amount-btn" onclick="showCustomAmountInput()">
+                                <i class="fas fa-pencil-alt"></i>
+                                <span>Custom</span>
+                            </button>
+                        </div>
+                        
+                        <div id="custom-amount-container" class="custom-amount-container hidden">
+                            <input type="number" id="custom-amount" placeholder="Enter amount" class="custom-amount-input" min="10">
+                            <button class="apply-custom-btn" onclick="applyCustomAmount()">Apply</button>
+                        </div>
+                    </div>
+                    
+                    <div class="selected-amount-display" id="selected-amount-display">
+                        <span>Selected Amount:</span>
+                        <span class="selected-amount-value" id="selected-amount-value">₹0</span>
+                    </div>
+                    
+                    <div class="utr-section">
+                        <h3><i class="fas fa-qrcode"></i> UPI Payment</h3>
+                        
+                        <div class="upi-info-card">
+                            <div class="upi-label">UPI ID</div>
+                            <div class="upi-value-container">
+                                <span id="upi-display" class="upi-value">fundmoney@upi</span>
+                                <button class="copy-upi-btn" onclick="copyUPIId()">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="utr-input-section">
+                            <div class="utr-step" id="utr-step-1">
+                                <label for="utr-first">Enter UTR/Transaction ID</label>
+                                <input type="text" id="utr-first" placeholder="e.g., UTR123456789" class="utr-input">
+                            </div>
+                            
+                            <div class="utr-step hidden" id="utr-step-2">
+                                <label for="utr-second">Confirm UTR/Transaction ID</label>
+                                <input type="text" id="utr-second" placeholder="Enter again to confirm" class="utr-input">
+                                <div class="utr-match-indicator" id="utr-match-indicator"></div>
+                            </div>
+                        </div>
+                        
+                        <button class="continue-btn" id="continue-to-confirm" onclick="proceedToConfirmation()">
+                            Continue to Confirm
+                        </button>
+                        
+                        <div id="final-submit-container" class="final-submit-container hidden">
+                            <div class="confirmation-details">
+                                <p><i class="fas fa-info-circle"></i> Please verify your details:</p>
+                                <div class="confirm-item">
+                                    <span>Amount:</span>
+                                    <span class="confirm-amount" id="confirm-amount">₹0</span>
+                                </div>
+                                <div class="confirm-item">
+                                    <span>UTR:</span>
+                                    <span class="confirm-utr" id="confirm-utr">-</span>
+                                </div>
+                            </div>
+                            
+                            <button class="submit-request-btn" onclick="submitAddMoneyRequest()">
+                                <i class="fas fa-paper-plane"></i> Submit Request
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="add-money-message" class="add-money-message hidden"></div>
+                    
+                    <div id="pending-info" class="pending-info hidden">
+                        <div class="pending-header">
+                            <i class="fas fa-clock"></i>
+                            <h4>Request Pending</h4>
+                        </div>
+                        <p>Your request has been submitted and is pending approval.</p>
+                        <p class="pending-time"><i class="fas fa-hourglass-half"></i> Please wait until <strong>8:00 PM</strong> for processing</p>
+                        <p class="pending-note">You will be notified once your request is approved or rejected.</p>
+                    </div>
+                    
+                    <div id="success-message" class="success-message-container hidden">
+                        <i class="fas fa-check-circle"></i>
+                        <h4>Request Submitted Successfully!</h4>
+                        <p>Your request is pending approval. You will be notified once processed.</p>
                     </div>
                 </div>
-                
-                <button class="submit-request-btn" onclick="submitAddMoneyRequest()">
-                    <i class="fas fa-paper-plane"></i> Submit Request
-                </button>
             </div>
-        </div>
-        
-        <!-- Request Status Messages -->
-        <div id="add-money-message" class="add-money-message hidden"></div>
-        
-        <!-- Pending Transaction Info -->
-        <div id="pending-info" class="pending-info hidden">
-            <div class="pending-header">
-                <i class="fas fa-clock"></i>
-                <h4>Request Pending</h4>
-            </div>
-            <p>Your request has been submitted and is pending approval.</p>
-            <p class="pending-time"><i class="fas fa-hourglass-half"></i> Please wait until <strong>8:00 PM</strong> for processing</p>
-            <p class="pending-note">You will be notified once your request is approved or rejected.</p>
-        </div>
-        
-        <!-- Success Message -->
-        <div id="success-message" class="success-message-container hidden">
-            <i class="fas fa-check-circle"></i>
-            <h4>Request Submitted Successfully!</h4>
-            <p>Your request is pending approval. You will be notified once processed.</p>
-        </div>
-    </div>
-</div>
 
             <!-- ================================ -->
             <!-- 30. WITHDRAW PAGE                      -->
@@ -3765,365 +3672,371 @@ body {
     <!-- ======================================== -->
     <script>
         // ======================================== -->
-// 34. GLOBAL VARIABLES
-// ======================================== -->
-const GS_API_URL = 'https://script.google.com/macros/s/AKfycby5n_eLj0RascjdOkFjq3kDD9Dm0p0-g3sPUC1CjrZFMGKT7oJ_GOcQLjHeskwn_C2Z9w/exec';
-const MAX_BALANCE = 100000;
-
-let currentUserData = {
-    userId: '12345678',
-    name: 'Demo User',
-    email: 'demo@example.com',
-    phone: 'Not Set',
-    // ✅ Cache से balance लो - तुरंत दिखेगा
-    balance: 0,
-    bank_accounts: [],
-    upis: [],
-    notifications: [],
-    totalWins: (localStorage.getItem('cached_wins') ? parseInt(localStorage.getItem('cached_wins')) : 0),
-    gamesPlayed: (localStorage.getItem('cached_games') ? parseInt(localStorage.getItem('cached_games')) : 0),
-    createdAt: new Date(),
-    telegram_id: null,
-    telegram_username: null
-};
-
-let selectedBankIndex = null;
-let selectedUPIIndex = null;
-let gameTimerInterval = null;
-let currentBet = { green: 0, blue: 0 };
-let userBetMap = { green: {}, blue: {} };
-const BETTING_TIME = 15;
-let gameState = {
-    totalGreenBets: 0,
-    totalBlueBets: 0,
-    allBets: [],
-    currentTime: 0
-};
-let isPlacingBet = false;
-let timeLeft = 15;
-let isBettingActive = true;
-let currentRoundId = Date.now();
-let fullHistoryFilter = 'all';
-let fullTransactionFilter = 'all';
-
-// ======================================== -->
-// ADD MONEY PAGE VARIABLES
-// ======================================== -->
-let selectedAddAmount = 0;
-let utrFirst = '';
-let utrSecond = '';
+        // 34. GLOBAL VARIABLES
+        // ======================================== -->
+        const MAX_BALANCE = 100000;
+        
+        let currentUserData = {
+            userId: '12345678',
+            name: 'Demo User',
+            email: 'demo@example.com',
+            phone: 'Not Set',
+            balance: 11,
+            bank_accounts: [],
+            upis: [],
+            notifications: [],
+            totalWins: 0,
+            gamesPlayed: 0,
+            createdAt: new Date(),
+            telegram_id: null,
+            telegram_username: null
+        };
+        
+        let selectedBankIndex = null;
+        let selectedUPIIndex = null;
+        let gameTimerInterval = null;
+        let currentBet = { green: 0, blue: 0 };
+        let userBetMap = { green: {}, blue: {} };
+        const BETTING_TIME = 15;
+        let gameState = {
+            totalGreenBets: 0,
+            totalBlueBets: 0,
+            allBets: [],
+            currentTime: 0
+        };
+        let isPlacingBet = false;
+        let timeLeft = 15;
+        let isBettingActive = true;
+        let currentRoundId = Date.now();
+        let fullHistoryFilter = 'all';
+        let fullTransactionFilter = 'all';
         
         // ======================================== -->
-// 35. UI HELPER FUNCTIONS & ADD MONEY FUNCTIONS
-// ======================================== -->
-
-// ========== UI HELPER FUNCTIONS ==========
-function formatBalance(amount) {
-    if (amount > MAX_BALANCE) amount = MAX_BALANCE;
-    if (amount === 0) return "0";
-    
-    let numStr = Math.floor(amount).toString();
-    if (numStr.length <= 3) return numStr;
-    
-    let lastThree = numStr.substring(numStr.length - 3);
-    let otherNumbers = numStr.substring(0, numStr.length - 3);
-    if (otherNumbers !== '') lastThree = ',' + lastThree;
-    
-    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
-}
-
-function enforceMaxBalance(amount) {
-    return amount > MAX_BALANCE ? MAX_BALANCE : amount;
-}
-
-function updateProfileDisplay() {
-    if (!currentUserData) return;
-    
-    let balance = formatBalance(currentUserData.balance);
-    
-    // Sab elements ek saath update karo
-    const elements = {
-        'current-balance': balance,
-        'profile-balance': balance,
-        'add-balance-display': balance,
-        'withdraw-balance-display': balance
-    };
-    
-    // Name/ID elements hamesha available hain
-    const nameEl = document.getElementById('profile-name');
-    if (nameEl) nameEl.textContent = currentUserData.name || 'User';
-    
-    const emailEl = document.getElementById('profile-email');
-    if (emailEl) emailEl.textContent = currentUserData.email || 'demo@example.com';
-    
-    const userIdEl = document.getElementById('profile-user-id');
-    if (userIdEl) userIdEl.textContent = currentUserData.userId || '123456';
-    
-    const phoneEl = document.getElementById('profile-phone');
-    if (phoneEl) phoneEl.textContent = currentUserData.phone || 'Not Set';
-    
-    // Balance elements update
-    for (let [id, value] of Object.entries(elements)) {
-        const el = document.getElementById(id);
-        if (el) el.textContent = value;
-    }
-}
-
-function loadUserStats() {
-    if (!currentUserData) return;
-    const wins = currentUserData.totalWins || 0;
-    const games = currentUserData.gamesPlayed || 0;
-    
-    const winsEl = document.getElementById('total-wins');
-    const gamesEl = document.getElementById('games-played');
-    const winRateEl = document.getElementById('win-rate');
-    
-    if (winsEl) winsEl.textContent = wins;
-    if (gamesEl) gamesEl.textContent = games;
-    if (winRateEl) winRateEl.textContent = games > 0 ? Math.round((wins / games) * 100) + '%' : '0%';
-}
-
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-    
-    const managePage = document.getElementById('manage-account-page');
-    if (managePage) managePage.classList.add('hidden');
-    
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) {
-        targetPage.classList.remove('hidden');
-        window.scrollTo(0, 0);
+        // ADD MONEY PAGE VARIABLES
+        // ======================================== -->
+        let selectedAddAmount = 0;
+        let utrFirst = '';
+        let utrSecond = '';
         
-        if (pageId === 'dashboard-page') {
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-            document.documentElement.style.overflow = 'auto';
+        // ======================================== -->
+        // SUPABASE CONFIGURATION (अपनी keys डालो)
+        // ======================================== -->
+        const supabase = window.supabase.createClient(
+            'https://gvxvibreducyyalebhuz.supabase.co',
+            'sb_publishable_DHVp7vwUJU0oA89rdJNgQQ_Mj2RJnV0'
+        );
+        
+        // ======================================== -->
+        // 35. UI HELPER FUNCTIONS
+        // ======================================== -->
+        
+        function formatBalance(amount) {
+            if (amount > MAX_BALANCE) amount = MAX_BALANCE;
+            if (amount === 0) return "0";
+            
+            let numStr = Math.floor(amount).toString();
+            if (numStr.length <= 3) return numStr;
+            
+            let lastThree = numStr.substring(numStr.length - 3);
+            let otherNumbers = numStr.substring(0, numStr.length - 3);
+            if (otherNumbers !== '') lastThree = ',' + lastThree;
+            
+            return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
         }
         
-        if (pageId === 'profile-page' && currentUserData) {
-            updateProfileDisplay();
-            loadUserStats();
+        function enforceMaxBalance(amount) {
+            return amount > MAX_BALANCE ? MAX_BALANCE : amount;
         }
-    }
-}
-
-function showStatusMessage(message, type = 'info') {
-    const statusEl = document.getElementById('betting-status');
-    const msgEl = document.getElementById('status-message');
-    if (!statusEl || !msgEl) return;
-    
-    statusEl.classList.remove('hidden', 'success', 'error');
-    if (type === 'success') statusEl.classList.add('success');
-    if (type === 'error') statusEl.classList.add('error');
-    
-    msgEl.textContent = message;
-    if (type !== 'info') setTimeout(() => statusEl.classList.add('hidden'), 3000);
-}
-
-function showMessage(elementId, message, type = 'error') {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
-    el.className = type === 'error' ? 'error-message' : 'success-message';
-    el.classList.remove('hidden');
-    if (type === 'success') setTimeout(() => el.classList.add('hidden'), 3000);
-}
-
-function toggleNotificationPanel() {
-    const panel = document.getElementById('notification-panel');
-    if (panel) panel.classList.toggle('hidden');
-    const dot = document.getElementById('notification-dot');
-    if (dot) dot.classList.add('hidden');
-}
-
-function closeImportantNotification() {
-    const popup = document.getElementById('important-notification-popup');
-    if (popup) popup.classList.add('hidden');
-}
-
-function showManageAccount() {
-    const page = document.getElementById('manage-account-page');
-    if (page) page.classList.remove('hidden');
-    loadBankAccountsManage();
-    loadUPIsManage();
-}
-
-function hideManageAccount() {
-    const page = document.getElementById('manage-account-page');
-    if (page) page.classList.add('hidden');
-}
-
-// ========== ADD MONEY PAGE FUNCTIONS ==========
-function goBackToProfile() {
-    showPage('profile-page');
-}
-
-function selectAddAmount(btn, amount) {
-    document.querySelectorAll('.amount-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    btn.classList.add('selected');
-    
-    const customContainer = document.getElementById('custom-amount-container');
-    if (customContainer) customContainer.classList.add('hidden');
-    
-    selectedAddAmount = amount;
-    const selectedValueEl = document.getElementById('selected-amount-value');
-    if (selectedValueEl) selectedValueEl.textContent = '₹' + amount.toLocaleString();
-    
-    checkContinueButton();
-}
-
-function showCustomAmountInput() {
-    document.querySelectorAll('.amount-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    const customContainer = document.getElementById('custom-amount-container');
-    if (customContainer) customContainer.classList.remove('hidden');
-}
-
-function applyCustomAmount() {
-    const customAmount = parseFloat(document.getElementById('custom-amount')?.value);
-    
-    if (isNaN(customAmount) || customAmount < 10) {
-        showAddMoneyMessage('Please enter a valid amount (minimum ₹10)', 'error');
-        return;
-    }
-    
-    selectedAddAmount = customAmount;
-    const selectedValueEl = document.getElementById('selected-amount-value');
-    if (selectedValueEl) selectedValueEl.textContent = '₹' + customAmount.toLocaleString();
-    
-    document.getElementById('custom-amount-container').classList.add('hidden');
-    
-    checkContinueButton();
-}
-
-function copyUPIId() {
-    const upiId = document.getElementById('upi-display')?.textContent;
-    if (!upiId) return;
-    
-    navigator.clipboard.writeText(upiId).then(() => {
-        showAddMoneyMessage('UPI ID copied!', 'success');
         
-        const copyBtn = document.querySelector('.copy-upi-btn');
-        if (copyBtn) {
-            const originalText = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+        function updateProfileDisplay() {
+            if (!currentUserData) return;
+            
+            let balance = formatBalance(currentUserData.balance);
+            
+            const elements = {
+                'current-balance': balance,
+                'profile-balance': balance,
+                'add-balance-display': balance,
+                'withdraw-balance-display': balance
+            };
+            
+            const nameEl = document.getElementById('profile-name');
+            if (nameEl) nameEl.textContent = currentUserData.name || 'User';
+            
+            const emailEl = document.getElementById('profile-email');
+            if (emailEl) emailEl.textContent = currentUserData.email || 'demo@example.com';
+            
+            const userIdEl = document.getElementById('profile-user-id');
+            if (userIdEl) userIdEl.textContent = currentUserData.userId || '123456';
+            
+            const phoneEl = document.getElementById('profile-phone');
+            if (phoneEl) phoneEl.textContent = currentUserData.phone || 'Not Set';
+            
+            for (let [id, value] of Object.entries(elements)) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            }
+        }
+        
+        function loadUserStats() {
+            if (!currentUserData) return;
+            const wins = currentUserData.totalWins || 0;
+            const games = currentUserData.gamesPlayed || 0;
+            
+            const winsEl = document.getElementById('total-wins');
+            const gamesEl = document.getElementById('games-played');
+            const winRateEl = document.getElementById('win-rate');
+            
+            if (winsEl) winsEl.textContent = wins;
+            if (gamesEl) gamesEl.textContent = games;
+            if (winRateEl) winRateEl.textContent = games > 0 ? Math.round((wins / games) * 100) + '%' : '0%';
+        }
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            
+            const managePage = document.getElementById('manage-account-page');
+            if (managePage) managePage.classList.add('hidden');
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                window.scrollTo(0, 0);
+                
+                if (pageId === 'dashboard-page') {
+                    document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = 'auto';
+                    document.documentElement.style.overflow = 'auto';
+                }
+                
+                if (pageId === 'profile-page' && currentUserData) {
+                    updateProfileDisplay();
+                    loadUserStats();
+                }
+            }
+        }
+        
+        function showStatusMessage(message, type = 'info') {
+            const statusEl = document.getElementById('betting-status');
+            const msgEl = document.getElementById('status-message');
+            if (!statusEl || !msgEl) return;
+            
+            statusEl.classList.remove('hidden', 'success', 'error');
+            if (type === 'success') statusEl.classList.add('success');
+            if (type === 'error') statusEl.classList.add('error');
+            
+            msgEl.textContent = message;
+            if (type !== 'info') setTimeout(() => statusEl.classList.add('hidden'), 3000);
+        }
+        
+        function showMessage(elementId, message, type = 'error') {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            el.className = type === 'error' ? 'error-message' : 'success-message';
+            el.classList.remove('hidden');
+            if (type === 'success') setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+        
+        function toggleNotificationPanel() {
+            const panel = document.getElementById('notification-panel');
+            if (panel) panel.classList.toggle('hidden');
+            const dot = document.getElementById('notification-dot');
+            if (dot) dot.classList.add('hidden');
+        }
+        
+        function closeImportantNotification() {
+            const popup = document.getElementById('important-notification-popup');
+            if (popup) popup.classList.add('hidden');
+        }
+        
+        function showManageAccount() {
+            const page = document.getElementById('manage-account-page');
+            if (page) page.classList.remove('hidden');
+            loadBankAccountsManage();
+            loadUPIsManage();
+        }
+        
+        function hideManageAccount() {
+            const page = document.getElementById('manage-account-page');
+            if (page) page.classList.add('hidden');
+        }
+        
+        // ======================================== -->
+        // 36. ADD MONEY PAGE FUNCTIONS
+        // ======================================== -->
+        
+        function goBackToProfile() {
+            showPage('profile-page');
+        }
+        
+        function selectAddAmount(btn, amount) {
+            document.querySelectorAll('.amount-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            btn.classList.add('selected');
+            
+            const customContainer = document.getElementById('custom-amount-container');
+            if (customContainer) customContainer.classList.add('hidden');
+            
+            selectedAddAmount = amount;
+            const selectedValueEl = document.getElementById('selected-amount-value');
+            if (selectedValueEl) selectedValueEl.textContent = '₹' + amount.toLocaleString();
+            
+            checkContinueButton();
+        }
+        
+        function showCustomAmountInput() {
+            document.querySelectorAll('.amount-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const customContainer = document.getElementById('custom-amount-container');
+            if (customContainer) customContainer.classList.remove('hidden');
+        }
+        
+        function applyCustomAmount() {
+            const customAmount = parseFloat(document.getElementById('custom-amount')?.value);
+            
+            if (isNaN(customAmount) || customAmount < 10) {
+                showAddMoneyMessage('Please enter a valid amount (minimum ₹10)', 'error');
+                return;
+            }
+            
+            selectedAddAmount = customAmount;
+            const selectedValueEl = document.getElementById('selected-amount-value');
+            if (selectedValueEl) selectedValueEl.textContent = '₹' + customAmount.toLocaleString();
+            
+            document.getElementById('custom-amount-container').classList.add('hidden');
+            
+            checkContinueButton();
+        }
+        
+        function copyUPIId() {
+            const upiId = document.getElementById('upi-display')?.textContent;
+            if (!upiId) return;
+            
+            navigator.clipboard.writeText(upiId).then(() => {
+                showAddMoneyMessage('UPI ID copied!', 'success');
+                
+                const copyBtn = document.querySelector('.copy-upi-btn');
+                if (copyBtn) {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                }
+            }).catch(() => {
+                showAddMoneyMessage('Failed to copy', 'error');
+            });
+        }
+        
+        function checkUTRMatch() {
+            const utrFirstInput = document.getElementById('utr-first');
+            const utrSecondInput = document.getElementById('utr-second');
+            
+            if (!utrFirstInput || !utrSecondInput) return false;
+            
+            utrFirst = utrFirstInput.value.trim();
+            utrSecond = utrSecondInput.value.trim();
+            
+            const indicator = document.getElementById('utr-match-indicator');
+            if (!indicator) return false;
+            
+            if (utrFirst && utrSecond) {
+                if (utrFirst === utrSecond) {
+                    indicator.textContent = '✓ UTR matches';
+                    indicator.className = 'utr-match-indicator match';
+                    return true;
+                } else {
+                    indicator.textContent = '✗ UTR does not match';
+                    indicator.className = 'utr-match-indicator no-match';
+                    return false;
+                }
+            } else {
+                indicator.textContent = '';
+                return false;
+            }
+        }
+        
+        function checkContinueButton() {
+            const utrFirstInput = document.getElementById('utr-first');
+            if (!utrFirstInput) return;
+            
+            const utrFirst = utrFirstInput.value.trim();
+            const continueBtn = document.getElementById('continue-to-confirm');
+            
+            if (continueBtn) {
+                if (selectedAddAmount > 0 && utrFirst.length > 0) {
+                    continueBtn.disabled = false;
+                } else {
+                    continueBtn.disabled = true;
+                }
+            }
+        }
+        
+        function proceedToConfirmation() {
+            const utrFirstInput = document.getElementById('utr-first');
+            if (!utrFirstInput) return;
+            
+            utrFirst = utrFirstInput.value.trim();
+            
+            if (!selectedAddAmount || selectedAddAmount < 10) {
+                showAddMoneyMessage('Please select an amount', 'error');
+                return;
+            }
+            
+            if (!utrFirst) {
+                showAddMoneyMessage('Please enter UTR/Transaction ID', 'error');
+                return;
+            }
+            
+            document.getElementById('utr-step-1')?.classList.add('hidden');
+            document.getElementById('utr-step-2')?.classList.remove('hidden');
+            
+            const continueBtn = document.getElementById('continue-to-confirm');
+            if (continueBtn) {
+                continueBtn.textContent = 'Confirm UTR';
+                continueBtn.onclick = confirmUTRAndShowSubmit;
+            }
+        }
+        
+        function confirmUTRAndShowSubmit() {
+            if (checkUTRMatch()) {
+                document.getElementById('continue-to-confirm')?.classList.add('hidden');
+                document.getElementById('final-submit-container')?.classList.remove('hidden');
+                
+                const confirmAmount = document.getElementById('confirm-amount');
+                const confirmUtr = document.getElementById('confirm-utr');
+                
+                if (confirmAmount) confirmAmount.textContent = '₹' + selectedAddAmount.toLocaleString();
+                if (confirmUtr) confirmUtr.textContent = utrFirst;
+            } else {
+                showAddMoneyMessage('UTR does not match. Please enter the same UTR in both fields.', 'error');
+            }
+        }
+        
+        function showAddMoneyMessage(message, type) {
+            const msgEl = document.getElementById('add-money-message');
+            if (!msgEl) return;
+            
+            msgEl.textContent = message;
+            msgEl.className = 'add-money-message ' + type;
+            msgEl.classList.remove('hidden');
+            
             setTimeout(() => {
-                copyBtn.innerHTML = originalText;
-            }, 2000);
+                msgEl.classList.add('hidden');
+            }, 3000);
         }
-    }).catch(() => {
-        showAddMoneyMessage('Failed to copy', 'error');
-    });
-}
-
-function checkUTRMatch() {
-    const utrFirstInput = document.getElementById('utr-first');
-    const utrSecondInput = document.getElementById('utr-second');
-    
-    if (!utrFirstInput || !utrSecondInput) return false;
-    
-    utrFirst = utrFirstInput.value.trim();
-    utrSecond = utrSecondInput.value.trim();
-    
-    const indicator = document.getElementById('utr-match-indicator');
-    if (!indicator) return false;
-    
-    if (utrFirst && utrSecond) {
-        if (utrFirst === utrSecond) {
-            indicator.textContent = '✓ UTR matches';
-            indicator.className = 'utr-match-indicator match';
-            return true;
-        } else {
-            indicator.textContent = '✗ UTR does not match';
-            indicator.className = 'utr-match-indicator no-match';
-            return false;
-        }
-    } else {
-        indicator.textContent = '';
-        return false;
-    }
-}
-
-function checkContinueButton() {
-    const utrFirstInput = document.getElementById('utr-first');
-    if (!utrFirstInput) return;
-    
-    const utrFirst = utrFirstInput.value.trim();
-    const continueBtn = document.getElementById('continue-to-confirm');
-    
-    if (continueBtn) {
-        if (selectedAddAmount > 0 && utrFirst.length > 0) {
-            continueBtn.disabled = false;
-        } else {
-            continueBtn.disabled = true;
-        }
-    }
-}
-
-function proceedToConfirmation() {
-    const utrFirstInput = document.getElementById('utr-first');
-    if (!utrFirstInput) return;
-    
-    utrFirst = utrFirstInput.value.trim();
-    
-    if (!selectedAddAmount || selectedAddAmount < 10) {
-        showAddMoneyMessage('Please select an amount', 'error');
-        return;
-    }
-    
-    if (!utrFirst) {
-        showAddMoneyMessage('Please enter UTR/Transaction ID', 'error');
-        return;
-    }
-    
-    document.getElementById('utr-step-1')?.classList.add('hidden');
-    document.getElementById('utr-step-2')?.classList.remove('hidden');
-    
-    const continueBtn = document.getElementById('continue-to-confirm');
-    if (continueBtn) {
-        continueBtn.textContent = 'Confirm UTR';
-        continueBtn.onclick = confirmUTRAndShowSubmit;
-    }
-}
-
-function confirmUTRAndShowSubmit() {
-    if (checkUTRMatch()) {
-        document.getElementById('continue-to-confirm')?.classList.add('hidden');
-        document.getElementById('final-submit-container')?.classList.remove('hidden');
-        
-        const confirmAmount = document.getElementById('confirm-amount');
-        const confirmUtr = document.getElementById('confirm-utr');
-        
-        if (confirmAmount) confirmAmount.textContent = '₹' + selectedAddAmount.toLocaleString();
-        if (confirmUtr) confirmUtr.textContent = utrFirst;
-    } else {
-        showAddMoneyMessage('UTR does not match. Please enter the same UTR in both fields.', 'error');
-    }
-}
-
-function showAddMoneyMessage(message, type) {
-    const msgEl = document.getElementById('add-money-message');
-    if (!msgEl) return;
-    
-    msgEl.textContent = message;
-    msgEl.className = 'add-money-message ' + type;
-    msgEl.classList.remove('hidden');
-    
-    setTimeout(() => {
-        msgEl.classList.add('hidden');
-    }, 3000);
-}
         
         // ======================================== -->
-        // 36. COPY USER ID FUNCTION
+        // 37. COPY USER ID FUNCTION
         // ======================================== -->
+        
         function copyUserId(event) {
             event.stopPropagation();
             event.preventDefault();
@@ -4141,7 +4054,7 @@ function showAddMoneyMessage(message, type) {
                     showCopyToast('Try again');
                 });
         }
-
+        
         function showCopyToast(message) {
             const toast = document.getElementById('copied-toast');
             if (!toast) return;
@@ -4159,302 +4072,155 @@ function showAddMoneyMessage(message, type) {
         }
         
         // ======================================== -->
-        // 37. TELEGRAM + WELCOME POPUP
+        // 38. SUPABASE FUNCTIONS
         // ======================================== -->
-
-        function initTelegramAndWelcome() {
-    let userName = 'User';
-    let telegramId = null;
-    
-    console.log("📱 Initializing Telegram...");
-    
-    // ✅ Timer start - हर हाल में start होगा
-    setTimeout(() => {
-        console.log("🎮 Trying to start game loop...");
-        if (typeof startGameLoop === 'function') {
+        
+        async function getUserFromSupabase(telegramId) {
             try {
-                startGameLoop();
-                console.log("✅ Game loop started successfully");
-            } catch (e) {
-                console.error("❌ Game loop error:", e);
-            }
-        } else {
-            console.error("❌ startGameLoop function not found!");
-        }
-    }, 500);
-    
-    // Telegram WebApp se data lo
-    if (window.Telegram && window.Telegram.WebApp) {
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-            
-            const tgUser = tg.initDataUnsafe?.user;
-            
-            if (tgUser) {
-                telegramId = tgUser.id.toString();
-                const firstName = tgUser.first_name || '';
-                const lastName = tgUser.last_name || '';
-                userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                const username = tgUser.username || '';
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('telegram_id', telegramId)
+                    .single();
                 
-                console.log(`✅ Telegram user: ${userName} (${telegramId})`);
-                
-                // ✅ CACHE से balance लोड करो - नहीं है तो 11 दो
-                const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
-                const cachedWins = localStorage.getItem(`wins_${telegramId}`);
-                const cachedGames = localStorage.getItem(`games_${telegramId}`);
-                
-                // ✅ अगर cache नहीं है तो 11 दो - तुरंत!
-                const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
-                const initialWins = cachedWins ? parseInt(cachedWins) : 0;
-                const initialGames = cachedGames ? parseInt(cachedGames) : 0;
-                
-                console.log(`⚡ Loading balance: ${initialBalance} (${cachedBalance ? 'from cache' : 'default ₹11'})`);
-                
-                currentUserData = {
-                    userId: telegramId,
-                    name: userName,
-                    email: '',
-                    phone: '',
-                    balance: initialBalance,
-                    bank_accounts: [],
-                    upis: [],
-                    notifications: [],
-                    totalWins: initialWins,
-                    gamesPlayed: initialGames,
-                    createdAt: new Date(),
-                    telegram_id: telegramId,
-                    telegram_username: username
-                };
-                
-                // ✅ तुरंत display update करो
-                updateProfileDisplay();
-                loadUserStats();
-                
-                localStorage.setItem('tg_id', telegramId);
-                localStorage.setItem('tg_name', userName);
-                
-                // ✅ अगर cache नहीं था तो cache में 11 save करो
-                if (!cachedBalance) {
-                    localStorage.setItem(`balance_${telegramId}`, '11');
-                    localStorage.setItem(`wins_${telegramId}`, '0');
-                    localStorage.setItem(`games_${telegramId}`, '0');
+                if (error && error.code !== 'PGRST116') {
+                    console.error("Supabase error:", error);
+                    return { success: false };
                 }
                 
-                // ✅ Background में Google Sheets से sync करो
-                setTimeout(() => {
-                    initializeUser();
-                }, 100);
-            } else {
-                console.log("⚠️ No Telegram user data");
-                loadFromLocalStorage();
+                if (data) {
+                    return { 
+                        success: true, 
+                        user: {
+                            balance: data.balance,
+                            totalWins: data.total_wins,
+                            gamesPlayed: data.games_played
+                        }
+                    };
+                }
+                return { success: false, notFound: true };
+            } catch (error) {
+                console.error("Supabase error:", error);
+                return { success: false };
             }
-        } catch (e) {
-            console.error("Telegram error:", e);
-            loadFromLocalStorage();
         }
-    } else {
-        console.log("ℹ️ Not in Telegram WebApp");
-        loadFromLocalStorage();
-    }
-    
-    function loadFromLocalStorage() {
-        const savedTgId = localStorage.getItem('tg_id');
-        const savedTgName = localStorage.getItem('tg_name');
         
-        if (savedTgId) {
-            // ✅ CACHE से balance लोड करो
-            const cachedBalance = localStorage.getItem(`balance_${savedTgId}`);
-            const cachedWins = localStorage.getItem(`wins_${savedTgId}`);
-            const cachedGames = localStorage.getItem(`games_${savedTgId}`);
+        async function createUserInSupabase(telegramId, name) {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([
+                        { 
+                            telegram_id: telegramId,
+                            balance: 11,
+                            total_wins: 0,
+                            games_played: 0
+                        }
+                    ])
+                    .select()
+                    .single();
+                
+                if (error) {
+                    console.error("Create error:", error);
+                    return { success: false };
+                }
+                
+                return { 
+                    success: true, 
+                    user: {
+                        balance: data.balance,
+                        totalWins: data.total_wins,
+                        gamesPlayed: data.games_played
+                    }
+                };
+            } catch (error) {
+                console.error("Create error:", error);
+                return { success: false };
+            }
+        }
+        
+        async function updateBalanceInSupabase(telegramId, newBalance, totalWins, gamesPlayed) {
+            try {
+                const updates = { balance: newBalance };
+                if (totalWins !== undefined) updates.total_wins = totalWins;
+                if (gamesPlayed !== undefined) updates.games_played = gamesPlayed;
+                
+                const { error } = await supabase
+                    .from('users')
+                    .update(updates)
+                    .eq('telegram_id', telegramId);
+                
+                if (error) {
+                    console.error("Update error:", error);
+                    return { success: false };
+                }
+                
+                return { success: true };
+            } catch (error) {
+                console.error("Update error:", error);
+                return { success: false };
+            }
+        }
+        
+        // ======================================== -->
+        // 39. INITIALIZE USER
+        // ======================================== -->
+        
+        async function initializeUser() {
+            const telegramId = currentUserData.userId;
+            const userName = currentUserData.name;
             
-            // ✅ अगर cache नहीं है तो 11 दो
-            const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+            if (!telegramId) {
+                updateProfileDisplay();
+                return;
+            }
             
-            console.log(`⚡ Loading from localStorage: ${initialBalance} (${cachedBalance ? 'cached' : 'default'})`);
+            const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
+            if (cachedBalance) {
+                currentUserData.balance = parseFloat(cachedBalance);
+                updateProfileDisplay();
+            }
             
-            currentUserData = {
-                userId: savedTgId,
-                name: savedTgName || 'User',
-                email: '',
-                phone: '',
-                balance: initialBalance,
-                bank_accounts: [],
-                upis: [],
-                notifications: [],
-                totalWins: cachedWins ? parseInt(cachedWins) : 0,
-                gamesPlayed: cachedGames ? parseInt(cachedGames) : 0,
-                createdAt: new Date(),
-                telegram_id: savedTgId,
-                telegram_username: savedTgName || null
-            };
+            try {
+                const result = await getUserFromSupabase(telegramId);
+                
+                if (result.success) {
+                    currentUserData.balance = result.user.balance;
+                    currentUserData.totalWins = result.user.totalWins;
+                    currentUserData.gamesPlayed = result.user.gamesPlayed;
+                    
+                    console.log(`✅ Loaded from Supabase: ₹${currentUserData.balance}`);
+                    
+                    localStorage.setItem(`balance_${telegramId}`, currentUserData.balance);
+                    localStorage.setItem(`wins_${telegramId}`, currentUserData.totalWins);
+                    localStorage.setItem(`games_${telegramId}`, currentUserData.gamesPlayed);
+                    
+                } else if (result.notFound) {
+                    console.log(`🆕 Creating new user...`);
+                    const createResult = await createUserInSupabase(telegramId, userName);
+                    
+                    if (createResult.success) {
+                        currentUserData.balance = 11;
+                        currentUserData.totalWins = 0;
+                        currentUserData.gamesPlayed = 0;
+                        
+                        localStorage.setItem(`balance_${telegramId}`, '11');
+                        localStorage.setItem(`wins_${telegramId}`, '0');
+                        localStorage.setItem(`games_${telegramId}`, '0');
+                    }
+                }
+            } catch (error) {
+                console.error("Supabase error:", error);
+            }
             
-            // ✅ तुरंत display update करो
             updateProfileDisplay();
             loadUserStats();
-            
-            // ✅ अगर cache नहीं था तो cache में 11 save करो
-            if (!cachedBalance) {
-                localStorage.setItem(`balance_${savedTgId}`, '11');
-                localStorage.setItem(`wins_${savedTgId}`, '0');
-                localStorage.setItem(`games_${savedTgId}`, '0');
-            }
-            
-            setTimeout(() => {
-                initializeUser();
-            }, 100);
-        } else {
-            currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
-            currentUserData.name = 'Demo User';
-            currentUserData.balance = 11; // ✅ Demo user को भी 11
-            updateProfileDisplay();
         }
-    }
-    
-    // Welcome popup - sirf ek baar
-    const welcomeShown = localStorage.getItem('welcomePopupShown');
-    if (!welcomeShown) {
-        setTimeout(() => {
-            const popup = document.getElementById('welcome-popup');
-            const nameEl = document.getElementById('welcome-user-name');
-            if (popup && nameEl) {
-                nameEl.textContent = userName;
-                popup.classList.remove('hidden');
-                localStorage.setItem('welcomePopupShown', 'true');
-                console.log("🎉 Welcome popup shown");
-            }
-        }, 1500);
-    }
-}    
-
-        function closeWelcomePopup() {
-            const popup = document.getElementById('welcome-popup');
-            if (popup) {
-                popup.classList.add('hidden');
-            }
-        }
-        
-        // ======================================== -->
-        // 38. GOOGLE SHEETS API FUNCTIONS
-        // ======================================== -->
-        async function getUserFromSheet(userId) {
-            try {
-                const url = `${GS_API_URL}?action=getUser&userId=${encodeURIComponent(userId)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                console.log("Google Sheets response:", data);
-                return data;
-            } catch (error) {
-                console.error("Error fetching user:", error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        async function createUserInSheet(userId, name, telegramId) {
-            try {
-                const url = `${GS_API_URL}?action=createUser&userId=${encodeURIComponent(userId)}&name=${encodeURIComponent(name)}&telegram_id=${encodeURIComponent(telegramId)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error creating user:", error);
-                return { success: false };
-            }
-        }
-
-        async function updateBalanceInSheet(userId, newBalance) {
-            try {
-                const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(userId)}&balance=${encodeURIComponent(newBalance)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error updating balance:", error);
-                return { success: false };
-            }
-        }
-        
-        // ======================================== -->
-// 39. INITIALIZE USER FROM SHEETS (FAST & BACKGROUND)
-// ======================================== -->
-async function initializeUser() {
-    const userId = currentUserData.userId;
-    const userName = currentUserData.name;
-    
-    if (!userId) {
-        updateProfileDisplay();
-        return;
-    }
-    
-    // ✅ STEP 1: CACHE से तुरंत लोड करो
-    const cachedBalance = localStorage.getItem(`balance_${userId}`);
-    const cachedWins = localStorage.getItem(`wins_${userId}`);
-    const cachedGames = localStorage.getItem(`games_${userId}`);
-    
-    if (cachedBalance) {
-        currentUserData.balance = parseFloat(cachedBalance);
-        currentUserData.totalWins = parseInt(cachedWins) || 0;
-        currentUserData.gamesPlayed = parseInt(cachedGames) || 0;
-        console.log(`⚡ Cached balance loaded: ₹${cachedBalance}`);
-    } else {
-        // ✅ कोई cache नहीं तो 11 दे दो - तुरंत!
-        currentUserData.balance = 11;
-        console.log(`💰 New user: ₹11 bonus added (cached)`);
-    }
-    
-    // ✅ STEP 2: तुरंत display update करो
-    updateProfileDisplay();
-    loadUserStats();
-    
-    // ✅ STEP 3: API call background में (बिना रुकावट)
-    setTimeout(async () => {
-        try {
-            console.log("📡 Fetching live data from Google Sheets...");
-            const result = await getUserFromSheet(userId);
-            
-            if (result.success && result.user) {
-                const liveBalance = parseFloat(result.user.balance) || 0;
-                const liveWins = parseInt(result.user.totalWins) || 0;
-                const liveGames = parseInt(result.user.gamesPlayed) || 0;
-                
-                // ✅ Cache update
-                localStorage.setItem(`balance_${userId}`, liveBalance);
-                localStorage.setItem(`wins_${userId}`, liveWins);
-                localStorage.setItem(`games_${userId}`, liveGames);
-                
-                // ✅ Update if changed
-                if (currentUserData.balance !== liveBalance) {
-                    currentUserData.balance = liveBalance;
-                    currentUserData.totalWins = liveWins;
-                    currentUserData.gamesPlayed = liveGames;
-                    
-                    updateProfileDisplay();
-                    loadUserStats();
-                    console.log(`✅ Live balance updated: ₹${liveBalance}`);
-                }
-            } else {
-                // User nahi mila - create karo
-                const createResult = await createUserInSheet(userId, userName, userId);
-                if (createResult.success) {
-                    // ✅ Already 11 set किया हुआ है
-                    localStorage.setItem(`balance_${userId}`, '11');
-                    localStorage.setItem(`wins_${userId}`, '0');
-                    localStorage.setItem(`games_${userId}`, '0');
-                    
-                    updateBalanceInSheet(userId, 11).catch(e => {});
-                }
-            }
-        } catch (error) {
-            console.error("Background sync error:", error);
-        }
-    }, 100);
-}
         
         // ======================================== -->
         // 40. GAME HISTORY FUNCTIONS
         // ======================================== -->
+        
         function loadGameHistory() {
             const hist = document.getElementById('result-history');
             if (!hist) return;
@@ -4476,99 +4242,93 @@ async function initializeUser() {
         }
         
         // ======================================== -->
-        // 41. GAME LOOP & BETTING (FIXED)
+        // 41. GAME LOOP & BETTING
         // ======================================== -->
+        
         function startGameLoop() {
-    console.log("🎯 startGameLoop() EXECUTED at", new Date().toLocaleTimeString());
-    
-    // पुराना timer हटाओ
-    if (gameTimerInterval) {
-        clearInterval(gameTimerInterval);
-        gameTimerInterval = null;
-    }
-    
-    timeLeft = 15;
-    isBettingActive = true;
-    currentRoundId = Date.now();
-    
-    // Elements ढूंढो
-    const timerValue = document.querySelector('.timer-value');
-    const resultBox = document.getElementById('result-box');
-    
-    console.log("🔍 Element check:", {
-        timerValue: timerValue ? "✅ Found" : "❌ Not found",
-        resultBox: resultBox ? "✅ Found" : "❌ Not found"
-    });
-    
-    // अगर elements नहीं मिले तो 1 सेकंड बाद फिर try करो
-    if (!timerValue || !resultBox) {
-        console.log("⏳ Elements not found, retrying in 1 second...");
-        setTimeout(startGameLoop, 1000);
-        return;
-    }
-    
-    // Timer set करो
-    timerValue.textContent = '15.0';
-    resultBox.classList.add('loading');
-    resultBox.innerHTML = '';
-    resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-    
-    // Game state reset
-    currentBet = { green: 0, blue: 0 };
-    gameState = {
-        totalGreenBets: 0,
-        totalBlueBets: 0,
-        allBets: [],
-        currentTime: 0,
-        roundId: currentRoundId
-    };
-    userBetMap = { green: {}, blue: {} };
-    
-    // Bet lists reset
-    const greenList = document.getElementById('green-bets-list');
-    const blueList = document.getElementById('blue-bets-list');
-    const greenTotal = document.getElementById('green-total');
-    const blueTotal = document.getElementById('blue-total');
-    const greenBadge = document.getElementById('bet-amount-green');
-    const blueBadge = document.getElementById('bet-amount-blue');
-    
-    if (greenList) greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
-    if (blueList) blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
-    if (greenTotal) greenTotal.textContent = '0';
-    if (blueTotal) blueTotal.textContent = '0';
-    if (greenBadge) {
-        greenBadge.textContent = '0';
-        greenBadge.style.display = 'none';
-    }
-    if (blueBadge) {
-        blueBadge.textContent = '0';
-        blueBadge.style.display = 'none';
-    }
-    
-    console.log("✅ Timer starting now! Countdown begins...");
-    
-    // Timer interval start
-    gameTimerInterval = setInterval(function() {
-        timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
-        
-        const timerElem = document.querySelector('.timer-value');
-        if (timerElem) {
-            timerElem.textContent = timeLeft.toFixed(1);
+            console.log("🎯 startGameLoop() EXECUTED at", new Date().toLocaleTimeString());
+            
+            if (gameTimerInterval) {
+                clearInterval(gameTimerInterval);
+                gameTimerInterval = null;
+            }
+            
+            timeLeft = 15;
+            isBettingActive = true;
+            currentRoundId = Date.now();
+            
+            const timerValue = document.querySelector('.timer-value');
+            const resultBox = document.getElementById('result-box');
+            
+            console.log("🔍 Element check:", {
+                timerValue: timerValue ? "✅ Found" : "❌ Not found",
+                resultBox: resultBox ? "✅ Found" : "❌ Not found"
+            });
+            
+            if (!timerValue || !resultBox) {
+                console.log("⏳ Elements not found, retrying in 1 second...");
+                setTimeout(startGameLoop, 1000);
+                return;
+            }
+            
+            timerValue.textContent = '15.0';
+            resultBox.classList.add('loading');
+            resultBox.innerHTML = '';
+            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+            
+            currentBet = { green: 0, blue: 0 };
+            gameState = {
+                totalGreenBets: 0,
+                totalBlueBets: 0,
+                allBets: [],
+                currentTime: 0,
+                roundId: currentRoundId
+            };
+            userBetMap = { green: {}, blue: {} };
+            
+            const greenList = document.getElementById('green-bets-list');
+            const blueList = document.getElementById('blue-bets-list');
+            const greenTotal = document.getElementById('green-total');
+            const blueTotal = document.getElementById('blue-total');
+            const greenBadge = document.getElementById('bet-amount-green');
+            const blueBadge = document.getElementById('bet-amount-blue');
+            
+            if (greenList) greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
+            if (blueList) blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
+            if (greenTotal) greenTotal.textContent = '0';
+            if (blueTotal) blueTotal.textContent = '0';
+            if (greenBadge) {
+                greenBadge.textContent = '0';
+                greenBadge.style.display = 'none';
+            }
+            if (blueBadge) {
+                blueBadge.textContent = '0';
+                blueBadge.style.display = 'none';
+            }
+            
+            console.log("✅ Timer starting now! Countdown begins...");
+            
+            gameTimerInterval = setInterval(function() {
+                timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
+                
+                const timerElem = document.querySelector('.timer-value');
+                if (timerElem) {
+                    timerElem.textContent = timeLeft.toFixed(1);
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(gameTimerInterval);
+                    gameTimerInterval = null;
+                    isBettingActive = false;
+                    
+                    const timerElem = document.querySelector('.timer-value');
+                    if (timerElem) timerElem.textContent = '0.0';
+                    
+                    endGameRound();
+                }
+            }, 100);
         }
         
-        if (timeLeft <= 0) {
-            clearInterval(gameTimerInterval);
-            gameTimerInterval = null;
-            isBettingActive = false;
-            
-            const timerElem = document.querySelector('.timer-value');
-            if (timerElem) timerElem.textContent = '0.0';
-            
-            endGameRound();
-        }
-    }, 100);
-}
-
         function endGameRound() {
             if (gameTimerInterval) { 
                 clearInterval(gameTimerInterval); 
@@ -4600,7 +4360,7 @@ async function initializeUser() {
                 setTimeout(() => { startGameLoop(); }, 3000);
             }, 2000);
         }
-
+        
         function updateHistoryDisplay(resultColor) {
             const hist = document.getElementById('result-history'); 
             if (!hist) return;
@@ -4613,95 +4373,87 @@ async function initializeUser() {
             hist.insertBefore(newItem, hist.firstChild);
             if (hist.children.length > 20) hist.removeChild(hist.lastChild);
         }
-
+        
         async function placeBet(color) {
-    if (!isBettingActive) {
-        showStatusMessage('Betting closed for this round!', 'error');
-        return;
-    }
-    
-    if (isPlacingBet) return;
-    
-    if (!currentUserData) {
-        showStatusMessage('Please login first!', 'error');
-        return;
-    }
-    
-    const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
-    if (isNaN(betAmount) || betAmount < 1) {
-        showStatusMessage('Enter valid amount (Min 1)', 'error');
-        return;
-    }
-    
-    if (betAmount > currentUserData.balance) {
-        showStatusMessage('Insufficient balance!', 'error');
-        return;
-    }
-    
-    const currentBetAmount = currentBet[color] || 0;
-    const potentialWin = (currentBetAmount + betAmount) * 2;
-    const totalOtherBets = color === 'green' ? currentBet.blue : currentBet.green;
-    const projectedBalance = currentUserData.balance - betAmount + potentialWin;
-    
-    if (projectedBalance > MAX_BALANCE) {
-        showStatusMessage(`Cannot place bet - would exceed ₹${formatBalance(MAX_BALANCE)}`, 'error');
-        return;
-    }
-    
-    isPlacingBet = true;
-    
-    currentUserData.balance -= betAmount;
-    
-    // ✅ CACHE UPDATE - Balance change तुरंत save करो
-    if (currentUserData.userId) {
-        localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
-        console.log(`💰 Cache updated: New balance ₹${currentUserData.balance}`);
-    }
-    
-    if (!userBetMap[color]) userBetMap[color] = {};
-    const userKey = currentUserData.userId || 'demo';
-    
-    if (userBetMap[color][userKey]) {
-        userBetMap[color][userKey].amount += betAmount;
-    } else {
-        userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
-    }
-    
-    currentBet[color] += betAmount;
-    if (color === 'green') {
-        gameState.totalGreenBets += betAmount;
-    } else {
-        gameState.totalBlueBets += betAmount;
-    }
-    
-    updateBetListDisplay(color);
-    
-    const betBadge = document.getElementById(`bet-amount-${color}`);
-    if (betBadge) {
-        betBadge.textContent = Math.floor(currentBet[color]);
-        betBadge.style.display = 'flex';
-    }
-    
-    const totalSpan = document.getElementById(`${color}-total`);
-    if (totalSpan) {
-        totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
-    }
-    
-    updateProfileDisplay();
-    showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
-    
-    try {
-        const url = `${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${currentUserData.balance}&actionType=bet&amount=${betAmount}`;
-        fetch(url).catch(error => console.error("API error:", error));
-    } catch (error) {
-        console.error("Bet error:", error);
-    }
-    
-    setTimeout(() => {
-        isPlacingBet = false;
-    }, 300);
-}
-
+            if (!isBettingActive) {
+                showStatusMessage('Betting closed for this round!', 'error');
+                return;
+            }
+            
+            if (isPlacingBet) return;
+            
+            if (!currentUserData) {
+                showStatusMessage('Please login first!', 'error');
+                return;
+            }
+            
+            const betAmount = parseFloat(document.getElementById('bet-amount')?.value);
+            if (isNaN(betAmount) || betAmount < 1) {
+                showStatusMessage('Enter valid amount (Min 1)', 'error');
+                return;
+            }
+            
+            if (betAmount > currentUserData.balance) {
+                showStatusMessage('Insufficient balance!', 'error');
+                return;
+            }
+            
+            const currentBetAmount = currentBet[color] || 0;
+            const potentialWin = (currentBetAmount + betAmount) * 2;
+            const totalOtherBets = color === 'green' ? currentBet.blue : currentBet.green;
+            const projectedBalance = currentUserData.balance - betAmount + potentialWin;
+            
+            if (projectedBalance > MAX_BALANCE) {
+                showStatusMessage(`Cannot place bet - would exceed ₹${formatBalance(MAX_BALANCE)}`, 'error');
+                return;
+            }
+            
+            isPlacingBet = true;
+            
+            currentUserData.balance -= betAmount;
+            
+            if (currentUserData.userId) {
+                localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+                updateBalanceInSupabase(currentUserData.userId, currentUserData.balance);
+            }
+            
+            if (!userBetMap[color]) userBetMap[color] = {};
+            const userKey = currentUserData.userId || 'demo';
+            
+            if (userBetMap[color][userKey]) {
+                userBetMap[color][userKey].amount += betAmount;
+            } else {
+                userBetMap[color][userKey] = { userName: currentUserData.name || 'User', amount: betAmount };
+            }
+            
+            currentBet[color] += betAmount;
+            if (color === 'green') {
+                gameState.totalGreenBets += betAmount;
+            } else {
+                gameState.totalBlueBets += betAmount;
+            }
+            
+            updateBetListDisplay(color);
+            
+            const betBadge = document.getElementById(`bet-amount-${color}`);
+            if (betBadge) {
+                betBadge.textContent = Math.floor(currentBet[color]);
+                betBadge.style.display = 'flex';
+            }
+            
+            const totalSpan = document.getElementById(`${color}-total`);
+            if (totalSpan) {
+                totalSpan.textContent = Math.floor(color === 'green' ? gameState.totalGreenBets : gameState.totalBlueBets);
+            }
+            
+            updateProfileDisplay();
+            showStatusMessage(`Bet placed: ₹${betAmount} on ${color}`, 'success');
+            
+            setTimeout(() => {
+                isPlacingBet = false;
+            }, 300);
+        }
+        
         function updateBetListDisplay(color) {
             const list = document.getElementById(`${color}-bets-list`);
             if (!list) return;
@@ -4726,68 +4478,78 @@ async function initializeUser() {
             });
             list.innerHTML = html;
         }
-
+        
         async function processWinning(winningColor) {
-    if (!currentUserData) return;
-    
-    const userBet = currentBet[winningColor] || 0;
-    
-    if (winningColor !== 'gray' && userBet > 0) {
-        const winAmount = userBet * 2;
-        
-        let newBalance = currentUserData.balance + winAmount;
-        
-        const finalBalance = enforceMaxBalance(newBalance);
-        
-        fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=win&amount=${userBet}`)
-            .catch(error => console.error("API error:", error));
-        
-        currentUserData.balance = finalBalance;
-        currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
-        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-        
-        // ✅ CACHE UPDATE - सारा data cache में save करो
-        if (currentUserData.userId) {
-            localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
-            localStorage.setItem(`wins_${currentUserData.userId}`, currentUserData.totalWins);
-            localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
-            console.log(`💰 Cache updated: Won ₹${winAmount}, New balance ₹${currentUserData.balance}`);
-        }
-        
-    } else if (winningColor === 'gray') {
-        const totalBet = currentBet.green + currentBet.blue;
-        if (totalBet > 0) {
-            let newBalance = currentUserData.balance + totalBet;
-            const finalBalance = enforceMaxBalance(newBalance);
+            if (!currentUserData) return;
             
-            fetch(`${GS_API_URL}?action=updateBalance&userId=${encodeURIComponent(currentUserData.userId)}&balance=${finalBalance}&actionType=gray&amount=${totalBet}`)
-                .catch(error => console.error("API error:", error));
+            const userBet = currentBet[winningColor] || 0;
             
-            currentUserData.balance = finalBalance;
-            currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-            
-            // ✅ CACHE UPDATE - Gray result (refund) के बाद
-            if (currentUserData.userId) {
-                localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
-                localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
-                console.log(`💰 Cache updated: Gray result, New balance ₹${currentUserData.balance}`);
+            if (winningColor !== 'gray' && userBet > 0) {
+                const winAmount = userBet * 2;
+                
+                let newBalance = currentUserData.balance + winAmount;
+                const finalBalance = enforceMaxBalance(newBalance);
+                
+                currentUserData.balance = finalBalance;
+                currentUserData.totalWins = (currentUserData.totalWins || 0) + 1;
+                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                
+                if (currentUserData.userId) {
+                    localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+                    localStorage.setItem(`wins_${currentUserData.userId}`, currentUserData.totalWins);
+                    localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
+                    
+                    updateBalanceInSupabase(
+                        currentUserData.userId, 
+                        currentUserData.balance,
+                        currentUserData.totalWins,
+                        currentUserData.gamesPlayed
+                    );
+                }
+                
+            } else if (winningColor === 'gray') {
+                const totalBet = currentBet.green + currentBet.blue;
+                if (totalBet > 0) {
+                    let newBalance = currentUserData.balance + totalBet;
+                    const finalBalance = enforceMaxBalance(newBalance);
+                    
+                    currentUserData.balance = finalBalance;
+                    currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                    
+                    if (currentUserData.userId) {
+                        localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+                        localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
+                        
+                        updateBalanceInSupabase(
+                            currentUserData.userId, 
+                            currentUserData.balance,
+                            undefined,
+                            currentUserData.gamesPlayed
+                        );
+                    }
+                }
+            } else {
+                currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
+                
+                if (currentUserData.userId) {
+                    localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
+                    
+                    updateBalanceInSupabase(
+                        currentUserData.userId, 
+                        currentUserData.balance,
+                        undefined,
+                        currentUserData.gamesPlayed
+                    );
+                }
             }
+            
+            updateProfileDisplay();
         }
-    } else {
-        currentUserData.gamesPlayed = (currentUserData.gamesPlayed || 0) + 1;
-        
-        // ✅ CACHE UPDATE - सिर्फ games count update करो
-        if (currentUserData.userId) {
-            localStorage.setItem(`games_${currentUserData.userId}`, currentUserData.gamesPlayed);
-        }
-    }
-    
-    updateProfileDisplay();
-}
         
         // ======================================== -->
         // 42. BET AMOUNT UTILITIES
         // ======================================== -->
+        
         function setBetAmount(amount) { 
             const input = document.getElementById('bet-amount'); 
             if (input) input.value = amount; 
@@ -4847,80 +4609,83 @@ async function initializeUser() {
         }
         
         // ======================================== -->
-// 43. ADD MONEY REQUEST FUNCTION (UPDATED)
-// ======================================== -->
-
-async function submitAddMoneyRequest() {
-    if (!currentUserData) {
-        showAddMoneyMessage('Please login first', 'error');
-        return;
-    }
-    
-    if (!selectedAddAmount || selectedAddAmount < 10) {
-        showAddMoneyMessage('Invalid amount', 'error');
-        return;
-    }
-    
-    if (!utrFirst || utrFirst !== utrSecond) {
-        showAddMoneyMessage('UTR confirmation failed', 'error');
-        return;
-    }
-    
-    if (currentUserData.balance + selectedAddAmount > MAX_BALANCE) {
-        const maxAdd = MAX_BALANCE - currentUserData.balance;
-        showAddMoneyMessage(`Cannot exceed maximum balance of ₹${formatBalance(MAX_BALANCE)}. You can add max ₹${formatBalance(maxAdd)} more.`, 'error');
-        return;
-    }
-    
-    const transaction = {
-        id: 'TXN' + Date.now(),
-        userId: currentUserData.userId,
-        amount: selectedAddAmount,
-        utr: utrFirst,
-        type: 'deposit',
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-        processedAt: null,
-        note: 'Waiting for admin approval'
-    };
-    
-    let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-    transactions.push(transaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    
-    document.querySelector('.utr-section')?.classList.add('hidden');
-    document.getElementById('pending-info')?.classList.remove('hidden');
-    document.getElementById('success-message')?.classList.remove('hidden');
-    
-    window.scrollTo(0, 0);
-    
-    console.log('Transaction submitted:', transaction);
-}
-
-// Keep the original withdraw function
-async function submitWithdrawRequest() {
-    if (!currentUserData) return showMessage('withdraw-message', 'Please login.');
-    
-    const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
-    
-    if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
-        return showMessage('withdraw-message', `Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}.`);
-    }
-    
-    const newBalance = currentUserData.balance - amount;
-    
-    await updateBalanceInSheet(currentUserData.userId, newBalance);
-    
-    currentUserData.balance = newBalance;
-    
-    showMessage('withdraw-message', `₹${formatBalance(amount)} withdrawal requested.`, 'success');
-    document.getElementById('withdraw-amount').value = '';
-    updateProfileDisplay();
-}
+        // 43. ADD MONEY REQUEST FUNCTION
+        // ======================================== -->
+        
+        async function submitAddMoneyRequest() {
+            if (!currentUserData) {
+                showAddMoneyMessage('Please login first', 'error');
+                return;
+            }
+            
+            if (!selectedAddAmount || selectedAddAmount < 10) {
+                showAddMoneyMessage('Invalid amount', 'error');
+                return;
+            }
+            
+            if (!utrFirst || utrFirst !== utrSecond) {
+                showAddMoneyMessage('UTR confirmation failed', 'error');
+                return;
+            }
+            
+            if (currentUserData.balance + selectedAddAmount > MAX_BALANCE) {
+                const maxAdd = MAX_BALANCE - currentUserData.balance;
+                showAddMoneyMessage(`Cannot exceed maximum balance of ₹${formatBalance(MAX_BALANCE)}. You can add max ₹${formatBalance(maxAdd)} more.`, 'error');
+                return;
+            }
+            
+            const transaction = {
+                id: 'TXN' + Date.now(),
+                userId: currentUserData.userId,
+                amount: selectedAddAmount,
+                utr: utrFirst,
+                type: 'deposit',
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                processedAt: null,
+                note: 'Waiting for admin approval'
+            };
+            
+            let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            document.querySelector('.utr-section')?.classList.add('hidden');
+            document.getElementById('pending-info')?.classList.remove('hidden');
+            document.getElementById('success-message')?.classList.remove('hidden');
+            
+            window.scrollTo(0, 0);
+            
+            console.log('Transaction submitted:', transaction);
+        }
+        
+        async function submitWithdrawRequest() {
+            if (!currentUserData) return showMessage('withdraw-message', 'Please login.');
+            
+            const amount = parseFloat(document.getElementById('withdraw-amount')?.value);
+            
+            if (isNaN(amount) || amount < 100 || amount > currentUserData.balance) {
+                return showMessage('withdraw-message', `Valid amount required. Min 100, Available ${formatBalance(currentUserData.balance)}.`);
+            }
+            
+            const newBalance = currentUserData.balance - amount;
+            
+            currentUserData.balance = newBalance;
+            
+            if (currentUserData.userId) {
+                localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+                updateBalanceInSupabase(currentUserData.userId, currentUserData.balance);
+            }
+            
+            showMessage('withdraw-message', `₹${formatBalance(amount)} withdrawal requested.`, 'success');
+            document.getElementById('withdraw-amount').value = '';
+            updateProfileDisplay();
+        }
         
         // ======================================== -->
-        // 44. BANK ACCOUNT FUNCTIONS (FIXED)
+        // 44. BANK ACCOUNT FUNCTIONS
         // ======================================== -->
+        
         function showAddBankPopup() {
             document.getElementById('add-bank-popup')?.classList.remove('hidden');
             document.getElementById('bank-message')?.classList.add('hidden');
@@ -5017,8 +4782,9 @@ async function submitWithdrawRequest() {
         }
         
         // ======================================== -->
-        // 45. UPI FUNCTIONS (FIXED)
+        // 45. UPI FUNCTIONS
         // ======================================== -->
+        
         function showAddUPIPopup() {
             document.getElementById('add-upi-popup')?.classList.remove('hidden');
             document.getElementById('upi-message')?.classList.add('hidden');
@@ -5104,98 +4870,208 @@ async function submitWithdrawRequest() {
         }
         
         // ======================================== -->
-// 48. LOADING SCREEN HATAYA GYA
-// ========================================
-
+        // 46. TELEGRAM + WELCOME POPUP
         // ======================================== -->
-        // 49. DISABLE COPY & RIGHT CLICK (COMPLETE)
+        
+        function initTelegramAndWelcome() {
+            let userName = 'User';
+            let telegramId = null;
+            
+            console.log("📱 Initializing Telegram...");
+            
+            setTimeout(() => {
+                console.log("🎮 Trying to start game loop...");
+                if (typeof startGameLoop === 'function') {
+                    try {
+                        startGameLoop();
+                        console.log("✅ Game loop started successfully");
+                    } catch (e) {
+                        console.error("❌ Game loop error:", e);
+                    }
+                } else {
+                    console.error("❌ startGameLoop function not found!");
+                }
+            }, 500);
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    const tg = window.Telegram.WebApp;
+                    tg.ready();
+                    tg.expand();
+                    
+                    const tgUser = tg.initDataUnsafe?.user;
+                    
+                    if (tgUser) {
+                        telegramId = tgUser.id.toString();
+                        const firstName = tgUser.first_name || '';
+                        const lastName = tgUser.last_name || '';
+                        userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+                        const username = tgUser.username || '';
+                        
+                        console.log(`✅ Telegram user: ${userName} (${telegramId})`);
+                        
+                        const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
+                        const cachedWins = localStorage.getItem(`wins_${telegramId}`);
+                        const cachedGames = localStorage.getItem(`games_${telegramId}`);
+                        
+                        const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+                        const initialWins = cachedWins ? parseInt(cachedWins) : 0;
+                        const initialGames = cachedGames ? parseInt(cachedGames) : 0;
+                        
+                        console.log(`⚡ Loading balance: ${initialBalance} (${cachedBalance ? 'from cache' : 'default ₹11'})`);
+                        
+                        currentUserData = {
+                            userId: telegramId,
+                            name: userName,
+                            email: '',
+                            phone: '',
+                            balance: initialBalance,
+                            bank_accounts: [],
+                            upis: [],
+                            notifications: [],
+                            totalWins: initialWins,
+                            gamesPlayed: initialGames,
+                            createdAt: new Date(),
+                            telegram_id: telegramId,
+                            telegram_username: username
+                        };
+                        
+                        updateProfileDisplay();
+                        loadUserStats();
+                        
+                        localStorage.setItem('tg_id', telegramId);
+                        localStorage.setItem('tg_name', userName);
+                        
+                        if (!cachedBalance) {
+                            localStorage.setItem(`balance_${telegramId}`, '11');
+                            localStorage.setItem(`wins_${telegramId}`, '0');
+                            localStorage.setItem(`games_${telegramId}`, '0');
+                        }
+                        
+                        setTimeout(() => {
+                            initializeUser();
+                        }, 100);
+                    } else {
+                        console.log("⚠️ No Telegram user data");
+                        loadFromLocalStorage();
+                    }
+                } catch (e) {
+                    console.error("Telegram error:", e);
+                    loadFromLocalStorage();
+                }
+            } else {
+                console.log("ℹ️ Not in Telegram WebApp");
+                loadFromLocalStorage();
+            }
+            
+            function loadFromLocalStorage() {
+                const savedTgId = localStorage.getItem('tg_id');
+                const savedTgName = localStorage.getItem('tg_name');
+                
+                if (savedTgId) {
+                    const cachedBalance = localStorage.getItem(`balance_${savedTgId}`);
+                    const cachedWins = localStorage.getItem(`wins_${savedTgId}`);
+                    const cachedGames = localStorage.getItem(`games_${savedTgId}`);
+                    
+                    const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+                    
+                    console.log(`⚡ Loading from localStorage: ${initialBalance} (${cachedBalance ? 'cached' : 'default'})`);
+                    
+                    currentUserData = {
+                        userId: savedTgId,
+                        name: savedTgName || 'User',
+                        email: '',
+                        phone: '',
+                        balance: initialBalance,
+                        bank_accounts: [],
+                        upis: [],
+                        notifications: [],
+                        totalWins: cachedWins ? parseInt(cachedWins) : 0,
+                        gamesPlayed: cachedGames ? parseInt(cachedGames) : 0,
+                        createdAt: new Date(),
+                        telegram_id: savedTgId,
+                        telegram_username: savedTgName || null
+                    };
+                    
+                    updateProfileDisplay();
+                    loadUserStats();
+                    
+                    if (!cachedBalance) {
+                        localStorage.setItem(`balance_${savedTgId}`, '11');
+                        localStorage.setItem(`wins_${savedTgId}`, '0');
+                        localStorage.setItem(`games_${savedTgId}`, '0');
+                    }
+                    
+                    setTimeout(() => {
+                        initializeUser();
+                    }, 100);
+                } else {
+                    currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
+                    currentUserData.name = 'Demo User';
+                    currentUserData.balance = 11;
+                    updateProfileDisplay();
+                }
+            }
+            
+            const welcomeShown = localStorage.getItem('welcomePopupShown');
+            if (!welcomeShown) {
+                setTimeout(() => {
+                    const popup = document.getElementById('welcome-popup');
+                    const nameEl = document.getElementById('welcome-user-name');
+                    if (popup && nameEl) {
+                        nameEl.textContent = userName;
+                        popup.classList.remove('hidden');
+                        localStorage.setItem('welcomePopupShown', 'true');
+                        console.log("🎉 Welcome popup shown");
+                    }
+                }, 1500);
+            }
+        }
+        
+        function closeWelcomePopup() {
+            const popup = document.getElementById('welcome-popup');
+            if (popup) {
+                popup.classList.add('hidden');
+            }
+        }
+        
         // ======================================== -->
-
-        // Disable right click
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // Disable keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.key === 'F12') {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.key === 'u') {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.key === 'p') {
-                e.preventDefault();
-                return false;
-            }
-            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-                e.preventDefault();
-                return false;
-            }
-            if ((e.altKey && e.key === 'F4') || (e.ctrlKey && e.key === 'w')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        console.log("🛡️ Copy protection enabled");
-
+        // 47. FULL SCREEN PAGE FUNCTIONS
         // ======================================== -->
-        // 50. FULL SCREEN PAGE FUNCTIONS
-        // ======================================== -->
-
+        
         function openFullWithdraw() {
             document.getElementById('full-withdraw-page').classList.add('active');
             document.getElementById('profile-page').classList.add('hidden');
             loadPaymentMethods();
         }
-
+        
         function closeFullWithdraw() {
             document.getElementById('full-withdraw-page').classList.remove('active');
             document.getElementById('profile-page').classList.remove('hidden');
         }
-
+        
         function openFullHistory() {
             document.getElementById('full-history-page').classList.add('active');
             document.getElementById('profile-page').classList.add('hidden');
             loadFullGameHistory();
         }
-
+        
         function closeFullHistory() {
             document.getElementById('full-history-page').classList.remove('active');
             document.getElementById('profile-page').classList.remove('hidden');
         }
-
+        
         function openFullTransaction() {
             document.getElementById('full-transaction-page').classList.add('active');
             document.getElementById('profile-page').classList.add('hidden');
             loadFullTransactionHistory();
         }
-
+        
         function closeFullTransaction() {
             document.getElementById('full-transaction-page').classList.remove('active');
             document.getElementById('profile-page').classList.remove('hidden');
         }
-
+        
         function filterFullHistory(filter) {
             fullHistoryFilter = filter;
             document.querySelectorAll('#full-history-page .fullscreen-filter-btn').forEach(btn => {
@@ -5204,7 +5080,7 @@ async function submitWithdrawRequest() {
             event.target.classList.add('active');
             loadFullGameHistory();
         }
-
+        
         function filterFullTransaction(filter) {
             fullTransactionFilter = filter;
             document.querySelectorAll('#full-transaction-page .fullscreen-filter-btn').forEach(btn => {
@@ -5213,7 +5089,7 @@ async function submitWithdrawRequest() {
             event.target.classList.add('active');
             loadFullTransactionHistory();
         }
-
+        
         function loadPaymentMethods() {
             const container = document.getElementById('payment-methods-container');
             if (!container) return;
@@ -5260,7 +5136,7 @@ async function submitWithdrawRequest() {
             
             container.innerHTML = html;
         }
-
+        
         function selectPaymentMethod(type, index) {
             const container = document.getElementById('payment-methods-container');
             
@@ -5295,7 +5171,7 @@ async function submitWithdrawRequest() {
             
             container.appendChild(form);
         }
-
+        
         function submitFullWithdraw(type, index) {
             const amount = parseFloat(document.getElementById('withdraw-amount-full')?.value);
             
@@ -5325,7 +5201,7 @@ async function submitWithdrawRequest() {
             
             console.log(`Withdraw: ₹${amount} to ${type} ${index}`);
         }
-
+        
         function loadFullGameHistory() {
             const container = document.getElementById('full-history-content');
             if (!container) return;
@@ -5373,7 +5249,7 @@ async function submitWithdrawRequest() {
             
             container.innerHTML = html;
         }
-
+        
         function loadFullTransactionHistory() {
             const container = document.getElementById('full-transaction-content');
             if (!container) return;
@@ -5421,7 +5297,7 @@ async function submitWithdrawRequest() {
             
             container.innerHTML = html;
         }
-
+        
         function showImportantNotification(title, message) {
             const popup = document.getElementById('important-notification-popup');
             const titleEl = document.getElementById('important-notification-title');
@@ -5431,7 +5307,7 @@ async function submitWithdrawRequest() {
             if (msgEl) msgEl.textContent = message;
             if (popup) popup.classList.remove('hidden');
         }
-
+        
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('tg_id');
@@ -5442,7 +5318,7 @@ async function submitWithdrawRequest() {
                     name: 'Demo User',
                     email: 'demo@example.com',
                     phone: 'Not Set',
-                    balance: 0,
+                    balance: 11,
                     bank_accounts: [],
                     upis: [],
                     notifications: [],
@@ -5457,112 +5333,164 @@ async function submitWithdrawRequest() {
                 showStatusMessage('Logged out successfully', 'success');
             }
         }
-
+        
         // ======================================== -->
-// 51. EXPORT FUNCTIONS TO GLOBAL SCOPE
-// ======================================== -->
-
-window.toggleNotificationPanel = toggleNotificationPanel;
-window.selectAmount = selectAmount;
-window.selectWithdrawAmount = selectWithdrawAmount;
-window.submitWithdrawRequest = submitWithdrawRequest;
-window.closeImportantNotification = closeImportantNotification;
-window.showAddBankPopup = showAddBankPopup;
-window.closeAddBankPopup = closeAddBankPopup;
-window.addBankAccount = addBankAccount;
-window.showAddUPIPopup = showAddUPIPopup;
-window.closeAddUPIPopup = closeAddUPIPopup;
-window.addUPI = addUPI;
-window.placeBet = placeBet;
-window.setBetAmount = setBetAmount;
-window.adjustBetAmount = adjustBetAmount;
-window.copyUserId = copyUserId;
-window.showManageAccount = showManageAccount;
-window.hideManageAccount = hideManageAccount;
-window.openFullWithdraw = openFullWithdraw;
-window.closeFullWithdraw = closeFullWithdraw;
-window.openFullHistory = openFullHistory;
-window.closeFullHistory = closeFullHistory;
-window.openFullTransaction = openFullTransaction;
-window.closeFullTransaction = closeFullTransaction;
-window.filterFullHistory = filterFullHistory;
-window.filterFullTransaction = filterFullTransaction;
-window.showPage = showPage;
-window.logout = logout;
-window.closeWelcomePopup = closeWelcomePopup;
-window.loadBankAccountsManage = loadBankAccountsManage;
-window.deleteBankAccount = deleteBankAccount;
-window.loadUPIsManage = loadUPIsManage;
-window.deleteUPI = deleteUPI;
-window.goBackToProfile = goBackToProfile;
-window.selectAddAmount = selectAddAmount;
-window.showCustomAmountInput = showCustomAmountInput;
-window.applyCustomAmount = applyCustomAmount;
-window.copyUPIId = copyUPIId;
-window.proceedToConfirmation = proceedToConfirmation;
-window.confirmUTRAndShowSubmit = confirmUTRAndShowSubmit;
-window.submitAddMoneyRequest = submitAddMoneyRequest;
-
-// ======================================== -->
-// 52. EMERGENCY TIMER FIX
-// ======================================== -->
-
-(function() {
-    console.log("🚨 Emergency timer fix running...");
-    
-    function forceStartTimer() {
-        console.log("⏰ forceStartTimer called, startGameLoop exists?", typeof startGameLoop === 'function');
+        // 48. DISABLE COPY & RIGHT CLICK
+        // ======================================== -->
         
-        if (typeof startGameLoop === 'function') {
-            try {
-                startGameLoop();
-                console.log("✅ Timer force started!");
-            } catch (e) {
-                console.error("❌ Timer force start error:", e);
-            }
-        } else {
-            console.error("❌ startGameLoop function not found!");
-        }
-    }
-    
-    setTimeout(forceStartTimer, 1000);
-    setTimeout(forceStartTimer, 2000);
-    setTimeout(forceStartTimer, 3000);
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(forceStartTimer, 500);
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
         });
-    }
-    
-    window.addEventListener('load', function() {
-        setTimeout(forceStartTimer, 500);
-    });
-    
-    console.log("📝 Manual test: type 'startGameLoop()' in console to start timer manually");
-})();
-
-// ======================================== -->
-// 53. EMERGENCY BALANCE FIX
-// ======================================== -->
-(function() {
-    console.log("💰 Emergency balance fix running...");
-    
-    // हर हाल में balance 11 दिखाओ
-    function forceBalance11() {
-        if (!currentUserData) return;
         
-        // अगर balance 0 है तो 11 कर दो
-        if (currentUserData.balance === 0) {
-            currentUserData.balance = 11;
-            console.log("💰 Force set balance to 11");
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                return false;
+            }
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                return false;
+            }
+            if ((e.altKey && e.key === 'F4') || (e.ctrlKey && e.key === 'w')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        console.log("🛡️ Copy protection enabled");
+        
+        // ======================================== -->
+        // 49. INITIALIZATION
+        // ======================================== -->
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("📄 DOM Content Loaded - Initializing App");
+            
+            if (typeof loadGameHistory === 'function') {
+                try { loadGameHistory(); } catch (e) { console.log("History error:", e); }
+            }
+            
+            ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function(e) {
+                        this.value = this.value.replace(/[^0-9]/g, '');
+                    });
+                }
+            });
+            
+            if (typeof initTelegramAndWelcome === 'function') {
+                setTimeout(() => {
+                    try { initTelegramAndWelcome(); } catch (e) { console.log("Telegram init error:", e); }
+                }, 100);
+            }
+            
             updateProfileDisplay();
-        }
-    }
-    
-    // कई बार try करो
-    setTimeout(forceBalance11, 10);
-    setTimeout(forceBalance11, 50);
-    setTimeout(forceBalance11, 100);
-    setTimeout(forceBalance11, 500);
-})();
+        });
+        
+        // ======================================== -->
+        // 50. EXPORT FUNCTIONS
+        // ======================================== -->
+        
+        window.toggleNotificationPanel = toggleNotificationPanel;
+        window.selectAmount = selectAmount;
+        window.selectWithdrawAmount = selectWithdrawAmount;
+        window.submitWithdrawRequest = submitWithdrawRequest;
+        window.closeImportantNotification = closeImportantNotification;
+        window.showAddBankPopup = showAddBankPopup;
+        window.closeAddBankPopup = closeAddBankPopup;
+        window.addBankAccount = addBankAccount;
+        window.showAddUPIPopup = showAddUPIPopup;
+        window.closeAddUPIPopup = closeAddUPIPopup;
+        window.addUPI = addUPI;
+        window.placeBet = placeBet;
+        window.setBetAmount = setBetAmount;
+        window.adjustBetAmount = adjustBetAmount;
+        window.copyUserId = copyUserId;
+        window.showManageAccount = showManageAccount;
+        window.hideManageAccount = hideManageAccount;
+        window.openFullWithdraw = openFullWithdraw;
+        window.closeFullWithdraw = closeFullWithdraw;
+        window.openFullHistory = openFullHistory;
+        window.closeFullHistory = closeFullHistory;
+        window.openFullTransaction = openFullTransaction;
+        window.closeFullTransaction = closeFullTransaction;
+        window.filterFullHistory = filterFullHistory;
+        window.filterFullTransaction = filterFullTransaction;
+        window.showPage = showPage;
+        window.logout = logout;
+        window.closeWelcomePopup = closeWelcomePopup;
+        window.loadBankAccountsManage = loadBankAccountsManage;
+        window.deleteBankAccount = deleteBankAccount;
+        window.loadUPIsManage = loadUPIsManage;
+        window.deleteUPI = deleteUPI;
+        window.goBackToProfile = goBackToProfile;
+        window.selectAddAmount = selectAddAmount;
+        window.showCustomAmountInput = showCustomAmountInput;
+        window.applyCustomAmount = applyCustomAmount;
+        window.copyUPIId = copyUPIId;
+        window.proceedToConfirmation = proceedToConfirmation;
+        window.confirmUTRAndShowSubmit = confirmUTRAndShowSubmit;
+        window.submitAddMoneyRequest = submitAddMoneyRequest;
+        
+        // ======================================== -->
+        // 51. EMERGENCY FIXES
+        // ======================================== -->
+        
+        (function() {
+            console.log("🚨 Emergency timer fix running...");
+            
+            function forceStartTimer() {
+                if (typeof startGameLoop === 'function') {
+                    try {
+                        startGameLoop();
+                        console.log("✅ Timer force started!");
+                    } catch (e) {
+                        console.error("❌ Timer error:", e);
+                    }
+                }
+            }
+            
+            setTimeout(forceStartTimer, 1000);
+            setTimeout(forceStartTimer, 2000);
+            setTimeout(forceStartTimer, 3000);
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(forceStartTimer, 500);
+                });
+            }
+            
+            window.addEventListener('load', function() {
+                setTimeout(forceStartTimer, 500);
+            });
+        })();
+        
+    </script>
+</body>
+</html>

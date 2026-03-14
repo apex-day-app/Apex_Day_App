@@ -3706,6 +3706,8 @@ body {
         };
         let isPlacingBet = false;
         let timeLeft = 15;
+        let gameLoopStarted = false;
+        let gameInterval = null;
         let isBettingActive = true;
         let currentRoundId = Date.now();
         let fullHistoryFilter = 'all';
@@ -3721,7 +3723,7 @@ body {
         // ======================================== -->
         // SUPABASE CONFIGURATION (अपनी keys डालो)
         // ======================================== -->
-        const supabase = window.supabase.createClient(
+        const mysupabase = window.supabase.createClient(
             'https://gvxvibreducyyalebhuz.supabase.co',
             'sb_publishable_DHVp7vwUJU0oA89rdJNgQQ_Mj2RJnV0'
         );
@@ -4077,7 +4079,7 @@ body {
         
         async function getUserFromSupabase(telegramId) {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await mysupabase
                     .from('users')
                     .select('*')
                     .eq('telegram_id', telegramId)
@@ -4107,7 +4109,7 @@ body {
         
         async function createUserInSupabase(telegramId, name) {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await mysupabase
                     .from('users')
                     .insert([
                         { 
@@ -4246,120 +4248,95 @@ body {
         // ======================================== -->
         
         function startGameLoop() {
-            console.log("🎯 startGameLoop() EXECUTED at", new Date().toLocaleTimeString());
-            
-            if (gameTimerInterval) {
-                clearInterval(gameTimerInterval);
-                gameTimerInterval = null;
-            }
-            
-            timeLeft = 15;
-            isBettingActive = true;
-            currentRoundId = Date.now();
-            
-            const timerValue = document.querySelector('.timer-value');
-            const resultBox = document.getElementById('result-box');
-            
-            console.log("🔍 Element check:", {
-                timerValue: timerValue ? "✅ Found" : "❌ Not found",
-                resultBox: resultBox ? "✅ Found" : "❌ Not found"
-            });
-            
-            if (!timerValue || !resultBox) {
-                console.log("⏳ Elements not found, retrying in 1 second...");
-                setTimeout(startGameLoop, 1000);
-                return;
-            }
-            
-            timerValue.textContent = '15.0';
-            resultBox.classList.add('loading');
-            resultBox.innerHTML = '';
-            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-            
-            currentBet = { green: 0, blue: 0 };
-            gameState = {
-                totalGreenBets: 0,
-                totalBlueBets: 0,
-                allBets: [],
-                currentTime: 0,
-                roundId: currentRoundId
-            };
-            userBetMap = { green: {}, blue: {} };
-            
-            const greenList = document.getElementById('green-bets-list');
-            const blueList = document.getElementById('blue-bets-list');
-            const greenTotal = document.getElementById('green-total');
-            const blueTotal = document.getElementById('blue-total');
-            const greenBadge = document.getElementById('bet-amount-green');
-            const blueBadge = document.getElementById('bet-amount-blue');
-            
-            if (greenList) greenList.innerHTML = '<div class="empty-bets"><i class="fas fa-leaf"></i> No bets</div>';
-            if (blueList) blueList.innerHTML = '<div class="empty-bets"><i class="fas fa-water"></i> No bets</div>';
-            if (greenTotal) greenTotal.textContent = '0';
-            if (blueTotal) blueTotal.textContent = '0';
-            if (greenBadge) {
-                greenBadge.textContent = '0';
-                greenBadge.style.display = 'none';
-            }
-            if (blueBadge) {
-                blueBadge.textContent = '0';
-                blueBadge.style.display = 'none';
-            }
-            
-            console.log("✅ Timer starting now! Countdown begins...");
-            
-            gameTimerInterval = setInterval(function() {
-                timeLeft = parseFloat((timeLeft - 0.1).toFixed(1));
-                
-                const timerElem = document.querySelector('.timer-value');
-                if (timerElem) {
-                    timerElem.textContent = timeLeft.toFixed(1);
-                }
-                
-                if (timeLeft <= 0) {
-                    clearInterval(gameTimerInterval);
-                    gameTimerInterval = null;
-                    isBettingActive = false;
-                    
-                    const timerElem = document.querySelector('.timer-value');
-                    if (timerElem) timerElem.textContent = '0.0';
-                    
-                    endGameRound();
-                }
-            }, 100);
+    console.log("🎮 Game loop starting...");
+    
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = null;
+    }
+    
+    timeLeft = 15;
+    isBettingActive = true;
+    currentRoundId = Date.now();
+    
+    // Timer update karo
+    const timerEl = document.querySelector('.timer-value');
+    const resultBox = document.getElementById('result-box');
+    
+    if (timerEl) timerEl.textContent = '15';
+    if (resultBox) {
+        resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
+        resultBox.classList.add('loading');
+    }
+    
+    // Reset bets
+    currentBet = { green: 0, blue: 0 };
+    userBetMap = { green: {}, blue: {} };
+    gameState = { totalGreenBets: 0, totalBlueBets: 0, allBets: [] };
+    
+    // Update UI
+    updateBetListDisplay('green');
+    updateBetListDisplay('blue');
+    document.getElementById('green-total').textContent = '0';
+    document.getElementById('blue-total').textContent = '0';
+    document.getElementById('bet-amount-green').style.display = 'none';
+    document.getElementById('bet-amount-blue').style.display = 'none';
+    
+    // Start countdown
+    gameInterval = setInterval(function() {
+        timeLeft = timeLeft - 0.1;
+        
+        const timerDisplay = document.querySelector('.timer-value');
+        if (timerDisplay) {
+            timerDisplay.textContent = timeLeft.toFixed(1);
         }
         
-        function endGameRound() {
-            if (gameTimerInterval) { 
-                clearInterval(gameTimerInterval); 
-                gameTimerInterval = null; 
-            }
-            const resultBox = document.getElementById('result-box'); 
-            if (!resultBox) return;
-            
-            resultBox.classList.remove('loading');
-            resultBox.innerHTML = '';
-            resultBox.classList.remove('green-result', 'blue-result', 'gray-result');
-            
-            const totalGreen = gameState.totalGreenBets;
-            const totalBlue = gameState.totalBlueBets;
-            let resultColor = 'gray';
-            
-            if (totalGreen > 0 || totalBlue > 0) {
-                if (totalGreen < totalBlue) resultColor = 'green';
-                else if (totalBlue < totalGreen) resultColor = 'blue';
-            }
-            
-            setTimeout(() => {
-                resultBox.classList.add(resultColor + '-result');
-                resultBox.innerHTML = '';
-                
-                processWinning(resultColor);
-                
-                updateHistoryDisplay(resultColor);
-                setTimeout(() => { startGameLoop(); }, 3000);
-            }, 2000);
+        if (timeLeft <= 0) {
+            clearInterval(gameInterval);
+            gameInterval = null;
+            isBettingActive = false;
+            endGameRound();
         }
+    }, 100);
+}
+        
+        function endGameRound() {
+    console.log("🏁 Round ended");
+    
+    const resultBox = document.getElementById('result-box');
+    if (!resultBox) return;
+    
+    resultBox.classList.remove('loading');
+    
+    // Random result generate karo
+    const random = Math.random();
+    let resultColor = 'gray';
+    
+    if (random < 0.4) resultColor = 'green';
+    else if (random < 0.8) resultColor = 'blue';
+    else resultColor = 'gray';
+    
+    resultBox.classList.add(resultColor + '-result');
+    
+    // Winning process karo
+    processWinning(resultColor);
+    
+    // History update karo
+    const hist = document.getElementById('result-history');
+    if (hist) {
+        const icon = resultColor === 'green' ? 'fa-leaf' : resultColor === 'blue' ? 'fa-water' : 'fa-circle';
+        const newItem = document.createElement('div');
+        newItem.className = `history-item ${resultColor}`;
+        newItem.innerHTML = `<i class="fas ${icon}"></i>`;
+        hist.insertBefore(newItem, hist.firstChild);
+        if (hist.children.length > 20) hist.removeChild(hist.lastChild);
+    }
+    
+    // Next round start karo
+    setTimeout(function() {
+        startGameLoop();
+    }, 3000);
+}
         
         function updateHistoryDisplay(resultColor) {
             const hist = document.getElementById('result-history'); 
@@ -5385,34 +5362,38 @@ body {
         console.log("🛡️ Copy protection enabled");
         
         // ======================================== -->
-        // 49. INITIALIZATION
-        // ======================================== -->
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("📄 DOM Content Loaded - Initializing App");
-            
-            if (typeof loadGameHistory === 'function') {
-                try { loadGameHistory(); } catch (e) { console.log("History error:", e); }
-            }
-            
-            ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', function(e) {
-                        this.value = this.value.replace(/[^0-9]/g, '');
-                    });
-                }
+// 49. INITIALIZATION
+// ======================================== -->
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("📄 DOM Content Loaded - Initializing App");
+    
+    if (typeof loadGameHistory === 'function') {
+        try { loadGameHistory(); } catch (e) { console.log("History error:", e); }
+    }
+    
+    ['bet-amount', 'add-amount', 'withdraw-amount'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
             });
-            
-            if (typeof initTelegramAndWelcome === 'function') {
-                setTimeout(() => {
-                    try { initTelegramAndWelcome(); } catch (e) { console.log("Telegram init error:", e); }
-                }, 100);
-            }
-            
-            updateProfileDisplay();
-        });
-        
+        }
+    });
+    
+    if (typeof initTelegramAndWelcome === 'function') {
+        setTimeout(() => {
+            try { initTelegramAndWelcome(); } catch (e) { console.log("Telegram init error:", e); }
+        }, 100);
+    }
+    
+    updateProfileDisplay();
+    
+    // Game loop start karo
+    setTimeout(function() {
+        startGameLoop();
+    }, 2000);
+});
         // ======================================== -->
         // 50. EXPORT FUNCTIONS
         // ======================================== -->
@@ -5462,6 +5443,20 @@ body {
         // 51. EMERGENCY FIXES
         // ======================================== -->
         
+// Window load par bhi start karo
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        startGameLoop();
+    }, 1000);
+});
+
+// Har 5 second mein check karo
+setInterval(function() {
+    var timer = document.querySelector('.timer-value');
+    if (timer && timer.textContent === '0.0') {
+        startGameLoop();
+    }
+}, 5000);
         (function() {
             console.log("🚨 Emergency timer fix running...");
             

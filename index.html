@@ -4275,93 +4275,49 @@ function saveQRToGallery() {
         const isTelegram = window.Telegram && window.Telegram.WebApp;
         
         if (isTelegram) {
-            // Telegram के लिए - सीधा image खोलो
-            const imageWindow = window.open();
-            if (imageWindow) {
-                imageWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>Save QR Code</title>
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <style>
-                                body { 
-                                    margin: 0; 
-                                    padding: 0; 
-                                    text-align: center; 
-                                    background: #1a2a3a;
-                                    font-family: Arial, sans-serif;
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    justify-content: center;
-                                    min-height: 100vh;
-                                }
-                                img {
-                                    max-width: 90%;
-                                    max-height: 70vh;
-                                    border: 3px solid #D4AF37;
-                                    border-radius: 15px;
-                                    margin: 20px;
-                                }
-                                .save-btn {
-                                    background: #00C853;
-                                    color: white;
-                                    border: none;
-                                    padding: 15px 30px;
-                                    border-radius: 10px;
-                                    font-size: 18px;
-                                    font-weight: bold;
-                                    margin: 10px;
-                                    cursor: pointer;
-                                    width: 200px;
-                                }
-                                .instruction {
-                                    color: white;
-                                    margin: 10px;
-                                    font-size: 16px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <img src="${dataURL}" alt="QR Code" id="qrImage">
-                            <div class="instruction">📱 Long press on QR code to save</div>
-                            <button class="save-btn" onclick="saveQR()">💾 Save QR</button>
-                            <button class="save-btn" style="background:#D4AF37;" onclick="window.close()">❌ Close</button>
-                            <script>
-                                function saveQR() {
-                                    const img = document.getElementById('qrImage');
-                                    const link = document.createElement('a');
-                                    link.href = img.src;
-                                    link.download = 'qr-code-' + Date.now() + '.png';
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                    setTimeout(() => {
-                                        alert('✅ QR Code saved! Check your downloads.');
-                                    }, 500);
-                                }
-                            <\/script>
-                        </body>
-                    </html>
-                `);
-                showAddMoneyMessage('Opening QR in new window...', 'info');
-            } else {
-                // अगर window open न हो तो दूसरा तरीका
-                const link = document.createElement('a');
-                link.href = dataURL;
-                link.download = 'qr-code-' + Date.now() + '.png';
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                
-                // Force click with delay
-                setTimeout(() => {
-                    link.click();
+            // Telegram के लिए - नया डाउनलोड तरीका
+            const fileName = 'qr-code-' + Date.now() + '.png';
+            
+            // Create blob from dataURL
+            fetch(dataURL)
+                .then(res => res.blob())
+                .then(blob => {
+                    // Create object URL
+                    const url = URL.createObjectURL(blob);
+                    
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    link.style.display = 'none';
+                    
+                    // Add to body
+                    document.body.appendChild(link);
+                    
+                    // Trigger click with delay
                     setTimeout(() => {
-                        document.body.removeChild(link);
-                        showAddMoneyMessage('✅ QR Code saved!', 'success');
-                    }, 1000);
-                }, 100);
-            }
+                        link.click();
+                        
+                        // Cleanup
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                            
+                            // Success message
+                            showAddMoneyMessage('✅ QR Code saved! Check your downloads.', 'success');
+                        }, 1000);
+                    }, 100);
+                })
+                .catch(() => {
+                    // Fallback - direct download attempt
+                    const link = document.createElement('a');
+                    link.href = dataURL;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showAddMoneyMessage('✅ QR Code saved!', 'success');
+                });
         } else {
             // Normal browser के लिए - सीधा download
             const link = document.createElement('a');
@@ -4375,15 +4331,7 @@ function saveQRToGallery() {
         
     } catch (error) {
         console.error('Save error:', error);
-        
-        // Last resort - सीधा image खोलो
-        const imageUrl = qrImage.src;
-        if (imageUrl) {
-            window.open(imageUrl, '_blank');
-            showAddMoneyMessage('Long press on image to save', 'info');
-        } else {
-            showAddMoneyMessage('Failed to save QR code', 'error');
-        }
+        showAddMoneyMessage('Failed to save QR code', 'error');
     }
 }
 

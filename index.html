@@ -4257,41 +4257,40 @@ function saveQRToGallery() {
         return;
     }
     
-    // Check if image loaded
-    if (!qrImage.complete) {
-        showAddMoneyMessage('QR image is loading, please wait...', 'info');
-        return;
-    }
-    
-    showAddMoneyMessage('Downloading QR code...', 'info');
+    showAddMoneyMessage('Saving QR code...', 'info');
     
     try {
-        // Create canvas from image
+        // Canvas बनाओ
         const canvas = document.createElement('canvas');
-        canvas.width = qrImage.naturalWidth;
-        canvas.height = qrImage.naturalHeight;
+        canvas.width = qrImage.naturalWidth || 400;
+        canvas.height = qrImage.naturalHeight || 400;
         
         const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(qrImage, 0, 0, canvas.width, canvas.height);
         
-        // Convert to blob and download
+        // Canvas से डाउनलोड लिंक बनाओ
         canvas.toBlob(function(blob) {
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
             link.download = 'payment-qr-' + new Date().getTime() + '.png';
             
+            // Auto click करो
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
+            // Cleanup
             URL.revokeObjectURL(url);
+            
             showAddMoneyMessage('✅ QR Code saved to gallery!', 'success');
         }, 'image/png');
         
     } catch (error) {
-        console.error('Download error:', error);
-        showAddMoneyMessage('Failed to download QR code', 'error');
+        console.error('Save error:', error);
+        showAddMoneyMessage('Failed to save QR code', 'error');
     }
 }
 

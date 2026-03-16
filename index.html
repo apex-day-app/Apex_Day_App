@@ -4256,20 +4256,22 @@ function saveQRToGallery() {
     
     showAddMoneyMessage('Opening bot...', 'info');
     
-    // ✅ यह URL ऑटोमैटिक SEND करेगा!
     const botLink = 'https://t.me/apex_day_bot?start=deposite';
-    
     const tg = window.Telegram?.WebApp;
     
     if (tg) {
-        tg.openTelegramLink(botLink);
-        setTimeout(() => tg.close(), 500);
+        try {
+            tg.openTelegramLink(botLink);
+            setTimeout(() => tg.close(), 500);
+        } catch (error) {
+            window.location.href = botLink;
+        }
     } else {
         window.open(botLink, '_blank');
     }
 }
 
-function showAddM   oneyMessage(message, type) {
+function showAddMoneyMessage(message, type) {
     const msgEl = document.getElementById('add-money-message');
     if (!msgEl) return;
     

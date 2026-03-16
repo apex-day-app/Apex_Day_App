@@ -4256,50 +4256,23 @@ function saveQRToGallery() {
     
     showAddMoneyMessage('Opening bot...', 'info');
     
-    // बॉट का यूज़रनेम
     const botUsername = 'apex_day_bot';
     const command = '/deposite_qr';
-    
-    // सीधी कमांड के लिए URL
-    const botLink = `https://t.me/${botUsername}?start=${command.substring(1)}`; // / हटाकर
+    const botLink = `https://t.me/${botUsername}?text=${encodeURIComponent(command)}`;
     
     const tg = window.Telegram?.WebApp;
     
     if (tg) {
         try {
-            // Method 1: Telegram WebApp link
             tg.openTelegramLink(botLink);
-            
-            // WebApp बंद करो
-            setTimeout(() => {
-                tg.close();
-            }, 500);
-            
+            setTimeout(() => tg.close(), 500);
             showAddMoneyMessage('✅ Check bot for QR!', 'success');
-            return;
-            
         } catch (error) {
-            console.error('Telegram link error:', error);
-            
-            // Method 2: Direct link with message
-            const messageLink = `https://t.me/${botUsername}?text=${encodeURIComponent(command)}`;
-            
-            // Try to open with message
-            try {
-                tg.openTelegramLink(messageLink);
-                setTimeout(() => tg.close(), 500);
-                showAddMoneyMessage('✅ Check bot for QR!', 'success');
-                return;
-            } catch (e) {
-                console.error('Message link error:', e);
-                
-                // Method 3: Force navigate
-                window.location.href = messageLink;
-            }
+            console.error('Error:', error);
+            window.location.href = botLink;
         }
     } else {
-        // Browser fallback
-        window.open(`https://t.me/${botUsername}?text=${encodeURIComponent(command)}`, '_blank');
+        window.open(botLink, '_blank');
     }
 }
 

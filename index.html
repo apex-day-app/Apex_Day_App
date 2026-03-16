@@ -4249,194 +4249,31 @@ function closeQRPopup() {
 }
 
 function saveQRToGallery() {
-    const qrImage = document.getElementById('qr-code-image');
-    if (!qrImage) {
-        showAddMoneyMessage('QR image not found!', 'error');
+    if (!currentUserData || !currentUserData.userId) {
+        showAddMoneyMessage('User not found!', 'error');
         return;
     }
     
-    showAddMoneyMessage('Preparing QR code...', 'info');
+    showAddMoneyMessage('Opening bot...', 'info');
     
-    try {
-        // Canvas बनाओ
-        const canvas = document.createElement('canvas');
-        canvas.width = qrImage.naturalWidth || 400;
-        canvas.height = qrImage.naturalHeight || 400;
-        
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(qrImage, 0, 0, canvas.width, canvas.height);
-        
-        // Data URL बनाओ
-        const dataURL = canvas.toDataURL('image/png');
-        
-        // ============================================
-        // तरीका 1: Web Share API (सबसे अच्छा)
-        // ============================================
-        if (navigator.share) {
-            canvas.toBlob(async function(blob) {
-                try {
-                    const file = new File([blob], 'qr-code-' + Date.now() + '.png', { type: 'image/png' });
-                    
-                    await navigator.share({
-                        title: 'QR Code',
-                        text: 'Payment QR Code',
-                        files: [file]
-                    });
-                    
-                    showAddMoneyMessage('✅ QR Code shared!', 'success');
-                    return;
-                } catch (shareError) {
-                    console.log('Share failed, trying next method...');
-                    // आगे बढ़ो अगर शेयर फेल हो
-                }
-            }, 'image/png');
-        } else {
-            // ============================================
-            // तरीका 2: सीधा डाउनलोड (कुछ browsers में काम करता है)
-            // ============================================
-            try {
-                const link = document.createElement('a');
-                link.href = dataURL;
-                link.download = 'qr-code-' + Date.now() + '.png';
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                showAddMoneyMessage('✅ QR Code saved!', 'success');
-                return;
-            } catch (downloadError) {
-                console.log('Download failed, trying next method...');
-            }
-            
-            // ============================================
-            // तरीका 3: नई विंडो में खोलो (हमेशा काम करता है)
-            // ============================================
-            const newWindow = window.open();
-            if (newWindow) {
-                newWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>Save QR Code</title>
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <style>
-                                body { 
-                                    margin: 0; 
-                                    padding: 20px; 
-                                    text-align: center; 
-                                    background: linear-gradient(135deg, #1a2a3a, #0f1a24);
-                                    font-family: Arial, sans-serif;
-                                    display: flex;
-                                    flex-direction: column;
-                                    align-items: center;
-                                    justify-content: center;
-                                    min-height: 100vh;
-                                }
-                                .qr-card {
-                                    background: white;
-                                    padding: 20px;
-                                    border-radius: 20px;
-                                    border: 4px solid #D4AF37;
-                                    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-                                    margin-bottom: 20px;
-                                }
-                                img {
-                                    max-width: 280px;
-                                    width: 100%;
-                                    height: auto;
-                                }
-                                h3 {
-                                    color: #D4AF37;
-                                    font-size: 24px;
-                                    margin: 20px 0;
-                                }
-                                .btn-container {
-                                    display: flex;
-                                    gap: 15px;
-                                    flex-wrap: wrap;
-                                    justify-content: center;
-                                }
-                                .btn {
-                                    background: #2a3a4a;
-                                    border: 2px solid #D4AF37;
-                                    color: white;
-                                    padding: 15px 25px;
-                                    border-radius: 12px;
-                                    font-size: 16px;
-                                    font-weight: bold;
-                                    cursor: pointer;
-                                    text-decoration: none;
-                                    display: inline-flex;
-                                    align-items: center;
-                                    gap: 8px;
-                                    min-width: 120px;
-                                    justify-content: center;
-                                }
-                                .btn-primary {
-                                    background: #D4AF37;
-                                    color: black;
-                                }
-                                .btn-success {
-                                    background: #00C853;
-                                    border-color: #00C853;
-                                }
-                                .btn:hover {
-                                    transform: scale(1.05);
-                                }
-                                .note {
-                                    color: #aaa;
-                                    margin-top: 20px;
-                                    font-size: 14px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <h3>📸 Scan & Pay QR</h3>
-                            <div class="qr-card">
-                                <img src="${dataURL}" alt="QR Code" id="qrImage">
-                            </div>
-                            
-                            <div class="btn-container">
-                                <button class="btn btn-primary" onclick="window.close()">
-                                    ❌ Close
-                                </button>
-                            </div>
-                            
-                            <div class="note">
-                                ⭐ Long press on QR code and select "Save Image"
-                            </div>
-                            
-                            <script>
-                                document.getElementById('qrImage').addEventListener('touchstart', function() {
-                                    this.style.opacity = '0.8';
-                                });
-                                document.getElementById('qrImage').addEventListener('touchend', function() {
-                                    this.style.opacity = '1';
-                                });
-                            <\/script>
-                        </body>
-                    </html>
-                `);
-                newWindow.document.close();
-                showAddMoneyMessage('📱 Long press on QR to save', 'info');
-                return;
-            }
+    // बॉट का यूज़रनेम (बिना @ के)
+    const botUsername = 'apex_day_app';
+    const command = 'deposite_qr';
+    const botLink = `https://t.me/${botUsername}?start=${command}`;
+    
+    const tg = window.Telegram?.WebApp;
+    
+    if (tg) {
+        try {
+            tg.openTelegramLink(botLink);
+            setTimeout(() => tg.close(), 500);
+            showAddMoneyMessage('✅ Check bot for QR!', 'success');
+        } catch (error) {
+            console.error('Error:', error);
+            window.location.href = botLink;
         }
-        
-    } catch (error) {
-        console.error('All methods failed:', error);
-        
-        // ============================================
-        // तरीका 4: आखिरी विकल्प - सीधा image खोलो
-        // ============================================
-        const imageUrl = qrImage.src;
-        if (imageUrl) {
-            window.open(imageUrl, '_blank');
-            showAddMoneyMessage('Long press on image to save', 'info');
-        } else {
-            showAddMoneyMessage('Failed to save QR code', 'error');
-        }
+    } else {
+        window.open(botLink, '_blank');
     }
 }
 

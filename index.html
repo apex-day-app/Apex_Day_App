@@ -4255,40 +4255,135 @@ function saveQRToGallery() {
         return;
     }
     
-    showAddMoneyMessage('Saving QR code...', 'info');
+    showAddMoneyMessage('Preparing QR code...', 'info');
     
     try {
         // Canvas बनाओ
         const canvas = document.createElement('canvas');
-        canvas.width = qrImage.naturalWidth || 400;
-        canvas.height = qrImage.naturalHeight || 400;
+        canvas.width = qrImage.naturalWidth || 300;
+        canvas.height = qrImage.naturalHeight || 300;
         
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(qrImage, 0, 0, canvas.width, canvas.height);
         
-        // Canvas से डाउनलोड लिंक बनाओ
-        canvas.toBlob(function(blob) {
-            const url = URL.createObjectURL(blob);
+        // Data URL बनाओ (base64)
+        const dataURL = canvas.toDataURL('image/png');
+        
+        // Telegram WebView में काम करने वाला तरीका
+        const isTelegram = window.Telegram && window.Telegram.WebApp;
+        
+        if (isTelegram) {
+            // Telegram के लिए - सीधा image खोलो
+            const imageWindow = window.open();
+            if (imageWindow) {
+                imageWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Save QR Code</title>
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <style>
+                                body { 
+                                    margin: 0; 
+                                    padding: 0; 
+                                    text-align: center; 
+                                    background: #1a2a3a;
+                                    font-family: Arial, sans-serif;
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    min-height: 100vh;
+                                }
+                                img {
+                                    max-width: 90%;
+                                    max-height: 70vh;
+                                    border: 3px solid #D4AF37;
+                                    border-radius: 15px;
+                                    margin: 20px;
+                                }
+                                .save-btn {
+                                    background: #00C853;
+                                    color: white;
+                                    border: none;
+                                    padding: 15px 30px;
+                                    border-radius: 10px;
+                                    font-size: 18px;
+                                    font-weight: bold;
+                                    margin: 10px;
+                                    cursor: pointer;
+                                    width: 200px;
+                                }
+                                .instruction {
+                                    color: white;
+                                    margin: 10px;
+                                    font-size: 16px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <img src="${dataURL}" alt="QR Code" id="qrImage">
+                            <div class="instruction">📱 Long press on QR code to save</div>
+                            <button class="save-btn" onclick="saveQR()">💾 Save QR</button>
+                            <button class="save-btn" style="background:#D4AF37;" onclick="window.close()">❌ Close</button>
+                            <script>
+                                function saveQR() {
+                                    const img = document.getElementById('qrImage');
+                                    const link = document.createElement('a');
+                                    link.href = img.src;
+                                    link.download = 'qr-code-' + Date.now() + '.png';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    setTimeout(() => {
+                                        alert('✅ QR Code saved! Check your downloads.');
+                                    }, 500);
+                                }
+                            <\/script>
+                        </body>
+                    </html>
+                `);
+                showAddMoneyMessage('Opening QR in new window...', 'info');
+            } else {
+                // अगर window open न हो तो दूसरा तरीका
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = 'qr-code-' + Date.now() + '.png';
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                
+                // Force click with delay
+                setTimeout(() => {
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        showAddMoneyMessage('✅ QR Code saved!', 'success');
+                    }, 1000);
+                }, 100);
+            }
+        } else {
+            // Normal browser के लिए - सीधा download
             const link = document.createElement('a');
-            link.href = url;
+            link.href = dataURL;
             link.download = 'payment-qr-' + new Date().getTime() + '.png';
-            
-            // Auto click करो
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // Cleanup
-            URL.revokeObjectURL(url);
-            
             showAddMoneyMessage('✅ QR Code saved to gallery!', 'success');
-        }, 'image/png');
+        }
         
     } catch (error) {
         console.error('Save error:', error);
-        showAddMoneyMessage('Failed to save QR code', 'error');
+        
+        // Last resort - सीधा image खोलो
+        const imageUrl = qrImage.src;
+        if (imageUrl) {
+            window.open(imageUrl, '_blank');
+            showAddMoneyMessage('Long press on image to save', 'info');
+        } else {
+            showAddMoneyMessage('Failed to save QR code', 'error');
+        }
     }
 }
 

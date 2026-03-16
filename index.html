@@ -4257,9 +4257,11 @@ function saveQRToGallery() {
     showAddMoneyMessage('Opening bot...', 'info');
     
     // बॉट का यूज़रनेम (बिना @ के)
-    const botUsername = 'apex_day_bot';
-    const command = 'deposite_qr';
-    const botLink = `https://t.me/${botUsername}?start=${command}`;
+    const botUsername = 'apex_day_app';
+    const command = '/deposite_qr'; // सीधी कमांड
+    
+    // सीधी कमांड के लिए URL
+    const botLink = `https://t.me/${botUsername}?text=${encodeURIComponent(command)}`;
     
     const tg = window.Telegram?.WebApp;
     

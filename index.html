@@ -4258,25 +4258,43 @@ function saveQRToGallery() {
     
     const botUsername = 'apex_day_bot';
     const command = '/deposite_qr';
+    
+    // सीधी कमांड के लिए URL
     const botLink = `https://t.me/${botUsername}?text=${encodeURIComponent(command)}`;
     
     const tg = window.Telegram?.WebApp;
     
     if (tg) {
         try {
+            // पहले तरीके से try करो
             tg.openTelegramLink(botLink);
             setTimeout(() => tg.close(), 500);
             showAddMoneyMessage('✅ Check bot for QR!', 'success');
         } catch (error) {
-            console.error('Error:', error);
-            window.location.href = botLink;
+            console.error('Telegram link error:', error);
+            
+            // दूसरा तरीका - नई विंडो में खोलो
+            const newWindow = window.open(botLink, '_blank');
+            
+            if (newWindow) {
+                showAddMoneyMessage('✅ Bot opened! Send /deposite_qr', 'success');
+            } else {
+                // तीसरा तरीका - current window में ही खोलो
+                window.location.href = botLink;
+            }
+            
+            // WebApp बंद करो
+            setTimeout(() => {
+                tg.close();
+            }, 1000);
         }
     } else {
+        // Browser fallback
         window.open(botLink, '_blank');
     }
 }
 
-function showAddMoneyMessage(message, type) {
+function showAddM   oneyMessage(message, type) {
     const msgEl = document.getElementById('add-money-message');
     if (!msgEl) return;
     

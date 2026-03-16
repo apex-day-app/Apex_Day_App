@@ -3780,11 +3780,11 @@ body {
             <h3>Select Amount</h3>
             <div class="amount-grid">
                 <button class="amount-btn" onclick="selectAddAmount(100, this)">₹100</button>
-                <button class="amount-btn" onclick="selectAddAmount(500)">₹500</button>
-                <button class="amount-btn" onclick="selectAddAmount(1000)">₹1K</button>
-                <button class="amount-btn" onclick="selectAddAmount(2000)">₹2K</button>
-                <button class="amount-btn" onclick="selectAddAmount(5000)">₹5K</button>
-                <button class="amount-btn" onclick="selectAddAmount(10000)">₹10K</button>
+                <button class="amount-btn" onclick="selectAddAmount(500, this)">₹500</button>
+                <button class="amount-btn" onclick="selectAddAmount(1000, this)">₹1K</button>
+                <button class="amount-btn" onclick="selectAddAmount(2000, this)">₹2K</button>
+                <button class="amount-btn" onclick="selectAddAmount(5000, this)">₹5K</button>
+                <button class="amount-btn" onclick="selectAddAmount(10000, this)">₹10K</button>
             </div>
             
             <!-- Custom Amount Input - सीधे यहीं -->
@@ -4180,16 +4180,14 @@ function selectWithdrawAmount(btn) {
 // 36. ADD MONEY FUNCTIONS (नए - साफ किए हुए)
 // ========================================
 
-function selectAddAmount(amount) {
+function selectAddAmount(amount, btn) {
     selectedAmount = amount;
     
-    document.querySelectorAll('.amount-grid .amount-btn').forEach(btn => {
-        btn.classList.remove('selected');
+    document.querySelectorAll('.amount-grid .amount-btn').forEach(b => {
+        b.classList.remove('selected');
     });
     
-    if (event && event.target) {
-        event.target.classList.add('selected');
-    }
+    btn.classList.add('selected');
     
     const depositBtn = document.getElementById('deposit-main-btn');
     const depositAmount = document.getElementById('deposit-amount-display');

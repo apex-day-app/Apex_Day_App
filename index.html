@@ -4260,78 +4260,77 @@ function saveQRToGallery() {
     try {
         // Canvas बनाओ
         const canvas = document.createElement('canvas');
-        canvas.width = qrImage.naturalWidth || 300;
-        canvas.height = qrImage.naturalHeight || 300;
+        canvas.width = qrImage.naturalWidth || 400;
+        canvas.height = qrImage.naturalHeight || 400;
         
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(qrImage, 0, 0, canvas.width, canvas.height);
         
-        // Data URL बनाओ (base64)
-        const dataURL = canvas.toDataURL('image/png');
-        
-        // Telegram WebView में काम करने वाला तरीका
-        const isTelegram = window.Telegram && window.Telegram.WebApp;
-        
-        if (isTelegram) {
-            // Telegram के लिए - नया डाउनलोड तरीका
-            const fileName = 'qr-code-' + Date.now() + '.png';
-            
-            // Create blob from dataURL
-            fetch(dataURL)
-                .then(res => res.blob())
-                .then(blob => {
-                    // Create object URL
-                    const url = URL.createObjectURL(blob);
+        // Canvas को Blob में बदलो
+        canvas.toBlob(async function(blob) {
+            try {
+                // Web Share API से शेयर करो
+                if (navigator.share) {
+                    const file = new File([blob], 'qr-code-' + Date.now() + '.png', { type: 'image/png' });
                     
-                    // Create download link
+                    await navigator.share({
+                        title: 'QR Code',
+                        text: 'Scan this QR code to pay',
+                        files: [file]
+                    });
+                    
+                    showAddMoneyMessage('✅ QR Code shared successfully!', 'success');
+                }
+                // अगर Web Share API सपोर्ट न करे तो डाउनलोड करो
+                else {
+                    const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = fileName;
-                    link.style.display = 'none';
-                    
-                    // Add to body
-                    document.body.appendChild(link);
-                    
-                    // Trigger click with delay
-                    setTimeout(() => {
-                        link.click();
-                        
-                        // Cleanup
-                        setTimeout(() => {
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                            
-                            // Success message
-                            showAddMoneyMessage('✅ QR Code saved! Check your downloads.', 'success');
-                        }, 1000);
-                    }, 100);
-                })
-                .catch(() => {
-                    // Fallback - direct download attempt
-                    const link = document.createElement('a');
-                    link.href = dataURL;
-                    link.download = fileName;
-                    document.body.appendChild(link);
+                    link.download = 'qr-code-' + Date.now() + '.png';
                     link.click();
-                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
                     showAddMoneyMessage('✅ QR Code saved!', 'success');
-                });
-        } else {
-            // Normal browser के लिए - सीधा download
-            const link = document.createElement('a');
-            link.href = dataURL;
-            link.download = 'payment-qr-' + new Date().getTime() + '.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showAddMoneyMessage('✅ QR Code saved to gallery!', 'success');
-        }
+                }
+            } catch (shareError) {
+                console.log('Share cancelled or failed:', shareError);
+                
+                // शेयर कैंसल हो या फेल हो तो डाउनलोड करो
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'qr-code-' + Date.now() + '.png';
+                link.click();
+                URL.revokeObjectURL(url);
+                showAddMoneyMessage('✅ QR Code saved!', 'success');
+            }
+        }, 'image/png');
         
     } catch (error) {
-        console.error('Save error:', error);
-        showAddMoneyMessage('Failed to save QR code', 'error');
+        console.error('Error:', error);
+        
+        // Fallback - सीधा image खोलो
+        const imageUrl = qrImage.src;
+        if (imageUrl && navigator.share) {
+            try {
+                fetch(imageUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], 'qr-code.png', { type: 'image/png' });
+                        navigator.share({
+                            title: 'QR Code',
+                            files: [file]
+                        });
+                    });
+            } catch {
+                window.open(imageUrl, '_blank');
+                showAddMoneyMessage('Long press on image to save', 'info');
+            }
+        } else {
+            window.open(imageUrl, '_blank');
+            showAddMoneyMessage('Long press on image to save', 'info');
+        }
     }
 }
 

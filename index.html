@@ -13,6 +13,9 @@
     
     <!-- ⭐ SUPABASE CDN - यह डालना था -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   
+    <!-- HTML2CAPTURE CDN - यह डालना है -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -4249,26 +4252,38 @@ function closeQRPopup() {
 }
 
 function saveQRToGallery() {
-    if (!currentUserData || !currentUserData.userId) {
-        showAddMoneyMessage('User not found!', 'error');
+    captureQRImage();
+}
+
+// नया फंक्शन - सिर्फ QR image capture करने के लिए
+function captureQRImage() {
+    const qrContainer = document.querySelector('.qr-image-container');
+    
+    if (!qrContainer) {
+        showAddMoneyMessage('QR not found!', 'error');
         return;
     }
     
-    showAddMoneyMessage('Opening bot...', 'info');
+    showAddMoneyMessage('Capturing QR...', 'info');
     
-    const botLink = 'https://t.me/apex_day_bot?start=deposite';
-    const tg = window.Telegram?.WebApp;
-    
-    if (tg) {
-        try {
-            tg.openTelegramLink(botLink);
-            setTimeout(() => tg.close(), 500);
-        } catch (error) {
-            window.location.href = botLink;
-        }
-    } else {
-        window.open(botLink, '_blank');
-    }
+    html2canvas(qrContainer, {
+        scale: 2, // हाई क्वालिटी
+        backgroundColor: '#ffffff',
+        allowTaint: false,
+        useCORS: true,
+        logging: false
+    }).then(canvas => {
+        // Canvas से डाउनलोड
+        const link = document.createElement('a');
+        link.download = 'qr-code-' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        showAddMoneyMessage('✅ QR Code saved!', 'success');
+    }).catch(error => {
+        console.error('Capture error:', error);
+        showAddMoneyMessage('Failed to capture QR', 'error');
+    });
 }
 
 function showAddMoneyMessage(message, type) {

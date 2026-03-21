@@ -5322,20 +5322,26 @@ function getQRFromBot() {
     const amount = currentDepositRequest.amount;
     const botUsername = 'apex_day_bot';
     
-    // Telegram WebApp check
+    // Check if in Telegram WebView
     if (!window.Telegram || !window.Telegram.WebApp) {
         showAddMoneyMessage('⚠️ Please open this app from Telegram', 'error');
         return;
     }
     
-    // Auto send command
+    showAddMoneyMessage('Opening Telegram chat...', 'info');
+    
+    const tg = window.Telegram.WebApp;
+    
+    // This opens bot chat INSIDE Telegram, stays in Telegram
     const chatUrl = `https://t.me/${botUsername}?start=deposit${amount}`;
     
     try {
-        window.Telegram.WebApp.openTelegramLink(chatUrl);
+        tg.openTelegramLink(chatUrl);
+        // Close the mini app and open bot chat
+        tg.close();
         showAddMoneyMessage(`✅ Opening bot for ₹${amount} QR code`, 'success');
-        closeQRPopup();
     } catch (e) {
+        console.error("Error:", e);
         showAddMoneyMessage('⚠️ Unable to open bot. Please try again.', 'error');
     }
 }

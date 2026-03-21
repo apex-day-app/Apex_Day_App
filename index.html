@@ -5309,59 +5309,75 @@ function closeQRPopup() {
     document.getElementById('qr-popup').classList.add('hidden');
 }
 
-// Share QR Code to Telegram - Only Telegram, No Fallback
 function shareQRToTelegram() {
     const qrImage = document.getElementById('qr-code-image');
     const amount = selectedAmount;
+    
+    if (amount === 0) {
+        showAddMoneyMessage('Please select amount first', 'error');
+        return;
+    }
     
     if (!qrImage || !qrImage.src) {
         showAddMoneyMessage('QR Code not available', 'error');
         return;
     }
     
+    if (!window.Telegram || !window.Telegram.WebApp) {
+        showAddMoneyMessage('⚠️ Please open this app from Telegram', 'error');
+        return;
+    }
+    
     showAddMoneyMessage('Opening Telegram...', 'info');
     
-    // Create message text
-    const message = `💰 PAYMENT REQUEST\n\n📌 Amount: ₹${amount}\n\n📱 Scan this QR code using any UPI app:\n• Google Pay\n• PhonePe\n• Paytm\n\n✅ After payment:\n1. Copy UTR from your UPI app\n2. Go to Apex Day App → Transactions section\n3. Submit your UTR\n\n⏱️ Balance updates within 24 hours.\n\nThank you! 🙏`;
+    const tg = window.Telegram.WebApp;
+    const message = `💰 PAYMENT REQUEST\n\n📌 Amount: ₹${amount}\n\n📱 Scan this QR code using any UPI app\n\n✅ After payment, copy UTR and submit in Apex Day App → Transactions section\n\nThank you! 🙏`;
     
-    // Get QR image as blob
+    // Get QR image and share
     fetch(qrImage.src)
         .then(response => response.blob())
         .then(blob => {
             const file = new File([blob], 'qr-code.png', { type: 'image/png' });
             
-            // Check if Telegram WebApp is available
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                
-                // Use shareToChat - opens Telegram contact selector
-                if (tg.shareToChat) {
-                    tg.shareToChat(message, {
-                        media: file
-                    });
-                    showAddMoneyMessage('✅ Select contact to forward', 'success');
+            // Try shareToChat first
+            if (tg.shareToChat) {
+                tg.shareToChat(message, { media: file });
+                showAddMoneyMessage('✅ Select contact to forward QR code', 'success');
+                closeQRPopup();
+            }
+            // Fallback to openTelegramLink
+            else if (tg.openTelegramLink) {
+                // Convert image to data URL for link
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const imageData = reader.result;
+                    const fullMessage = `${message}\n\nQR Code: ${imageData}`;
+                    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('Apex Day')}&text=${encodeURIComponent(fullMessage)}`;
+                    tg.openTelegramLink(shareUrl);
+                    showAddMoneyMessage('✅ Select contact to share', 'success');
                     closeQRPopup();
-                }
-                // Use shareToStory if shareToChat not available
-                else if (tg.shareToStory) {
-                    tg.shareToStory(message, {
-                        media: file,
-                        caption: message
-                    });
-                    showAddMoneyMessage('✅ Opening Telegram story...', 'success');
-                    closeQRPopup();
-                }
-                else {
-                    showAddMoneyMessage('⚠️ Please update Telegram app', 'error');
-                }
-            } else {
-                // Not in Telegram WebApp - Show message to open in Telegram
-                showAddMoneyMessage('⚠️ Please open this app from Telegram', 'error');
+                };
+                reader.readAsDataURL(blob);
+            }
+            else {
+                window.open(`https://t.me/share/url?url=${encodeURIComponent('Apex Day')}&text=${encodeURIComponent(message)}`, '_blank');
+                showAddMoneyMessage('✅ Telegram opened! Share message', 'success');
+                closeQRPopup();
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showAddMoneyMessage('⚠️ Failed to load QR code. Please try again.', 'error');
+            // Last fallback - text only
+            if (tg.shareToChat) {
+                tg.shareToChat(message);
+                showAddMoneyMessage('✅ Select contact (text only)', 'success');
+                closeQRPopup();
+            } else {
+                const shareUrl = `https://t.me/share/url?url=${encodeURIComponent('Apex Day')}&text=${encodeURIComponent(message)}`;
+                window.open(shareUrl, '_blank');
+                showAddMoneyMessage('✅ Telegram opened! Share message', 'success');
+                closeQRPopup();
+            }
         });
 }
 

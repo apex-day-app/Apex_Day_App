@@ -5330,31 +5330,30 @@ function shareQRToTelegram() {
     showAddMoneyMessage('Opening Telegram...', 'info');
     
     const tg = window.Telegram.WebApp;
-    const message = `💰 PAYMENT REQUEST\n\nAmount: ₹${amount}\n\nScan this QR code using any UPI app\n\nAfter payment, copy UTR and submit in Apex Day App → Transactions section`;
+    const message = `💰 PAYMENT REQUEST\n\nAmount: ₹${amount}\n\nScan this QR code to pay`;
     
-    // Method: Create a blob and use shareToChat
     fetch(qrImage.src)
         .then(response => response.blob())
         .then(blob => {
             const file = new File([blob], 'qr-code.png', { type: 'image/png' });
             
-            // Use shareToChat with media
-            if (tg.shareToChat) {
-                tg.shareToChat(message, { media: file });
-                showAddMoneyMessage('✅ Select contact to forward QR image', 'success');
+            // Try shareToStory (works in many cases)
+            if (tg.shareToStory) {
+                tg.shareToStory(message, {
+                    media: file,
+                    caption: message
+                });
+                showAddMoneyMessage('✅ Opening Telegram story... Share QR', 'success');
                 closeQRPopup();
-            } else {
-                // Alternative: Use shareToStory
-                if (tg.shareToStory) {
-                    tg.shareToStory(message, {
-                        media: file,
-                        caption: message
-                    });
-                    showAddMoneyMessage('✅ Opening Telegram story...', 'success');
-                    closeQRPopup();
-                } else {
-                    showAddMoneyMessage('⚠️ Please update Telegram app', 'error');
-                }
+            }
+            // Try shareToChat
+            else if (tg.shareToChat) {
+                tg.shareToChat(message, { media: file });
+                showAddMoneyMessage('✅ Select contact to forward', 'success');
+                closeQRPopup();
+            }
+            else {
+                showAddMoneyMessage('⚠️ Please update Telegram app', 'error');
             }
         })
         .catch(error => {

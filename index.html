@@ -4549,110 +4549,136 @@ body {
             </div>
 
             <!-- ================================ -->
-            <!-- Part 32. ADD MONEY PAGE                  -->
-            <!-- ================================ -->
-            <div id="add-money-page" class="page hidden">
-                <div class="add-money-container">
-                    <div class="add-money-header">
-                        <button class="add-money-back-btn" onclick="goBackToProfile()">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <h2><i class="fas fa-wallet"></i> Add Money</h2>
-                        <div style="width: 40px;"></div>
-                    </div>
-                    
-                    <div class="premium-balance-card">
-                        <div class="balance-label">Current Balance</div>
-                        <div class="balance-amount" id="add-balance-display">0</div>
-                    </div>
-                    
-                    <div class="amount-section">
-                        <h3>Select Amount</h3>
-                        <div class="amount-grid">
-                            <button class="amount-btn" onclick="selectAddAmount(50, this)">₹50</button>
-                            <button class="amount-btn" onclick="selectAddAmount(100, this)">₹100</button>
-                            <button class="amount-btn" onclick="selectAddAmount(150, this)">₹150</button>
-                            <button class="amount-btn" onclick="selectAddAmount(200, this)">₹200</button>
-                            <button class="amount-btn" onclick="selectAddAmount(500, this)">₹500</button>
-                            <button class="amount-btn" onclick="selectAddAmount(1000, this)">₹1,000</button>
-                            <button class="amount-btn" onclick="selectAddAmount(5000, this)">₹5,000</button>
-                            <button class="amount-btn" onclick="selectAddAmount(10000, this)">₹10,000</button>
-                        </div>
-                        <div class="custom-amount-wrapper">
-                            <input type="number" id="custom-amount-input" placeholder="Enter custom amount" class="custom-amount-field" min="10" oninput="updateCustomAmount(this.value)">
-                        </div>
-                    </div>
-                    
-                    <button class="deposit-main-btn" id="deposit-main-btn" onclick="showDepositQR()" disabled>
-                        <i class="fas fa-hand-holding-usd"></i> Pay ₹<span id="deposit-amount-display">0</span>
+<!-- Part 32. ADD MONEY PAGE - NEW QR POPUP DESIGN -->
+<!-- ================================ -->
+<div id="add-money-page" class="page hidden">
+    <div class="add-money-container">
+        <div class="add-money-header">
+            <button class="add-money-back-btn" onclick="goBackToProfile()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h2><i class="fas fa-wallet"></i> Add Money</h2>
+            <div style="width: 40px;"></div>
+        </div>
+        
+        <!-- Premium Balance Card -->
+        <div class="premium-balance-card">
+            <div class="balance-label">Current Balance</div>
+            <div class="balance-amount" id="add-balance-display">0</div>
+        </div>
+        
+        <!-- Amount Selection -->
+        <div class="amount-section">
+            <h3>Select Amount</h3>
+            <div class="amount-grid">
+                <button class="amount-btn" onclick="selectAddAmount(50, this)">₹50</button>
+                <button class="amount-btn" onclick="selectAddAmount(100, this)">₹100</button>
+                <button class="amount-btn" onclick="selectAddAmount(150, this)">₹150</button>
+                <button class="amount-btn" onclick="selectAddAmount(200, this)">₹200</button>
+                <button class="amount-btn" onclick="selectAddAmount(500, this)">₹500</button>
+                <button class="amount-btn" onclick="selectAddAmount(1000, this)">₹1,000</button>
+                <button class="amount-btn" onclick="selectAddAmount(5000, this)">₹5,000</button>
+                <button class="amount-btn" onclick="selectAddAmount(10000, this)">₹10,000</button>
+            </div>
+            <div class="custom-amount-wrapper">
+                <input type="number" id="custom-amount-input" placeholder="Enter custom amount" class="custom-amount-field" min="10" oninput="updateCustomAmount(this.value)">
+            </div>
+        </div>
+        
+        <!-- Pay Button -->
+        <button class="deposit-main-btn" id="deposit-main-btn" onclick="showDepositQR()" disabled>
+            <i class="fas fa-hand-holding-usd"></i> Pay ₹<span id="deposit-amount-display">0</span>
+        </button>
+        
+        <!-- Instructions -->
+        <div class="points-container">
+            <div class="point-item">
+                <i class="fas fa-camera"></i>
+                <span>1. Take screenshot of QR code</span>
+            </div>
+            <div class="point-item">
+                <i class="fas fa-qrcode"></i>
+                <span>2. Scan QR code with any UPI app (Google Pay, PhonePe, Paytm)</span>
+            </div>
+            <div class="point-item">
+                <i class="fas fa-rupee-sign"></i>
+                <span>3. Make payment of selected amount</span>
+            </div>
+            <div class="point-item">
+                <i class="fas fa-copy"></i>
+                <span>4. Copy UTR/Transaction ID from your UPI app</span>
+            </div>
+            <div class="point-item">
+                <i class="fas fa-exchange-alt"></i>
+                <span>5. Go to Transactions section and submit UTR</span>
+            </div>
+            <div class="point-item">
+                <i class="fas fa-clock"></i>
+                <span>6. Your balance will be updated within 24 hours after verification</span>
+            </div>
+        </div>
+        
+        <!-- QR Popup - New Design -->
+        <div id="qr-popup" class="qr-popup-overlay hidden">
+            <div class="qr-popup-content" style="max-width: 320px; padding: 0; overflow: hidden;">
+                
+                <!-- Top Strip - Scan & Pay (Half Size) -->
+                <div style="background: linear-gradient(135deg, #D4AF37, #B8860B); padding: 6px 14px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-qrcode" style="color: #221A12; font-size: 0.9rem;"></i>
+                    <span style="color: #221A12; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;">SCAN & PAY</span>
+                    <div style="flex: 1;"></div>
+                    <button onclick="closeQRPopup()" style="background: rgba(0,0,0,0.2); border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-times" style="color: #221A12; font-size: 0.75rem;"></i>
                     </button>
-                    
-                    <div class="points-container">
-                        <div class="point-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>पेमेंट करने के बाद ट्रांजेक्शन सेक्शन में UTR डालना न भूलें</span>
-                        </div>
-                        <div class="point-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>ट्रांजेक्शन करने के बाद सुबह 8:00 AM तक इंतज़ार करें</span>
-                        </div>
-                        <div class="point-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>डिपॉजिट फीस - 0% (बिल्कुल फ्री)</span>
-                        </div>
-                        <div class="point-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>अधिकतम डिपॉजिट लिमिट - ₹10,000 प्रति दिन</span>
-                        </div>
-                        <div class="point-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>ट्रांजेक्शन स्टेटस चेक करें हमारे टेलीग्राम चैनल पर</span>
-                        </div>
-                        <div class="point-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>चैनल लिंक: <a href="https://t.me/apexday" target="_blank" style="color: #D4AF37;">@apexday</a></span>
-                        </div>
-                    </div>
-                    
-                    <div id="qr-popup" class="qr-popup-overlay hidden">
-                        <div class="qr-popup-content">
-                            <div class="qr-popup-header">
-                                <h3><i class="fas fa-qrcode"></i> Scan & Pay</h3>
-                                <button class="close-btn" onclick="closeQRPopup()"><i class="fas fa-times"></i></button>
-                            </div>
-                            <div class="qr-image-container">
-                                <img src="qr-code.png" alt="QR Code" id="qr-code-image">
-                            </div>
-                            <button class="save-qr-btn" onclick="saveQRToGallery()">
-                                <i class="fas fa-camera"></i> Save QR Code
-                            </button>
-                            <div class="utr-section">
-                                <h4><i class="fas fa-pen"></i> Submit UTR</h4>
-                                <div class="utr-input-group">
-                                    <input type="text" id="utr-input-1" placeholder="Enter UTR / Transaction ID" class="utr-field">
-                                </div>
-                                <div id="utr-input-2-container" class="utr-input-group hidden">
-                                    <input type="text" id="utr-input-2" placeholder="Confirm UTR" class="utr-field">
-                                    <div id="utr-match-message" class="utr-match-msg"></div>
-                                </div>
-                                <button class="submit-utr-btn" id="submit-utr-btn" onclick="submitUTR()" disabled>
-                                    <i class="fas fa-paper-plane"></i> Submit UTR
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="add-money-message" class="add-money-message hidden"></div>
-                    <div id="pending-info" class="pending-info hidden">
-                        <div class="pending-header">
-                            <i class="fas fa-clock"></i>
-                            <h4>Request Pending</h4>
-                        </div>
-                        <p>Your request has been submitted and is pending approval.</p>
-                        <p class="pending-note">You will be notified once processed.</p>
+                </div>
+                
+                <!-- QR Code Image -->
+                <div style="padding: 16px 20px 8px 20px; text-align: center;">
+                    <img src="qr-code.png" alt="QR Code" id="qr-code-image" style="width: 170px; height: 170px; object-fit: contain; border-radius: 12px;">
+                </div>
+                
+                <!-- Amount Display - Small Pill, Amount on Right -->
+                <div style="padding: 0 20px 8px 20px;">
+                    <div style="background: rgba(0,0,0,0.25); border-radius: 20px; padding: 4px 12px; display: inline-flex; align-items: center; gap: 8px;">
+                        <span style="color: #FFE4B5; font-size: 0.6rem; font-weight: 500;">Amount to Pay</span>
+                        <span style="color: #D4AF37; font-size: 0.85rem; font-weight: 700;">₹<span id="qr-amount-display">0</span></span>
                     </div>
                 </div>
+                
+                <!-- Share Button -->
+                <div style="padding: 0 20px 12px 20px;">
+                    <button onclick="shareQRToTelegram()" style="width: 100%; padding: 9px; background: linear-gradient(135deg, #D4AF37, #B8860B); border: none; border-radius: 40px; color: #221A12; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-share-alt"></i> Share QR Code
+                    </button>
+                </div>
+                
+                <!-- Instructions with White Ticks Only -->
+                <div style="background: rgba(0,0,0,0.25); padding: 10px 16px; margin-top: 0;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+                        <i class="fas fa-check-circle" style="color: #ffffff; font-size: 0.65rem; margin-top: 2px;"></i>
+                        <span style="color: #FFE4B5; font-size: 0.6rem; font-weight: 500;">Take screenshot or share this QR code</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+                        <i class="fas fa-check-circle" style="color: #ffffff; font-size: 0.65rem; margin-top: 2px;"></i>
+                        <span style="color: #FFE4B5; font-size: 0.6rem; font-weight: 500;">Scan with any UPI app (Google Pay, PhonePe, Paytm)</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px;">
+                        <i class="fas fa-check-circle" style="color: #ffffff; font-size: 0.65rem; margin-top: 2px;"></i>
+                        <span style="color: #FFE4B5; font-size: 0.6rem; font-weight: 500;">Make payment of ₹<span id="qr-amount-instr">0</span></span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                        <i class="fas fa-check-circle" style="color: #ffffff; font-size: 0.65rem; margin-top: 2px;"></i>
+                        <span style="color: #FFE4B5; font-size: 0.6rem; font-weight: 500;">Copy UTR and submit in Transactions section</span>
+                    </div>
+                </div>
+                
             </div>
+        </div>
+        
+        <!-- Message Area -->
+        <div id="add-money-message" class="add-money-message hidden"></div>
+    </div>
+</div>
 
             <!-- ================================ -->
 <!-- Part 33. WITHDRAW PAGE - MODIFIED      -->
@@ -5220,7 +5246,7 @@ function logout() {
 }
 
 // ========================================
-// Part 45. ADD MONEY FUNCTIONS
+// Part 45. ADD MONEY FUNCTIONS - SHARE ONLY
 // ========================================
 
 function selectAddAmount(amount, btn) {
@@ -5268,114 +5294,119 @@ function showDepositQR() {
         return;
     }
     
+    // Update amount displays in popup
+    const amountDisplay = document.getElementById('qr-amount-display');
+    const amountInstr = document.getElementById('qr-amount-instr');
+    if (amountDisplay) amountDisplay.textContent = selectedAmount;
+    if (amountInstr) amountInstr.textContent = selectedAmount;
+    
     document.getElementById('qr-popup').classList.remove('hidden');
 }
 
 function closeQRPopup() {
     document.getElementById('qr-popup').classList.add('hidden');
-    
-    document.getElementById('utr-input-1').value = '';
-    document.getElementById('utr-input-2').value = '';
-    document.getElementById('utr-input-2-container').classList.add('hidden');
-    document.getElementById('submit-utr-btn').disabled = true;
-    document.getElementById('utr-match-message').textContent = '';
 }
 
-function saveQRToGallery() {
-    const qrPopup = document.querySelector('.qr-popup-content');
+// Share QR Code to Telegram
+function shareQRToTelegram() {
+    const qrImage = document.getElementById('qr-code-image');
+    const amount = selectedAmount;
     
-    if (!qrPopup) {
-        showAddMoneyMessage('QR Popup not found!', 'error');
+    if (!qrImage || !qrImage.src) {
+        showAddMoneyMessage('QR Code not available', 'error');
         return;
     }
     
-    showAddMoneyMessage('Capturing screenshot...', 'info');
+    showAddMoneyMessage('Preparing to share...', 'info');
     
-    html2canvas(qrPopup, {
-        scale: 2.5,
-        backgroundColor: '#1a2a3a',
-        allowTaint: true,
-        useCORS: true,
-        logging: false
-    }).then(canvas => {
-        // Convert canvas to data URL
-        const imageData = canvas.toDataURL('image/png');
-        
-        // Open screenshot in new tab (no download)
-        const newTab = window.open();
-        if (newTab) {
-            newTab.document.write(`
-                <html>
-                    <head>
-                        <title>Screenshot - Apex Day</title>
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-                        <style>
-                            body {
-                                margin: 0;
-                                background: #0a0a0a;
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                min-height: 100vh;
-                                font-family: system-ui, -apple-system, sans-serif;
-                            }
-                            .screenshot-container {
-                                text-align: center;
-                                padding: 20px;
-                            }
-                            .screenshot-image {
-                                max-width: 100%;
-                                max-height: 85vh;
-                                border-radius: 12px;
-                                box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-                                border: 1px solid #D4AF37;
-                            }
-                            .instruction {
-                                position: fixed;
-                                bottom: 20px;
-                                left: 0;
-                                right: 0;
-                                text-align: center;
-                                color: #D4AF37;
-                                background: rgba(0,0,0,0.8);
-                                padding: 12px;
-                                font-size: 14px;
-                                font-weight: 500;
-                                margin: 0;
-                                backdrop-filter: blur(10px);
-                            }
-                            .instruction i {
-                                margin-right: 8px;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="screenshot-container">
-                            <img src="${imageData}" class="screenshot-image" alt="Payment Screenshot">
-                        </div>
-                        <div class="instruction">
-                            <i class="fas fa-fingerprint"></i> Long press on the image and select "Save Image" to save screenshot
-                        </div>
-                    </body>
-                </html>
-            `);
-            showAddMoneyMessage('✅ Screenshot opened! Long press to save', 'success');
-        } else {
-            // If popup blocked, show message
-            showAddMoneyMessage('⚠️ Popup blocked! Please allow popups to view screenshot', 'error');
-        }
-        
-        // Close after 5 seconds? No, user will close manually
-        setTimeout(() => {
-            // Optional: auto close after 30 seconds
-            // if (newTab && !newTab.closed) {
-            //     setTimeout(() => newTab.close(), 30000);
-            // }
-        }, 500);
-        
-    }).catch(error => {
-        console.error('Capture error:', error);
-        showAddMoneyMessage('Failed to capture screenshot. Please take manual screenshot.', 'error');
+    // Create message text
+    const message = `💰 PAYMENT REQUEST\n\n📌 Amount: ₹${amount}\n\n📱 Scan this QR code using any UPI app:\n• Google Pay\n• PhonePe\n• Paytm\n• Any other UPI app\n\n✅ After successful payment:\n1. Copy the UTR/Transaction ID from your UPI app\n2. Go to Apex Day App → Transactions section\n3. Submit your UTR for verification\n\n⏱️ Your balance will be updated within 24 hours after verification.\n\nThank you for using Apex Day! 🙏`;
+    
+    // Try to get QR image as blob
+    fetch(qrImage.src)
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch QR');
+            return response.blob();
+        })
+        .then(blob => {
+            const file = new File([blob], 'qr-code.png', { type: 'image/png' });
+            
+            // Check if Telegram WebApp is available
+            if (window.Telegram && window.Telegram.WebApp) {
+                try {
+                    const tg = window.Telegram.WebApp;
+                    
+                    // Try to share via Telegram
+                    if (tg.shareToStory) {
+                        tg.shareToStory(message, {
+                            media: file,
+                            caption: message
+                        });
+                        showAddMoneyMessage('✅ Opening Telegram share...', 'success');
+                        closeQRPopup();
+                    } else if (tg.shareToChat) {
+                        tg.shareToChat(message);
+                        showAddMoneyMessage('✅ Opening Telegram share...', 'success');
+                        closeQRPopup();
+                    } else {
+                        // Fallback
+                        shareViaFallback(message, qrImage.src);
+                    }
+                } catch (e) {
+                    console.error('Telegram share error:', e);
+                    shareViaFallback(message, qrImage.src);
+                }
+            } else {
+                shareViaFallback(message, qrImage.src);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            // Fallback: share message only
+            shareMessageOnly(message);
+        });
+}
+
+function shareViaFallback(message, imageUrl) {
+    // Try to open share dialog
+    if (navigator.share) {
+        navigator.share({
+            title: 'Payment QR Code - Apex Day',
+            text: message,
+            url: imageUrl
+        }).then(() => {
+            showAddMoneyMessage('✅ Shared successfully!', 'success');
+            closeQRPopup();
+        }).catch(() => {
+            copyToClipboard(message + '\n\nQR Code: ' + imageUrl);
+        });
+    } else {
+        copyToClipboard(message + '\n\nQR Code: ' + imageUrl);
+    }
+}
+
+function shareMessageOnly(message) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Payment Request - Apex Day',
+            text: message
+        }).then(() => {
+            showAddMoneyMessage('✅ Shared successfully!', 'success');
+            closeQRPopup();
+        }).catch(() => {
+            copyToClipboard(message);
+        });
+    } else {
+        copyToClipboard(message);
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showAddMoneyMessage('✅ Payment details copied to clipboard! Share manually', 'success');
+        closeQRPopup();
+    }).catch(() => {
+        showAddMoneyMessage('Please copy the QR code manually', 'info');
     });
 }
 
@@ -5389,74 +5420,21 @@ function showAddMoneyMessage(message, type) {
     
     setTimeout(() => {
         msgEl.classList.add('hidden');
-    }, 3000);
+    }, 4000);
 }
 
-async function submitUTR() {
-    const utr1 = document.getElementById('utr-input-1').value.trim();
-    const utr2 = document.getElementById('utr-input-2').value.trim();
-    
-    if (!utr1 || !utr2 || utr1 !== utr2) {
-        showAddMoneyMessage('Please enter matching UTR', 'error');
-        return;
-    }
-    
-    if (!currentUserData) {
-        showAddMoneyMessage('Please login first', 'error');
-        return;
-    }
-    
-    if (currentUserData.balance + selectedAmount > MAX_BALANCE) {
-        showAddMoneyMessage('Maximum balance limit exceeded', 'error');
-        return;
-    }
-    
-    const transaction = {
-        id: 'TXN' + Date.now(),
-        user_id: currentUserData.userId,
-        user_name: currentUserData.name,
-        amount: selectedAmount,
-        utr: utr1,
-        type: 'deposit',
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        date: new Date().toLocaleString()
-    };
-    
-    try {
-        if (mysupabase) {
-            const { error } = await mysupabase
-                .from('transactions')
-                .insert([transaction]);
-            
-            if (error) {
-                console.error('Supabase error:', error);
-                saveTransactionToLocal(transaction);
-            } else {
-                console.log('✅ Transaction saved to Supabase');
-            }
-        } else {
-            saveTransactionToLocal(transaction);
-        }
-        
-        closeQRPopup();
-        document.querySelector('.utr-section').classList.add('hidden');
-        document.getElementById('pending-info').classList.remove('hidden');
-        
-        showAddMoneyMessage('Request submitted successfully!', 'success');
-        
-        setTimeout(() => {
-            document.getElementById('pending-info').classList.add('hidden');
-            document.querySelector('.utr-section').classList.remove('hidden');
-        }, 3000);
-        
-    } catch (error) {
-        console.error('Error:', error);
-        showAddMoneyMessage('Something went wrong', 'error');
-    }
+// UTR Functions - Removed (now in Transactions section)
+function submitUTR() {
+    showAddMoneyMessage('Please go to Transactions section to submit UTR', 'info');
+}
+
+function setupUTREventListeners() {
+    // Empty - UTR removed from add money page
+    console.log("UTR removed from add money page - use Transactions section");
 }
 
 function saveTransactionToLocal(transaction) {
+    // Keep this for transactions section
     let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
     transactions.push(transaction);
     localStorage.setItem('transactions', JSON.stringify(transactions));

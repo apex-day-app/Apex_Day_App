@@ -5320,6 +5320,7 @@ function getQRFromBot() {
     }
     
     const amount = currentDepositRequest.amount;
+    const botUsername = 'apex_day_bot'; // ← अपना bot username डालो
     
     if (!window.Telegram || !window.Telegram.WebApp) {
         showAddMoneyMessage('⚠️ Please open this app from Telegram', 'error');
@@ -5329,10 +5330,9 @@ function getQRFromBot() {
     showAddMoneyMessage('Opening Telegram...', 'info');
     
     const tg = window.Telegram.WebApp;
-    const botUsername = 'apex_day_bot'; // Your bot username
     
-    // Open Telegram bot chat with deposit command
-    const chatUrl = `https://t.me/${botUsername}?start=deposit_${amount}`;
+    // ✅ Auto send command to bot: /start deposit100
+    const chatUrl = `https://t.me/${botUsername}?start=deposit${amount}`;
     
     if (tg.openTelegramLink) {
         tg.openTelegramLink(chatUrl);
@@ -5340,7 +5340,7 @@ function getQRFromBot() {
         window.open(chatUrl, '_blank');
     }
     
-    showAddMoneyMessage(`✅ Opening bot to get QR code for ₹${amount}`, 'success');
+    showAddMoneyMessage(`✅ Opening bot for ₹${amount} QR code`, 'success');
 }
 
 function showAddMoneyMessage(message, type) {

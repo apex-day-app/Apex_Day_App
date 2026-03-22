@@ -4917,7 +4917,6 @@ let isPlacingBet = false;
 let timeLeft = ROUND_DURATION;
 let isBettingActive = true;
 let isResultPhase = false;
-let currentRoundId = Date.now();
 let lastResult = null;
 
 let fullHistoryFilter = 'all';
@@ -6957,7 +6956,7 @@ async function processRefundFromSupabase() {
                     .update({ balance: newBalance, updated_at: new Date().toISOString() })
                     .eq('user_id', bet.user_id);
                 
-                if (bet.user_id === currentUserData.userId) {
+                if (    bet.user_id === currentUserData.userId) {
                     currentUserData.balance = newBalance;
                     if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
                     localStorage.setItem(`balance_${currentUserData.userId}`, newBalance);

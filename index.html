@@ -6316,7 +6316,7 @@ async function initTelegramAndWelcome() {
                 
                 console.log(`✅ Telegram user detected: ${userName} (${telegramId})`);
                 
-                // 🔥 AUTO SAVE TO SUPABASE
+                // 🔥🔥🔥 YEH LINE ADD KARO 🔥🔥🔥
                 const supabaseUser = await saveUserToSupabase(telegramId, userName, firstName, lastName);
                 
                 // Get balance from Supabase or localStorage
@@ -8912,117 +8912,6 @@ async function saveWithdrawToSupabase(withdrawData) {
 // ========================================
 
 
-
-async function initTelegramAndWelcome() {
-    let userName = 'User';
-    let firstName = '';
-    let lastName = '';
-    let telegramId = null;
-    
-    console.log("📱 Initializing Telegram...");
-    
-    setTimeout(() => {
-        loadFullHistoryToStrip();
-    }, 1000);
-    
-    if (window.Telegram && window.Telegram.WebApp) {
-        try {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-            
-            const tgUser = tg.initDataUnsafe?.user;
-            
-            if (tgUser) {
-                telegramId = tgUser.id.toString();
-                firstName = tgUser.first_name || '';
-                lastName = tgUser.last_name || '';
-                userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
-                
-                console.log(`✅ Telegram user detected: ${userName} (${telegramId})`);
-                
-                // 🔥🔥🔥 AUTO SAVE TO SUPABASE - YEH LINE ADD KI HAI 🔥🔥🔥
-                const supabaseUser = await saveUserToSupabase(telegramId, userName, firstName, lastName);
-                
-                // Get balance from Supabase or localStorage
-                let initialBalance = 11;
-                
-                if (supabaseUser) {
-                    initialBalance = supabaseUser.balance || 11;
-                    console.log(`💰 Balance from Supabase: ${initialBalance}`);
-                } else {
-                    const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
-                    initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
-                }
-                
-                currentUserData = {
-                    ...currentUserData,
-                    userId: telegramId,
-                    name: userName,
-                    balance: initialBalance,
-                    telegram_id: telegramId,
-                    first_name: firstName,
-                    last_name: lastName,
-                    totalWins: supabaseUser?.total_wins || 0,
-                    gamesPlayed: supabaseUser?.games_played || 0
-                };
-                
-                updateProfileDisplay();
-                localStorage.setItem('tg_id', telegramId);
-                localStorage.setItem('tg_name', userName);
-                
-                const isNewUser = !localStorage.getItem(`welcome_shown_${telegramId}`);
-                if (isNewUser && initialBalance === 11) {
-                    setTimeout(() => {
-                        const welcomePopup = document.getElementById('welcome-popup');
-                        const welcomeName = document.getElementById('welcome-user-name');
-                        if (welcomeName) welcomeName.textContent = userName;
-                        if (welcomePopup) welcomePopup.classList.remove('hidden');
-                        localStorage.setItem(`welcome_shown_${telegramId}`, 'true');
-                    }, 500);
-                }
-                
-                setTimeout(() => {
-                    initializeUser();
-                }, 100);
-                
-            } else {
-                console.log("ℹ️ No Telegram user data");
-                loadFromLocalStorage();
-            }
-        } catch (e) {
-            console.error("Telegram error:", e);
-            loadFromLocalStorage();
-        }
-    } else {
-        console.log("ℹ️ Not in Telegram WebApp");
-        loadFromLocalStorage();
-    }
-    
-    function loadFromLocalStorage() {
-        const savedTgId = localStorage.getItem('tg_id');
-        const savedTgName = localStorage.getItem('tg_name');
-        
-        if (savedTgId) {
-            const cachedBalance = localStorage.getItem(`balance_${savedTgId}`);
-            currentUserData = {
-                ...currentUserData,
-                userId: savedTgId,
-                name: savedTgName || 'User',
-                balance: cachedBalance ? parseFloat(cachedBalance) : 11,
-                telegram_id: savedTgId
-            };
-            updateProfileDisplay();
-            setTimeout(() => initializeUser(), 100);
-        } else {
-            currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
-            currentUserData.name = 'Demo User';
-            currentUserData.balance = 11;
-            updateProfileDisplay();
-            setTimeout(() => initializeUser(), 100);
-        }
-    }
-}
 
 function closeWelcomePopup() {
     const popup = document.getElementById('welcome-popup');

@@ -5676,7 +5676,7 @@ window.testAddToHistory = function(color) {
 };
 
 
-// ========================================
+    // ========================================
 // Part 49. GAME TIMER FUNCTIONS - COMPLETE FIXED
 // ========================================
 
@@ -6199,6 +6199,796 @@ function updateBetListDisplay(color) {
         </div>`;
     });
     list.innerHTML = html;
+}
+
+// ========================================
+// 🔥 PART 49.5 - SUPABASE AUTO SAVE & REAL-TIME BETTING
+// ========================================
+
+// ========================================
+// 🔥 GLOBAL VARIABLES
+// ========================================
+let currentRoundId = Date.now().toString();
+let realtimeChannel = null;
+
+// ========================================
+// 🔥 TELEGRAM USER KO SUPABASE ME AUTO SAVE
+// ========================================
+async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
+    if (!mysupabase) {
+        console.log("⚠️ Supabase not ready");
+        return null;
+    }
+    
+    try {
+        // Check if user exists
+        const { data: existingUser, error: fetchError } = await mysupabase
+            .from('users')
+            .select('*')
+            .eq('telegram_id', telegramId)
+            .maybeSingle();
+        
+        if (existingUser) {
+            console.log("✅ User already exists:", existingUser.user_id);
+            // Update last login
+            await mysupabase
+                .from('users')
+                .update({ updated_at: new Date().toISOString() })
+                .eq('telegram_id', telegramId);
+            return existingUser;
+        }
+        
+        // NEW USER - Create
+        console.log("🆕 New user! Saving to Supabase...");
+        
+        const newUser = {
+            user_id: `TG_${telegramId}`,
+            name: userName || firstName || 'Telegram User',
+            telegram_id: telegramId,
+            telegram_username: userName,
+            balance: 11,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        const { data: insertedUser, error: insertError } = await mysupabase
+            .from('users')
+            .insert([newUser])
+            .select()
+            .single();
+        
+        if (insertError) {
+            console.error("❌ Insert error:", insertError);
+            return null;
+        }
+        
+        console.log("✅ New user saved! ID:", insertedUser.user_id);
+        return insertedUser;
+        
+    } catch (error) {
+        console.error("❌ Supabase error:", error);
+        return null;
+    }
+}
+
+// ========================================
+// 🔥 MODIFIED initTelegramAndWelcome WITH SUPABASE AUTO-SAVE
+// ========================================
+async function initTelegramAndWelcome() {
+    let userName = 'User';
+    let firstName = '';
+    let lastName = '';
+    let telegramId = null;
+    
+    console.log("📱 Initializing Telegram...");
+    
+    setTimeout(() => {
+        if (typeof loadFullHistoryToStrip === 'function') loadFullHistoryToStrip();
+    }, 1000);
+    
+    if (window.Telegram && window.Telegram.WebApp) {
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            
+            const tgUser = tg.initDataUnsafe?.user;
+            
+            if (tgUser) {
+                telegramId = tgUser.id.toString();
+                firstName = tgUser.first_name || '';
+                lastName = tgUser.last_name || '';
+                userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
+                
+                console.log(`✅ Telegram user detected: ${userName} (${telegramId})`);
+                
+                // 🔥 AUTO SAVE TO SUPABASE
+                const supabaseUser = await saveUserToSupabase(telegramId, userName, firstName, lastName);
+                
+                // Get balance from Supabase or localStorage
+                let initialBalance = 11;
+                
+                if (supabaseUser && supabaseUser.balance !== undefined) {
+                    initialBalance = supabaseUser.balance;
+                    console.log(`💰 Balance from Supabase: ${initialBalance}`);
+                } else {
+                    const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
+                    initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+                }
+                
+                currentUserData = {
+                    userId: telegramId,
+                    name: userName,
+                    balance: initialBalance,
+                    telegram_id: telegramId,
+                    first_name: firstName,
+                    last_name: lastName,
+                    totalWins: supabaseUser?.total_wins || 0,
+                    gamesPlayed: supabaseUser?.games_played || 0,
+                    bank_accounts: supabaseUser?.bank_accounts || [],
+                    upis: supabaseUser?.upis || []
+                };
+                
+                updateProfileDisplay();
+                localStorage.setItem('tg_id', telegramId);
+                localStorage.setItem('tg_name', userName);
+                
+                // Show welcome popup for new users
+                const isNewUser = !localStorage.getItem(`welcome_shown_${telegramId}`);
+                if (isNewUser && initialBalance === 11) {
+                    setTimeout(() => {
+                        const welcomePopup = document.getElementById('welcome-popup');
+                        const welcomeName = document.getElementById('welcome-user-name');
+                        if (welcomeName) welcomeName.textContent = userName;
+                        if (welcomePopup) welcomePopup.classList.remove('hidden');
+                        localStorage.setItem(`welcome_shown_${telegramId}`, 'true');
+                    }, 500);
+                }
+                
+                setTimeout(() => {
+                    if (typeof initializeUser === 'function') initializeUser();
+                }, 100);
+                
+            } else {
+                console.log("ℹ️ No Telegram user data");
+                loadFromLocalStorage();
+            }
+        } catch (e) {
+            console.error("Telegram error:", e);
+            loadFromLocalStorage();
+        }
+    } else {
+        console.log("ℹ️ Not in Telegram WebApp");
+        loadFromLocalStorage();
+    }
+    
+    function loadFromLocalStorage() {
+        const savedTgId = localStorage.getItem('tg_id');
+        const savedTgName = localStorage.getItem('tg_name');
+        
+        if (savedTgId) {
+            const cachedBalance = localStorage.getItem(`balance_${savedTgId}`);
+            currentUserData = {
+                ...currentUserData,
+                userId: savedTgId,
+                name: savedTgName || 'User',
+                balance: cachedBalance ? parseFloat(cachedBalance) : 11,
+                telegram_id: savedTgId
+            };
+            updateProfileDisplay();
+            setTimeout(() => {
+                if (typeof initializeUser === 'function') initializeUser();
+            }, 100);
+        } else {
+            currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
+            currentUserData.name = 'Demo User';
+            currentUserData.balance = 11;
+            updateProfileDisplay();
+            setTimeout(() => {
+                if (typeof initializeUser === 'function') initializeUser();
+            }, 100);
+        }
+    }
+}
+
+// ========================================
+// 🔥 PLACE BET WITH SUPABASE (REAL-TIME)
+// ========================================
+async function placeBet(color) {
+    if (!isBettingActive) {
+        showStatusMessage('⚠️ Betting closed!', 'error');
+        return;
+    }
+    
+    if (isResultPhase) {
+        showStatusMessage('⚠️ Result phase - no betting!', 'error');
+        return;
+    }
+    
+    if (isPlacingBet) return;
+    
+    if (!currentUserData || !currentUserData.userId) {
+        showStatusMessage('Please login first!', 'error');
+        return;
+    }
+    
+    const formattedAmount = document.getElementById('bet-amount')?.value;
+    const betAmount = getNumericValue(formattedAmount);
+    
+    if (isNaN(betAmount) || betAmount < 1) {
+        showStatusMessage('Please enter valid amount', 'error');
+        return;
+    }
+    
+    if (betAmount > currentUserData.balance) {
+        showStatusMessage('Insufficient balance!', 'error');
+        return;
+    }
+    
+    isPlacingBet = true;
+    
+    // Deduct balance
+    currentUserData.balance -= betAmount;
+    updateProfileDisplay();
+    localStorage.setItem(`balance_${currentUserData.userId}`, currentUserData.balance);
+    
+    // 🔥 SAVE BET TO SUPABASE (GLOBAL - Sabko dikhega)
+    if (mysupabase) {
+        try {
+            const { error } = await mysupabase
+                .from('active_bets')
+                .insert([{
+                    user_id: currentUserData.userId,
+                    user_name: currentUserData.name || currentUserData.userId.slice(-4),
+                    color: color,
+                    amount: betAmount,
+                    round_id: currentRoundId,
+                    created_at: new Date().toISOString()
+                }]);
+            
+            if (error) {
+                console.error("Bet save error:", error);
+                currentUserData.balance += betAmount;
+                updateProfileDisplay();
+                showStatusMessage('Technical error! Try again', 'error');
+                isPlacingBet = false;
+                return;
+            }
+            
+            console.log(`✅ Bet placed: ₹${betAmount} on ${color}`);
+            showStatusMessage(`✅ Bet placed: ₹${betAmount} on ${color}`, 'success');
+            
+            // Update local totals immediately for better UX
+            if (color === 'green') {
+                gameState.totalGreenBets += betAmount;
+            } else {
+                gameState.totalBlueBets += betAmount;
+            }
+            updateTotalsDisplay();
+            
+        } catch (error) {
+            console.error("Supabase error:", error);
+            currentUserData.balance += betAmount;
+            updateProfileDisplay();
+            showStatusMessage('Network error! Try again', 'error');
+            isPlacingBet = false;
+            return;
+        }
+    } else {
+        // Fallback to local only
+        updateLocalBetMap(color, betAmount);
+        showStatusMessage(`✅ Bet placed: ₹${betAmount} on ${color} (Local)`, 'success');
+    }
+    
+    setTimeout(() => {
+        isPlacingBet = false;
+    }, 300);
+}
+
+// ========================================
+// 🔥 UPDATE LOCAL BET MAP (FALLBACK)
+// ========================================
+function updateLocalBetMap(color, betAmount) {
+    const userKey = currentUserData.userId;
+    if (!userBetMap[color]) userBetMap[color] = {};
+    
+    if (userBetMap[color][userKey]) {
+        userBetMap[color][userKey].amount += betAmount;
+    } else {
+        userBetMap[color][userKey] = {
+            userName: currentUserData.name || 'User',
+            amount: betAmount
+        };
+    }
+    
+    if (color === 'green') {
+        gameState.totalGreenBets += betAmount;
+    } else {
+        gameState.totalBlueBets += betAmount;
+    }
+    
+    updateBetListDisplay('green');
+    updateBetListDisplay('blue');
+    updateTotalsDisplay();
+}
+
+// ========================================
+// 🔥 UPDATE TOTALS DISPLAY
+// ========================================
+function updateTotalsDisplay() {
+    const greenTotalEl = document.getElementById('green-total');
+    const blueTotalEl = document.getElementById('blue-total');
+    if (greenTotalEl) greenTotalEl.textContent = gameState.totalGreenBets;
+    if (blueTotalEl) blueTotalEl.textContent = gameState.totalBlueBets;
+    
+    const greenBadge = document.getElementById('bet-amount-green');
+    const blueBadge = document.getElementById('bet-amount-blue');
+    
+    if (greenBadge) {
+        if (gameState.totalGreenBets > 0) {
+            greenBadge.textContent = gameState.totalGreenBets;
+            greenBadge.style.display = 'flex';
+        } else {
+            greenBadge.style.display = 'none';
+        }
+    }
+    
+    if (blueBadge) {
+        if (gameState.totalBlueBets > 0) {
+            blueBadge.textContent = gameState.totalBlueBets;
+            blueBadge.style.display = 'flex';
+        } else {
+            blueBadge.style.display = 'none';
+        }
+    }
+}
+
+// ========================================
+// 🔥 REAL-TIME SUBSCRIPTION - SABKI BETS LIVE DIKHEGI
+// ========================================
+async function subscribeToRealtimeBets() {
+    if (!mysupabase) {
+        console.log("⚠️ Supabase not available, using local only");
+        return;
+    }
+    
+    if (realtimeChannel) {
+        try {
+            await realtimeChannel.unsubscribe();
+        } catch(e) {}
+    }
+    
+    console.log("📡 Subscribing to real-time bets for round:", currentRoundId);
+    
+    realtimeChannel = mysupabase
+        .channel(`bets-round-${currentRoundId}`)
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'active_bets',
+                filter: `round_id=eq.${currentRoundId}`
+            },
+            (payload) => {
+                console.log("🔄 New bet received:", payload.new);
+                handleNewBetRealtime(payload.new);
+            }
+        )
+        .subscribe((status) => {
+            console.log("📡 Subscription status:", status);
+        });
+}
+
+// ========================================
+// 🔥 HANDLE NEW BET FROM OTHER USERS
+// ========================================
+function handleNewBetRealtime(betData) {
+    const { user_id, user_name, color, amount } = betData;
+    
+    // Update totals
+    if (color === 'green') {
+        gameState.totalGreenBets += amount;
+    } else {
+        gameState.totalBlueBets += amount;
+    }
+    
+    // Update user bet map for display
+    if (!userBetMap[color]) userBetMap[color] = {};
+    
+    if (userBetMap[color][user_id]) {
+        userBetMap[color][user_id].amount += amount;
+    } else {
+        userBetMap[color][user_id] = {
+            userName: user_name || user_id.slice(-4),
+            amount: amount
+        };
+    }
+    
+    // Update UI
+    updateBetListDisplay('green');
+    updateBetListDisplay('blue');
+    updateTotalsDisplay();
+    
+    // Show console log for other users' bets
+    if (user_id !== currentUserData.userId) {
+        console.log(`👤 ${user_name} bet ₹${amount} on ${color}`);
+    }
+}
+
+// ========================================
+// 🔥 LOAD ACTIVE BETS FOR CURRENT ROUND
+// ========================================
+async function loadActiveBetsForRound() {
+    if (!mysupabase) return;
+    
+    try {
+        const { data, error } = await mysupabase
+            .from('active_bets')
+            .select('*')
+            .eq('round_id', currentRoundId);
+        
+        if (error) {
+            console.error("Error loading bets:", error);
+            return;
+        }
+        
+        if (data && data.length > 0) {
+            console.log(`📊 Loaded ${data.length} bets for round ${currentRoundId}`);
+            
+            gameState.totalGreenBets = 0;
+            gameState.totalBlueBets = 0;
+            userBetMap = { green: {}, blue: {} };
+            
+            data.forEach(bet => {
+                if (bet.color === 'green') {
+                    gameState.totalGreenBets += bet.amount;
+                } else {
+                    gameState.totalBlueBets += bet.amount;
+                }
+                
+                if (!userBetMap[bet.color][bet.user_id]) {
+                    userBetMap[bet.color][bet.user_id] = {
+                        userName: bet.user_name || bet.user_id.slice(-4),
+                        amount: 0
+                    };
+                }
+                userBetMap[bet.color][bet.user_id].amount += bet.amount;
+            });
+            
+            updateBetListDisplay('green');
+            updateBetListDisplay('blue');
+            updateTotalsDisplay();
+        }
+        
+    } catch (error) {
+        console.error("Supabase error:", error);
+    }
+}
+
+// ========================================
+// 🔥 UPDATE BET LIST DISPLAY (WITH REAL NAMES)
+// ========================================
+function updateBetListDisplay(color) {
+    const list = document.getElementById(`${color}-bets-list`);
+    if (!list) return;
+    
+    const users = Object.entries(userBetMap[color] || {})
+        .map(([userId, data]) => ({ userId, ...data }))
+        .sort((a, b) => b.amount - a.amount);
+    
+    if (users.length === 0) {
+        list.innerHTML = `<div class="empty-bets"><i class="fas fa-${color === 'green' ? 'leaf' : 'water'}"></i> No bets</div>`;
+        return;
+    }
+    
+    let html = '';
+    users.slice(0, 8).forEach((user) => {
+        const isCurrentUser = user.userId === currentUserData.userId;
+        const userName = user.userName || user.userId.slice(-6);
+        
+        html += `<div class="bet-item" style="${isCurrentUser ? 'background: rgba(212, 175, 55, 0.2); border-radius: 6px; margin: 2px 0;' : ''}">
+            <div class="bet-item-left">
+                <span class="bet-user-name" style="${isCurrentUser ? 'color: #D4AF37; font-weight: 600;' : ''}">
+                    ${isCurrentUser ? '👤 ' : ''}${escapeHtml(userName)}
+                </span>
+            </div>
+            <span class="bet-amount">${Math.floor(user.amount)}</span>
+        </div>`;
+    });
+    list.innerHTML = html;
+}
+
+// ========================================
+// 🔥 MODIFIED START GAME LOOP WITH REAL-TIME
+// ========================================
+async function startGameLoop() {
+    console.log("🎮 Starting GAME LOOP with real-time...");
+    
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    if (resultTimeout) {
+        clearTimeout(resultTimeout);
+        resultTimeout = null;
+    }
+    
+    const roundInfo = getCurrentRoundInfo();
+    
+    currentRoundId = roundInfo.roundId;
+    currentRoundStartTime = roundInfo.roundStart;
+    isBettingActive = roundInfo.isBettingActive;
+    isResultPhase = roundInfo.isInResultPhase;
+    
+    console.log(`⏱️ Round: ${currentRoundId}, Phase: ${roundInfo.isInResultPhase ? 'RESULT' : 'BETTING'}`);
+    
+    await subscribeToRealtimeBets();
+    await loadActiveBetsForRound();
+    
+    updateTimerDisplay(roundInfo.timeLeft);
+    
+    const savedLastResult = localStorage.getItem('lastResult');
+    if (savedLastResult) {
+        lastResult = savedLastResult;
+        updateResultBox(savedLastResult);
+    }
+    
+    if (roundInfo.isInResultPhase) {
+        const timeUntilNextRound = Math.max(0, roundInfo.roundEnd - Date.now());
+        if (resultTimeout) clearTimeout(resultTimeout);
+        resultTimeout = setTimeout(() => {
+            endGameRound();
+            resultTimeout = null;
+        }, Math.min(timeUntilNextRound, 3000));
+    } else {
+        updateRedBorder(roundInfo.timeLeft);
+        
+        timerInterval = setInterval(async () => {
+            const info = getCurrentRoundInfo();
+            
+            updateTimerDisplay(info.timeLeft);
+            updateRedBorder(info.timeLeft);
+            
+            if (info.isBettingActive !== isBettingActive) {
+                isBettingActive = info.isBettingActive;
+                if (!isBettingActive) {
+                    console.log("⏰ Betting closed for this round");
+                }
+            }
+            
+            if (info.isInResultPhase && !isResultPhase) {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                
+                isResultPhase = true;
+                isBettingActive = false;
+                
+                if (resultTimeout) clearTimeout(resultTimeout);
+                resultTimeout = setTimeout(() => {
+                    endGameRound();
+                    resultTimeout = null;
+                }, RESULT_DELAY * 1000);
+            }
+        }, 100);
+    }
+}
+
+// ========================================
+// 🔥 END GAME ROUND - CLEAN UP ACTIVE BETS
+// ========================================
+async function endGameRound() {
+    console.log("🎯 Calculating result...");
+    
+    let resultColor = 'gray';
+    
+    if (gameState.totalGreenBets === 0 && gameState.totalBlueBets === 0) {
+        resultColor = 'gray';
+    }
+    else if (gameState.totalGreenBets < gameState.totalBlueBets) {
+        resultColor = 'green';
+    }
+    else if (gameState.totalBlueBets < gameState.totalGreenBets) {
+        resultColor = 'blue';
+    }
+    else {
+        resultColor = 'gray';
+    }
+    
+    updateResultBox(resultColor);
+    
+    const roundData = {
+        roundId: currentRoundId,
+        result: resultColor,
+        greenTotal: gameState.totalGreenBets,
+        blueTotal: gameState.totalBlueBets
+    };
+    
+    if (typeof saveGameHistoryToSupabase === 'function') {
+        saveGameHistoryToSupabase(roundData);
+    }
+    if (typeof addNewResultToHistory === 'function') {
+        addNewResultToHistory(resultColor);
+    }
+    
+    if (resultColor === 'green' || resultColor === 'blue') {
+        await processWinnersFromSupabase(resultColor);
+        if (typeof showStatusMessage === 'function') {
+            showStatusMessage(`🎯 ${resultColor.toUpperCase()} wins!`, 'success');
+        }
+    } else {
+        if (gameState.totalGreenBets === 0 && gameState.totalBlueBets === 0) {
+            if (typeof showStatusMessage === 'function') {
+                showStatusMessage("🎲 No bets this round", 'info');
+            }
+        } else {
+            await processRefundFromSupabase();
+            if (typeof showStatusMessage === 'function') {
+                showStatusMessage("⚖️ Tie - Refunding all bets", 'info');
+            }
+        }
+    }
+    
+    if (mysupabase) {
+        await mysupabase
+            .from('active_bets')
+            .delete()
+            .eq('round_id', currentRoundId);
+        console.log("🧹 Cleaned up active bets for round", currentRoundId);
+    }
+    
+    if (typeof resetBettingUI === 'function') {
+        resetBettingUI();
+    }
+    
+    currentRoundId = Date.now().toString();
+    
+    if (realtimeChannel) {
+        try {
+            await realtimeChannel.unsubscribe();
+        } catch(e) {}
+    }
+    await subscribeToRealtimeBets();
+    
+    setTimeout(() => {
+        startGameLoop();
+    }, 500);
+}
+
+// ========================================
+// 🔥 PROCESS WINNERS FROM SUPABASE
+// ========================================
+async function processWinnersFromSupabase(winningColor) {
+    if (!mysupabase) {
+        if (typeof processWinning === 'function') processWinning(winningColor);
+        return;
+    }
+    
+    try {
+        const { data: winningBets, error } = await mysupabase
+            .from('active_bets')
+            .select('*')
+            .eq('round_id', currentRoundId)
+            .eq('color', winningColor);
+        
+        if (error) {
+            console.error("Error fetching winners:", error);
+            return;
+        }
+        
+        let currentUserWinAmount = 0;
+        
+        for (const bet of winningBets) {
+            const winAmount = bet.amount * 2;
+            
+            if (bet.user_id === currentUserData.userId) {
+                currentUserWinAmount += winAmount;
+            }
+            
+            const { data: userData } = await mysupabase
+                .from('users')
+                .select('balance')
+                .eq('user_id', bet.user_id)
+                .maybeSingle();
+            
+            if (userData) {
+                const newBalance = (userData.balance || 0) + winAmount;
+                await mysupabase
+                    .from('users')
+                    .update({ balance: newBalance, updated_at: new Date().toISOString() })
+                    .eq('user_id', bet.user_id);
+                
+                if (bet.user_id === currentUserData.userId) {
+                    currentUserData.balance = newBalance;
+                    if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
+                    localStorage.setItem(`balance_${currentUserData.userId}`, newBalance);
+                }
+            }
+        }
+        
+        if (currentUserWinAmount > 0 && typeof showStatusMessage === 'function') {
+            showStatusMessage(`🎉 You won ₹${currentUserWinAmount}!`, 'success');
+        }
+        
+    } catch (error) {
+        console.error("Error processing winners:", error);
+    }
+}
+
+// ========================================
+// 🔥 PROCESS REFUND FROM SUPABASE
+// ========================================
+async function processRefundFromSupabase() {
+    if (!mysupabase) {
+        if (typeof processRefund === 'function') processRefund();
+        return;
+    }
+    
+    try {
+        const { data: allBets, error } = await mysupabase
+            .from('active_bets')
+            .select('*')
+            .eq('round_id', currentRoundId);
+        
+        if (error) {
+            console.error("Error fetching bets for refund:", error);
+            return;
+        }
+        
+        let currentUserRefund = 0;
+        
+        for (const bet of allBets) {
+            if (bet.user_id === currentUserData.userId) {
+                currentUserRefund += bet.amount;
+            }
+            
+            const { data: userData } = await mysupabase
+                .from('users')
+                .select('balance')
+                .eq('user_id', bet.user_id)
+                .maybeSingle();
+            
+            if (userData) {
+                const newBalance = (userData.balance || 0) + bet.amount;
+                await mysupabase
+                    .from('users')
+                    .update({ balance: newBalance, updated_at: new Date().toISOString() })
+                    .eq('user_id', bet.user_id);
+                
+                if (bet.user_id === currentUserData.userId) {
+                    currentUserData.balance = newBalance;
+                    if (typeof updateProfileDisplay === 'function') updateProfileDisplay();
+                    localStorage.setItem(`balance_${currentUserData.userId}`, newBalance);
+                }
+            }
+        }
+        
+        if (currentUserRefund > 0 && typeof showStatusMessage === 'function') {
+            showStatusMessage(`💰 Refund: ₹${currentUserRefund} returned`, 'success');
+        }
+        
+    } catch (error) {
+        console.error("Error processing refund:", error);
+    }
+}
+
+// ========================================
+// 🔥 RESET BETTING UI
+// ========================================
+function resetBettingUI() {
+    userBetMap = { green: {}, blue: {} };
+    gameState.totalGreenBets = 0;
+    gameState.totalBlueBets = 0;
+    
+    if (typeof updateBetListDisplay === 'function') {
+        updateBetListDisplay('green');
+        updateBetListDisplay('blue');
+    }
+    if (typeof updateTotalsDisplay === 'function') {
+        updateTotalsDisplay();
+    }
 }
 
 // ========================================

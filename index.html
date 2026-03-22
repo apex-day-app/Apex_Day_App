@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <!-- ============================================ -->
 <!-- Part 1.DOCUMENT HEAD & META TAGS                    -->
 <!-- ============================================ -->
@@ -4452,12 +4452,12 @@ body {
             <!-- Part 29. FULL SCREEN WITHDRAW PAGE        -->
             <!-- ================================ -->
             <div id="full-withdraw-page">
-                <div class="fullscreen-header">
-                    <h2><i class="fas fa-arrow-up"></i> Withdraw Money</h2>
-                    <button class="close-fullscreen" onclick="closeFullWithdraw()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
+                <div class="fullscreen-header" style="padding: 8px 15px;">
+    <h2 style="font-size: 1rem; margin: 0;"><i class="fas fa-exchange-alt" style="font-size: 0.9rem;"></i> Transactions</h2>
+    <button class="close-fullscreen" style="width: 30px; height: 30px; font-size: 0.9rem;" onclick="closeFullTransaction()">
+        <i class="fas fa-times"></i>
+    </button>
+</div>      
                 
                 <div style="background: rgba(212, 175, 55, 0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; border: 2px solid #D4AF37;">
                     <div style="color: #FFE4B5; font-size: 0.9rem; margin-bottom: 5px;">Available Balance</div>
@@ -8105,8 +8105,71 @@ async function saveWithdrawToSupabase(withdrawData) {
 // Part 55. TELEGRAM + WELCOME POPUP
 // ========================================
 
-function initTelegramAndWelcome() {
+// ========================================
+// 🔥 Telegram User ko Supabase me Auto Save
+// ========================================
+async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
+    if (!mysupabase) {
+        console.log("⚠️ Supabase not ready");
+        return false;
+    }
+    
+    try {
+        // Check if user exists
+        const { data: existingUser, error: fetchError } = await mysupabase
+            .from('users')
+            .select('*')
+            .eq('telegram_id', telegramId)
+            .single();
+        
+        if (existingUser) {
+            console.log("✅ User already exists:", existingUser.user_id);
+            // Update last login
+            await mysupabase
+                .from('users')
+                .update({ updated_at: new Date().toISOString() })
+                .eq('telegram_id', telegramId);
+            return existingUser;
+        }
+        
+        // NEW USER - Create
+        console.log("🆕 New user! Saving to Supabase...");
+        
+        const newUser = {
+            user_id: `TG_${telegramId}`,
+            name: userName || firstName || 'Telegram User',
+            telegram_id: telegramId,
+            telegram_username: userName,
+            balance: 11,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        const { data: insertedUser, error: insertError } = await mysupabase
+            .from('users')
+            .insert([newUser])
+            .select()
+            .single();
+        
+        if (insertError) {
+            console.error("❌ Insert error:", insertError);
+            return null;
+        }
+        
+        console.log("✅ New user saved! ID:", insertedUser.user_id);
+        return insertedUser;
+        
+    } catch (error) {
+        console.error("❌ Supabase error:", error);
+        return null;
+    }
+}
+
+
+async function initTelegramAndWelcome() {
     let userName = 'User';
+    let firstName = '';
+    let lastName = '';
     let telegramId = null;
     
     console.log("📱 Initializing Telegram...");
@@ -8125,35 +8188,59 @@ function initTelegramAndWelcome() {
             
             if (tgUser) {
                 telegramId = tgUser.id.toString();
-                const firstName = tgUser.first_name || '';
-                const lastName = tgUser.last_name || '';
+                firstName = tgUser.first_name || '';
+                lastName = tgUser.last_name || '';
                 userName = (firstName + ' ' + lastName).trim() || 'Telegram User';
                 
-                console.log(`✅ Telegram user: ${userName} (${telegramId})`);
+                console.log(`✅ Telegram user detected: ${userName} (${telegramId})`);
                 
-                const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
-                const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+                // 🔥🔥🔥 AUTO SAVE TO SUPABASE - YEH LINE ADD KI HAI 🔥🔥🔥
+                const supabaseUser = await saveUserToSupabase(telegramId, userName, firstName, lastName);
+                
+                // Get balance from Supabase or localStorage
+                let initialBalance = 11;
+                
+                if (supabaseUser) {
+                    initialBalance = supabaseUser.balance || 11;
+                    console.log(`💰 Balance from Supabase: ${initialBalance}`);
+                } else {
+                    const cachedBalance = localStorage.getItem(`balance_${telegramId}`);
+                    initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
+                }
                 
                 currentUserData = {
                     ...currentUserData,
                     userId: telegramId,
                     name: userName,
                     balance: initialBalance,
-                    telegram_id: telegramId
+                    telegram_id: telegramId,
+                    first_name: firstName,
+                    last_name: lastName,
+                    totalWins: supabaseUser?.total_wins || 0,
+                    gamesPlayed: supabaseUser?.games_played || 0
                 };
                 
                 updateProfileDisplay();
                 localStorage.setItem('tg_id', telegramId);
                 localStorage.setItem('tg_name', userName);
                 
-                if (!cachedBalance) {
-                    localStorage.setItem(`balance_${telegramId}`, '11');
+                const isNewUser = !localStorage.getItem(`welcome_shown_${telegramId}`);
+                if (isNewUser && initialBalance === 11) {
+                    setTimeout(() => {
+                        const welcomePopup = document.getElementById('welcome-popup');
+                        const welcomeName = document.getElementById('welcome-user-name');
+                        if (welcomeName) welcomeName.textContent = userName;
+                        if (welcomePopup) welcomePopup.classList.remove('hidden');
+                        localStorage.setItem(`welcome_shown_${telegramId}`, 'true');
+                    }, 500);
                 }
                 
                 setTimeout(() => {
                     initializeUser();
                 }, 100);
+                
             } else {
+                console.log("ℹ️ No Telegram user data");
                 loadFromLocalStorage();
             }
         } catch (e) {
@@ -8171,30 +8258,21 @@ function initTelegramAndWelcome() {
         
         if (savedTgId) {
             const cachedBalance = localStorage.getItem(`balance_${savedTgId}`);
-            const initialBalance = cachedBalance ? parseFloat(cachedBalance) : 11;
-            
             currentUserData = {
                 ...currentUserData,
                 userId: savedTgId,
                 name: savedTgName || 'User',
-                balance: initialBalance,
+                balance: cachedBalance ? parseFloat(cachedBalance) : 11,
                 telegram_id: savedTgId
             };
-            
             updateProfileDisplay();
-            
-            setTimeout(() => {
-                initializeUser();
-            }, 100);
+            setTimeout(() => initializeUser(), 100);
         } else {
             currentUserData.userId = 'demo_' + Math.floor(Math.random() * 10000);
             currentUserData.name = 'Demo User';
             currentUserData.balance = 11;
             updateProfileDisplay();
-            
-            setTimeout(() => {
-                initializeUser();
-            }, 100);
+            setTimeout(() => initializeUser(), 100);
         }
     }
 }

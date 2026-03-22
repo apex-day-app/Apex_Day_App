@@ -4365,12 +4365,12 @@
                                 </div>
                                 
                                 <!-- NAME -->
-                                <div class="profile-name-id">
-                                    <div class="name">
-                                        <span id="profile-name">Demo User</span>
-                                        <i class="fas fa-pen edit-field-icon" onclick="showStatusMessage('Edit name coming soon!', 'success')"></i>
-                                    </div>
-                                </div>
+<div class="profile-name-id">
+    <div class="name" id="profile-name-container">
+        <span id="profile-name" onclick="editNameInline()">Demo User</span>
+        <i class="fas fa-pen edit-field-icon" onclick="editNameInline()"></i>
+    </div>
+</div>
                                 
                                 <!-- USER ID SECTION -->
                                 <div style="display: flex; flex-direction: column; align-items: center; margin: 5px 0; width: 100%;">
@@ -5416,6 +5416,102 @@
     }
     
     // ========================================
+// INLINE NAME EDIT FUNCTIONS
+// ========================================
+
+function editNameInline() {
+    const nameSpan = document.getElementById('profile-name');
+    const currentName = nameSpan.innerText;
+    
+    // Create input element
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentName;
+    input.id = 'edit-name-input';
+    input.style.cssText = `
+        background: #2A2A2A;
+        border: 2px solid #D4AF37;
+        border-radius: 8px;
+        color: #FFE4B5;
+        font-size: 1.5rem;
+        font-weight: 600;
+        padding: 5px 10px;
+        text-align: center;
+        width: 200px;
+        font-family: 'Poppins', sans-serif;
+    `;
+    
+    // Replace span with input
+    nameSpan.style.display = 'none';
+    nameSpan.parentNode.insertBefore(input, nameSpan);
+    
+    // Focus and select
+    input.focus();
+    input.select();
+    
+    // Save on Enter or Blur
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            saveNameInline(input.value);
+        }
+    });
+    
+    input.addEventListener('blur', function() {
+        saveNameInline(input.value);
+    });
+}
+
+async function saveNameInline(newName) {
+    const nameSpan = document.getElementById('profile-name');
+    const input = document.getElementById('edit-name-input');
+    
+    if (!newName || newName.trim() === '') {
+        newName = nameSpan.innerText;
+    }
+    
+    newName = newName.trim();
+    
+    // Remove input and show span
+    if (input) input.remove();
+    nameSpan.style.display = 'inline';
+    
+    // Update local
+    nameSpan.innerText = newName;
+    currentUserData.name = newName;
+    
+    // 🔥 UPDATE IN SUPABASE
+    if (mysupabase && currentUserData.telegram_id) {
+        try {
+            const { error } = await mysupabase
+                .from('users')
+                .update({
+                    name: newName,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('telegram_id', currentUserData.telegram_id);
+            
+            if (error) {
+                console.error("❌ Failed to update name in Supabase:", error);
+                showStatusMessage('Failed to update name!', 'error');
+            } else {
+                console.log("✅ Name updated in Supabase:", newName);
+                showStatusMessage('Name updated successfully!', 'success');
+            }
+        } catch (error) {
+            console.error("❌ Error:", error);
+            showStatusMessage('Network error!', 'error');
+        }
+    } else {
+        console.log("⚠️ Supabase not available, name saved locally only");
+        showStatusMessage('Name saved locally', 'success');
+    }
+    
+    updateProfileDisplay();
+}
+
+
+    
+    // ========================================
     // Part 46. COPY USER ID FUNCTION
     // ========================================
     
@@ -6224,13 +6320,12 @@
             return;
         }
         
-        const formattedAmount = document.getElementById('bet-amount')?.value;
-        const betAmount = getNumericValue(formattedAmount);
-        
-        if (isNaN(betAmount) || betAmount < 1) {
-            showStatusMessage('Please enter valid amount', 'error');
-            return;
-        }
+const formattedAmount = document.getElementById('bet-amount')?.value;
+const betAmount = getNumericValue(formattedAmount);
+if (isNaN(betAmount) || betAmount < 1) {
+    showStatusMessage('Please enter valid amount (minimum ₹1)', 'error');
+    return;
+}
         
         if (betAmount > currentUserData.balance) {
             showStatusMessage('Insufficient balance!', 'error');

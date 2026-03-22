@@ -6215,57 +6215,72 @@ let realtimeChannel = null;
 // ========================================
 async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
     if (!mysupabase) {
-        console.log("⚠️ Supabase not ready");
+        console.error("❌ Supabase client not initialized");
         return null;
     }
     
     try {
-        // Check if user exists
+        console.log("📝 Checking if user exists:", telegramId);
+        
+        // FIRST: Check if user exists
         const { data: existingUser, error: fetchError } = await mysupabase
             .from('users')
             .select('*')
             .eq('telegram_id', telegramId)
             .maybeSingle();
         
+        if (fetchError) {
+            console.error("❌ Error checking user:", fetchError);
+            return null;
+        }
+        
+        // If user exists, return it
         if (existingUser) {
-            console.log("✅ User already exists:", existingUser.user_id);
-            // Update last login
-            await mysupabase
-                .from('users')
-                .update({ updated_at: new Date().toISOString() })
-                .eq('telegram_id', telegramId);
+            console.log("✅ Existing user found:", existingUser.user_id);
             return existingUser;
         }
         
-        // NEW USER - Create
-        console.log("🆕 New user! Saving to Supabase...");
+        // SECOND: Create new user
+        console.log("🆕 Creating new user for:", userName);
         
         const newUser = {
             user_id: `TG_${telegramId}`,
-            name: userName || firstName || 'Telegram User',
+            name: userName || 'Telegram User',
             telegram_id: telegramId,
             telegram_username: userName,
             balance: 11,
+            status: 'active',
+            bank_accounts: [],
+            upis: [],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
         };
         
+        console.log("📤 Sending to Supabase:", newUser);
+        
         const { data: insertedUser, error: insertError } = await mysupabase
             .from('users')
             .insert([newUser])
-            .select()
-            .single();
+            .select();
         
         if (insertError) {
             console.error("❌ Insert error:", insertError);
+            console.error("Error details:", JSON.stringify(insertError));
             return null;
         }
         
-        console.log("✅ New user saved! ID:", insertedUser.user_id);
-        return insertedUser;
+        if (!insertedUser || insertedUser.length === 0) {
+            console.error("❌ No data returned after insert");
+            return null;
+        }
+        
+        console.log("✅ User created successfully:", insertedUser[0].user_id);
+        console.log("💰 Welcome bonus: ₹11 added");
+        
+        return insertedUser[0];
         
     } catch (error) {
-        console.error("❌ Supabase error:", error);
+        console.error("❌ Unexpected error:", error);
         return null;
     }
 }
@@ -8895,64 +8910,7 @@ async function saveWithdrawToSupabase(withdrawData) {
 // ========================================
 
 // ========================================
-// 🔥 Telegram User ko Supabase me Auto Save
-// ========================================
-async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
-    if (!mysupabase) {
-        console.log("⚠️ Supabase not ready");
-        return false;
-    }
-    
-    try {
-        // Check if user exists
-        const { data: existingUser, error: fetchError } = await mysupabase
-            .from('users')
-            .select('*')
-            .eq('telegram_id', telegramId)
-            .single();
-        
-        if (existingUser) {
-            console.log("✅ User already exists:", existingUser.user_id);
-            // Update last login
-            await mysupabase
-                .from('users')
-                .update({ updated_at: new Date().toISOString() })
-                .eq('telegram_id', telegramId);
-            return existingUser;
-        }
-        
-        // NEW USER - Create
-        console.log("🆕 New user! Saving to Supabase...");
-        
-        const newUser = {
-            user_id: `TG_${telegramId}`,
-            name: userName || firstName || 'Telegram User',
-            telegram_id: telegramId,
-            telegram_username: userName,
-            balance: 11,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-        };
-        
-        const { data: insertedUser, error: insertError } = await mysupabase
-            .from('users')
-            .insert([newUser])
-            .select()
-            .single();
-        
-        if (insertError) {
-            console.error("❌ Insert error:", insertError);
-            return null;
-        }
-        
-        console.log("✅ New user saved! ID:", insertedUser.user_id);
-        return insertedUser;
-        
-    } catch (error) {
-        console.error("❌ Supabase error:", error);
-        return null;
-    }
-}
+
 
 
 async function initTelegramAndWelcome() {
@@ -9207,6 +9165,19 @@ function setupUTREventListeners() {
                 submitBtn.disabled = true;
             }
         });
+    }
+}
+
+// ========================================
+// initPage - Page initialization function
+// ========================================
+function initPage() {
+    console.log("📄 Page initialized");
+    if (typeof loadFullHistoryToStrip === 'function') {
+        loadFullHistoryToStrip();
+    }
+    if (typeof updateProfileDisplay === 'function') {
+        updateProfileDisplay();
     }
 }
 

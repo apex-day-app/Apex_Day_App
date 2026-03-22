@@ -9082,12 +9082,86 @@ async function initializeUser() {
     
     setupUTREventListeners();
     
+    // 🔥 SAVE NEW USER TO SUPABASE
+    if (mysupabase && currentUserData && currentUserData.userId) {
+        try {
+            // Check if user exists
+            const { data: existing } = await mysupabase
+                .from('users')
+                .select('user_id')
+                .eq('user_id', currentUserData.userId)
+                .single();
+            
+            if (!existing) {
+                // Insert new user
+                await mysupabase.from('users').insert([{
+                    user_id: currentUserData.userId,
+                    name: currentUserData.name,
+                    balance: currentUserData.balance,
+                    status: 'active',
+                    bank_accounts: currentUserData.bank_accounts || [],
+                    upis: currentUserData.upis || [],
+                    created_at: new Date().toISOString()
+                }]);
+                console.log("✅ New user saved to Supabase:", currentUserData.userId);
+            } else {
+                console.log("User already exists in Supabase");
+            }
+        } catch (error) {
+            console.error("Supabase save error:", error);
+        }
+    }
+    
     setTimeout(() => {
         if (typeof startGameLoop === 'function') {
             startGameLoop();
             console.log("✅ Game loop started");
         }
     }, 500);
+}
+
+// New user ko Supabase me save karne ka function
+async function saveUserToSupabase(userData) {
+    if (!mysupabase) {
+        console.log("Supabase not available, skipping save");
+        return;
+    }
+    
+    try {
+        // Check if user already exists
+        const { data: existingUser, error: checkError } = await mysupabase
+            .from('users')
+            .select('user_id')
+            .eq('user_id', userData.userId)
+            .single();
+        
+        if (existingUser) {
+            console.log("User already exists in Supabase");
+            return;
+        }
+        
+        // Insert new user
+        const { error } = await mysupabase
+            .from('users')
+            .insert([{
+                user_id: userData.userId,
+                name: userData.name,
+                email: userData.email || null,
+                balance: userData.balance,
+                status: 'active',
+                bank_accounts: userData.bank_accounts || [],
+                upis: userData.upis || [],
+                created_at: new Date().toISOString()
+            }]);
+        
+        if (error) {
+            console.error("Error saving user to Supabase:", error);
+        } else {
+            console.log("✅ New user saved to Supabase:", userData.userId);
+        }
+    } catch (error) {
+        console.error("Supabase save error:", error);
+    }
 }
 
 function setupUTREventListeners() {

@@ -6222,30 +6222,43 @@ async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
     try {
         console.log("📝 Checking if user exists:", telegramId);
         
-        // FIRST: Check if user exists
+        // Check if user exists
         const { data: existingUser, error: fetchError } = await mysupabase
             .from('users')
             .select('*')
             .eq('telegram_id', telegramId)
             .maybeSingle();
         
-        if (fetchError) {
-            console.error("❌ Error checking user:", fetchError);
-            return null;
-        }
-        
-        // If user exists, return it
         if (existingUser) {
             console.log("✅ Existing user found:", existingUser.user_id);
+            console.log("📊 Current balance:", existingUser.balance);
+            
+            // UPDATE existing user with latest Telegram name
+            const { data: updatedUser, error: updateError } = await mysupabase
+                .from('users')
+                .update({
+                    name: userName || firstName || existingUser.name,
+                    telegram_username: userName,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('telegram_id', telegramId)
+                .select();
+            
+            if (updateError) {
+                console.error("❌ Update error:", updateError);
+            } else {
+                console.log("✅ User updated with latest name:", userName);
+            }
+            
             return existingUser;
         }
         
-        // SECOND: Create new user
+        // NEW USER - Create
         console.log("🆕 Creating new user for:", userName);
         
         const newUser = {
             user_id: `TG_${telegramId}`,
-            name: userName || 'Telegram User',
+            name: userName || firstName || 'Telegram User',
             telegram_id: telegramId,
             telegram_username: userName,
             balance: 11,
@@ -6265,16 +6278,10 @@ async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
         
         if (insertError) {
             console.error("❌ Insert error:", insertError);
-            console.error("Error details:", JSON.stringify(insertError));
             return null;
         }
         
-        if (!insertedUser || insertedUser.length === 0) {
-            console.error("❌ No data returned after insert");
-            return null;
-        }
-        
-        console.log("✅ User created successfully:", insertedUser[0].user_id);
+        console.log("✅ New user created! ID:", insertedUser[0].user_id);
         console.log("💰 Welcome bonus: ₹11 added");
         
         return insertedUser[0];
@@ -6317,7 +6324,7 @@ async function initTelegramAndWelcome() {
                 console.log(`✅ Telegram user detected: ${userName} (${telegramId})`);
                 
                 // 🔥🔥🔥 YEH LINE ADD KARO 🔥🔥🔥
-                const supabaseUser = await saveUserToSupabase(telegramId, userName, firstName, lastName);
+                    const supabaseUser = await saveUserToSupabase(telegramId, userName, firstName, lastName);
                 
                 // Get balance from Supabase or localStorage
                 let initialBalance = 11;
@@ -8965,50 +8972,6 @@ async function initializeUser() {
             console.log("✅ Game loop started");
         }
     }, 500);
-}
-
-// New user ko Supabase me save karne ka function
-async function saveUserToSupabase(userData) {
-    if (!mysupabase) {
-        console.log("Supabase not available, skipping save");
-        return;
-    }
-    
-    try {
-        // Check if user already exists
-        const { data: existingUser, error: checkError } = await mysupabase
-            .from('users')
-            .select('user_id')
-            .eq('user_id', userData.userId)
-            .single();
-        
-        if (existingUser) {
-            console.log("User already exists in Supabase");
-            return;
-        }
-        
-        // Insert new user
-        const { error } = await mysupabase
-            .from('users')
-            .insert([{
-                user_id: userData.userId,
-                name: userData.name,
-                email: userData.email || null,
-                balance: userData.balance,
-                status: 'active',
-                bank_accounts: userData.bank_accounts || [],
-                upis: userData.upis || [],
-                created_at: new Date().toISOString()
-            }]);
-        
-        if (error) {
-            console.error("Error saving user to Supabase:", error);
-        } else {
-            console.log("✅ New user saved to Supabase:", userData.userId);
-        }
-    } catch (error) {
-        console.error("Supabase save error:", error);
-    }
 }
 
 function setupUTREventListeners() {

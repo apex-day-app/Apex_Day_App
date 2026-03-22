@@ -6567,38 +6567,94 @@ function updateTotalsDisplay() {
 // ========================================
 // 🔥 REAL-TIME SUBSCRIPTION - SABKI BETS LIVE DIKHEGI
 // ========================================
-async function subscribeToRealtimeBets() {
+async function saveUserToSupabase(telegramId, userName, firstName, lastName) {
     if (!mysupabase) {
-        console.log("⚠️ Supabase not available, using local only");
-        return;
+        console.error("❌ Supabase client not initialized");
+        return null;
     }
     
-    if (realtimeChannel) {
-        try {
-            await realtimeChannel.unsubscribe();
-        } catch(e) {}
-    }
-    
-    console.log("📡 Subscribing to real-time bets for round:", currentRoundId);
-    
-    realtimeChannel = mysupabase
-        .channel(`bets-round-${currentRoundId}`)
-        .on(
-            'postgres_changes',
-            {
-                event: 'INSERT',
-                schema: 'public',
-                table: 'active_bets',
-                filter: `round_id=eq.${currentRoundId}`
-            },
-            (payload) => {
-                console.log("🔄 New bet received:", payload.new);
-                handleNewBetRealtime(payload.new);
+    try {
+        console.log("📝 Checking if user exists:", telegramId);
+        
+        // Check if user exists by telegram_id
+        const { data: existingUser, error: fetchError } = await mysupabase
+            .from('users')
+            .select('*')
+            .eq('telegram_id', telegramId)
+            .maybeSingle();
+        
+        if (fetchError) {
+            console.error("❌ Error checking user:", fetchError);
+            return null;
+        }
+        
+        // If user exists, UPDATE with latest Telegram data
+        if (existingUser) {
+            console.log("✅ Existing user found:", existingUser.user_id);
+            console.log("📊 Old balance:", existingUser.balance);
+            console.log("📝 Old name:", existingUser.name);
+            console.log("🔄 Updating with new name:", userName);
+            
+            // UPDATE user with latest Telegram name, keep balance as is
+            const { data: updatedUser, error: updateError } = await mysupabase
+                .from('users')
+                .update({
+                    name: userName || firstName || existingUser.name,
+                    telegram_username: userName,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('telegram_id', telegramId)
+                .select();
+            
+            if (updateError) {
+                console.error("❌ Update error:", updateError);
+                return existingUser;
             }
-        )
-        .subscribe((status) => {
-            console.log("📡 Subscription status:", status);
-        });
+            
+            console.log("✅ User updated successfully!");
+            console.log("📊 Balance preserved:", existingUser.balance);
+            console.log("📝 New name:", userName);
+            
+            return updatedUser[0] || existingUser;
+        }
+        
+        // NEW USER - Create
+        console.log("🆕 Creating new user for:", userName);
+        
+        const newUser = {
+            user_id: `TG_${telegramId}`,
+            name: userName || firstName || 'Telegram User',
+            telegram_id: telegramId,
+            telegram_username: userName,
+            balance: 11,
+            status: 'active',
+            bank_accounts: [],
+            upis: [],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        console.log("📤 Sending to Supabase:", newUser);
+        
+        const { data: insertedUser, error: insertError } = await mysupabase
+            .from('users')
+            .insert([newUser])
+            .select();
+        
+        if (insertError) {
+            console.error("❌ Insert error:", insertError);
+            return null;
+        }
+        
+        console.log("✅ New user created! ID:", insertedUser[0].user_id);
+        console.log("💰 Welcome bonus: ₹11 added");
+        
+        return insertedUser[0];
+        
+    } catch (error) {
+        console.error("❌ Unexpected error:", error);
+        return null;
+    }
 }
 
 // ========================================
